@@ -22,7 +22,7 @@ class AreaController extends Controller
 
         //append query string to pagination links
         $areas->appends(['q' => request()->q]);
-
+        
         //render with inertia
         return inertia('Admin/Areas/Index', [
             'areas' => $areas,

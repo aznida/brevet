@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Exam;
 use App\Models\Category;
 use App\Models\Area;
+use App\Models\Question;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -186,5 +187,54 @@ class ExamController extends Controller
 
         //redirect
         return redirect()->route('admin.exams.index');
+    }
+
+    /**
+     * createQuestion
+     *
+     * @param  mixed $exam
+     * @return void
+     */
+    public function createQuestion(Exam $exam)
+    {
+        //render with inertia
+        return inertia('Admin/Questions/Create', [
+            'exam' => $exam,
+        ]);
+    }
+    /**
+     * storeQuestion
+     *
+     * @param  mixed $request
+     * @param  mixed $exam
+     * @return void
+     */
+    public function storeQuestion(Request $request, Exam $exam)
+    {
+        //validate request
+        $request->validate([
+            'question'          => 'required',
+            'option_1'          => 'required',
+            'option_2'          => 'required',
+            'option_3'          => 'required',
+            'option_4'          => 'required',
+            'option_5'          => 'required',
+            'answer'            => 'required',
+        ]);
+        
+        //create question
+        Question::create([
+            'exam_id'           => $exam->id,
+            'question'          => $request->question,
+            'option_1'          => $request->option_1,
+            'option_2'          => $request->option_2,
+            'option_3'          => $request->option_3,
+            'option_4'          => $request->option_4,
+            'option_5'          => $request->option_5,
+            'answer'            => $request->answer,
+        ]);
+        
+        //redirect
+        return redirect()->route('admin.exams.show', $exam->id);
     }
 }
