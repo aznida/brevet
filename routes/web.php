@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-//Test Push
+//Test Push github
 Route::get('/', function () {
     return view('welcome');
 });
