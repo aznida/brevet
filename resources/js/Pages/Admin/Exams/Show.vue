@@ -106,6 +106,10 @@
         router
     } from '@inertiajs/vue3';
 
+
+    //import sweet alert2
+    import Swal from 'sweetalert2';
+
     export default {
 
         //layout
@@ -115,6 +119,7 @@
         components: {
             Head,
             Link,
+            Pagination
         },
 
         //props
@@ -123,7 +128,44 @@
             exam: Object,
         },
 
+        //inisialisasi composition API
+        setup() {
+
+        //define method destroy
+        const destroy = (exam_id, question_id) => {
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Anda tidak akan dapat mengembalikan ini!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            })
+            .then((result) => {
+                if (result.isConfirmed) {
+
+                    router.delete(`/admin/exams/${exam_id}/questions/${question_id}/destroy`);
+
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: 'Soal Ujian Berhasil Dihapus!.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false,
+                    });
+                }
+            })
+        }
+
+        //return
+        return {
+            destroy,
+        }
+
     }
+
+}
 
 </script>
 
