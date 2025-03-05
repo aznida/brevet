@@ -67,11 +67,19 @@
                                 </thead>
                                 <div class="mt-2"></div>
                                 <tbody>
-
+                                    <tr v-for="(data, index) in exam_session.exam_groups.data" :key="index">
+                                        <td class="fw-bold text-center">{{ ++index + (exam_session.exam_groups.current_page - 1) * exam_session.exam_groups.per_page }}</td>
+                                        <td>{{ data.participant.name }}</td>
+                                        <td class="text-center">{{ data.participant.area.title }}</td>
+                                        <td class="text-center">{{ data.participant.gender }}</td>
+                                        <td class="text-center">
+                                            <button @click.prevent="destroy(exam_session.id, data.id)" class="btn btn-sm btn-danger border-0"><i class="fa fa-trash"></i></button>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
-                        
+                            <Pagination :links="exam_session.exam_groups.links" align="end" />
                     </div>
                 </div>
 
@@ -87,8 +95,15 @@
     //import Heade and Link from Inertia
     import {
         Head,
-        Link
+        Link,
+        router
     } from '@inertiajs/vue3';
+
+    //import sweet alert2
+    import Swal from 'sweetalert2';
+
+    //import component pagination
+    import Pagination from '../../../Components/Pagination.vue';    
 
     export default {
 
@@ -99,6 +114,7 @@
         components: {
             Head,
             Link,
+            Pagination
         },
 
         //props
@@ -106,6 +122,44 @@
             errors: Object,
             exam_session: Object,
         },
+
+        //inisialisasi composition API
+        setup() {
+
+            //define method destroy
+            const destroy = (exam_session_id, exam_group_id) => {
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Anda tidak akan dapat mengembalikan ini!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                })
+                .then((result) => {
+                    if (result.isConfirmed) {
+
+                        router.delete(`/admin/exam_sessions/${exam_session_id}/enrolled/${exam_group_id}/destroy`);
+
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'Siswa Berhasil Dihapus!.',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false,
+                        });
+                    }
+                })
+            }
+
+            //return
+            return {
+                destroy,
+            }
+
+        }
+
 
     }
 

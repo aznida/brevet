@@ -6,6 +6,9 @@ use App\Models\Exam;
 use App\Models\ExamSession;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Participant;
+use App\Models\ExamGroup;
+
 
 class ExamSessionController extends Controller
 {
@@ -160,5 +163,76 @@ class ExamSessionController extends Controller
         
         //redirect
         return redirect()->route('admin.exam_sessions.index');
+    }
+
+    /**
+     * createEnrolle
+     *
+     * @param  mixed $exam_session
+     * @return void
+     */
+    public function createEnrolled(ExamSession $exam_session)
+    {
+        //get exams
+        $exam = $exam_session->exam;
+
+        //get participants already enrolled
+        $participants_enrolled = ExamGroup::where('exam_id', $exam->id)->where('exam_session_id', $exam_session->id)->pluck('participant_id')->all();
+        
+        //get participants
+        $participants = Participant::with('area')->where('area_id', $exam->area_id)->whereNotIn('id', $participants_enrolled)->get();
+
+        //render with inertia
+        return inertia('Admin/ExamGroups/Create', [
+            'exam'          => $exam,
+            'exam_session'  => $exam_session,
+            'participants'  => $participants,
+        ]);
+    }
+
+    /**
+     * storeEnrolled
+     *
+     * @param  mixed $exam_session
+     * @return void
+     */
+    public function storeEnrolled(Request $request, ExamSession $exam_session)
+    {
+        //validate request
+        $request->validate([
+            'participant_id'    => 'required',
+        ]);
+        
+        //create exam_group
+        foreach($request->participant_id as $participant_id) {
+
+            //select participant
+            $participant = Participant::findOrFail($participant_id);
+
+            //create exam_group
+            ExamGroup::create([
+                'exam_id'         => $request->exam_id,  
+                'exam_session_id' => $exam_session->id,
+                'participant_id'      => $participant->id,
+            ]);
+        }
+        
+        //redirect
+        return redirect()->route('admin.exam_sessions.show', $exam_session->id);
+    }
+    /**
+     * destroyEnrolle
+     *
+     * @param  mixed $exam_session
+     * @param  mixed $exam_group
+     * @return void
+     */
+    public function destroyEnrolled(ExamSession $exam_session, ExamGroup $exam_group)
+    {
+        //delete exam_group
+        $exam_group->delete();
+        
+        //redirect
+        return redirect()->route('admin.exam_sessions.show', $exam_session->id);
     }
 }

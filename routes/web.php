@@ -58,6 +58,15 @@ Route::prefix('admin')->group(function() {
         
         //route resource exam_sessions    
         Route::resource('/exam_sessions', \App\Http\Controllers\Admin\ExamSessionController::class, ['as' => 'admin']);
-    
+        
+        //custom route for enrolled create
+        Route::get('/exam_sessions/{exam_session}/enrolled/create', [\App\Http\Controllers\Admin\ExamSessionController::class, 'createEnrolled'])->name('admin.exam_sessions.createEnrolled');
+
+        //custom route for enrolled store
+        Route::post('/exam_sessions/{exam_session}/enrolled/store', [\App\Http\Controllers\Admin\ExamSessionController::class, 'storeEnrolled'])->name('admin.exam_sessions.storeEnrolled');
+
+        //custom route for enrolle destroy
+        Route::delete('/exam_sessions/{exam_session}/enrolled/{exam_group}/destroy', [\App\Http\Controllers\Admin\ExamSessionController::class, 'destroyEnrolled'])->name('admin.exam_sessions.destroyEnrolled');
+
     });
 });
