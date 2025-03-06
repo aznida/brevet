@@ -68,5 +68,14 @@ Route::prefix('admin')->group(function() {
         //custom route for enrolle destroy
         Route::delete('/exam_sessions/{exam_session}/enrolled/{exam_group}/destroy', [\App\Http\Controllers\Admin\ExamSessionController::class, 'destroyEnrolled'])->name('admin.exam_sessions.destroyEnrolled');
 
+        //route index reports
+        Route::get('/reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('admin.reports.index');
+
+        //route index reports filter
+        Route::get('/reports/filter', [\App\Http\Controllers\Admin\ReportController::class, 'filter'])->name('admin.reports.filter');
+
+        //route index reports export
+        Route::get('/reports/export', [\App\Http\Controllers\Admin\ReportController::class, 'export'])->name('admin.reports.export');
+
     });
 });
