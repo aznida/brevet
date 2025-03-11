@@ -79,3 +79,51 @@ Route::prefix('admin')->group(function() {
 
     });
 });
+
+//route homepage
+Route::get('/', function () {
+
+    //cek session participant
+    if(auth()->guard('participant')->check()) {
+        return redirect()->route('participant.dashboard');
+    }
+
+    //return view login
+    return \Inertia\Inertia::render('Participant/Login/Index');
+});
+
+//login participants
+Route::post('/participants/login', \App\Http\Controllers\Participant\LoginController::class)->name('participant.login');
+
+//prefix "participant"
+Route::prefix('participant')->group(function() {
+
+    //middleware "participant"
+    Route::group(['middleware' => 'participant'], function () {
+        
+        //route dashboard
+        Route::get('/dashboard', App\Http\Controllers\Participant\DashboardController::class)->name('participant.dashboard');
+        
+        //route exam confirmation
+        Route::get('/exam-confirmation/{id}', [App\Http\Controllers\Participant\ExamController::class, 'confirmation'])->name('participant.exams.confirmation');
+        
+        //route exam start
+        Route::get('/exam-start/{id}', [App\Http\Controllers\Participant\ExamController::class, 'startExam'])->name('participant.exams.startExam');
+        
+        //route exam show
+        Route::get('/exam/{id}/{page}', [App\Http\Controllers\Participant\ExamController::class, 'show'])->name('participant.exams.show');
+        
+        //route exam update duration
+        Route::put('/exam-duration/update/{grade_id}', [App\Http\Controllers\Participant\ExamController::class, 'updateDuration'])->name('participant.exams.update_duration');
+        
+        //route answer question
+        Route::post('/exam-answer', [App\Http\Controllers\Participant\ExamController::class, 'answerQuestion'])->name('participant.exams.answerQuestion');
+
+        //route exam end
+        Route::post('/exam-end', [App\Http\Controllers\Participant\ExamController::class, 'endExam'])->name('participant.exams.endExam');
+        
+        //route exam result
+        Route::get('/exam-result/{exam_group_id}', [App\Http\Controllers\Participant\ExamController::class, 'resultExam'])->name('participant.exams.resultExam');
+    
+    });
+});
