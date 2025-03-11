@@ -48,14 +48,17 @@
 
                             <div class="mb-4">
                                 <label>Deskripsi</label> 
-                                <Editor 
-                                    api-key="bvu9lokg76dk4mx0sipczxrdbcmps5ll9px9olsfpqjywybo" 
-                                    v-model="form.description" 
-                                    :init="{
-                                        menubar: false,
-                                        plugins: 'lists link image emoticons',
-                                        toolbar: 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image emoticons'
-                                    }"
+                                <QuillEditor
+                                    v-model:content="form.description"
+                                    contentType="html"
+                                    theme="snow"
+                                    :toolbar="[
+                                        ['bold', 'italic', 'underline'],
+                                        ['blockquote', 'code-block'],
+                                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                        ['link', 'image'],
+                                        ['clean']
+                                    ]"
                                 />
                                 <div v-if="errors.description" class="alert alert-danger mt-2">
                                     {{ errors.description }}
@@ -140,8 +143,9 @@
     //import sweet alert2
     import Swal from 'sweetalert2';
 
-    //import tinyMCE
-    import Editor from '@tinymce/tinymce-vue';
+    //import quill
+    import { QuillEditor } from '@vueup/vue-quill'
+    import '@vueup/vue-quill/dist/vue-quill.snow.css'
 
     export default {
 
@@ -152,7 +156,7 @@
         components: {
             Head,
             Link,
-            Editor
+            QuillEditor
         },
 
         //props

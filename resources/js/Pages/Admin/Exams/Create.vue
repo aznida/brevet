@@ -45,23 +45,18 @@
                                 </div>
                             </div>
 
-
                             <div class="mb-4">
                                 <label>Deskripsi</label> 
-                                <Editor 
-                                    api-key="bvu9lokg76dk4mx0sipczxrdbcmps5ll9px9olsfpqjywybo" 
-                                    v-model="form.description" 
-                                    :init="{
-                                        menubar: false,
-                                        plugins: 'lists link image emoticons',
-                                        toolbar: 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image emoticons'
-                                    }"
+                                <QuillEditor
+                                    v-model:content="form.description"
+                                    contentType="html"
+                                    theme="snow"
+                                    toolbar="full"
                                 />
                                 <div v-if="errors.description" class="alert alert-danger mt-2">
                                     {{ errors.description }}
                                 </div>
                             </div>
-
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-4">
@@ -126,35 +121,22 @@
 <script>
     //import layout
     import LayoutAdmin from '../../../Layouts/Admin.vue';
-
-    //import Heade and Link from Inertia
-    import {
-        Head,
-        Link,
-        router
-    } from '@inertiajs/vue3';
-
-    //import reactive from vue
+    import { Head, Link, router } from '@inertiajs/vue3';
     import { reactive } from 'vue';
-
-    //import sweet alert2
     import Swal from 'sweetalert2';
-
-    //import tinyMCE
-    import Editor from '@tinymce/tinymce-vue';
+    
+    //import Quill
+    import { QuillEditor } from '@vueup/vue-quill'
+    import '@vueup/vue-quill/dist/vue-quill.snow.css'
 
     export default {
-
-        //layout
         layout: LayoutAdmin,
-
-        //register components
         components: {
             Head,
             Link,
-            Editor
+            QuillEditor
         },
-
+        
         //props
         props: {
             errors: Object,
@@ -162,10 +144,7 @@
             areas: Array,
         },
 
-        //inisialisasi composition API
         setup() {
-
-            //define form with reactive
             const form = reactive({
                 title: '',
                 category_id: '',
@@ -208,13 +187,10 @@
 
             return {
                 form,
-                submit,
+                submit
             };
-
         }
-
     }
-
 </script>
 
 <style>
