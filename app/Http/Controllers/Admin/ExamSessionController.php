@@ -177,10 +177,22 @@ class ExamSessionController extends Controller
         $exam = $exam_session->exam;
 
         //get participants already enrolled
-        $participants_enrolled = ExamGroup::where('exam_id', $exam->id)->where('exam_session_id', $exam_session->id)->pluck('participant_id')->all();
+        $participants_enrolled = ExamGroup::where('exam_id', $exam->id)
+            ->where('exam_session_id', $exam_session->id)
+            ->pluck('participant_id')
+            ->all();
         
-        //get participants
-        $participants = Participant::with('area')->where('area_id', $exam->area_id)->whereNotIn('id', $participants_enrolled)->get();
+        //get participants based on area
+        if ($exam->area->title === 'Nasional') {
+            $participants = Participant::with('area')
+                ->whereNotIn('id', $participants_enrolled)
+                ->get();
+        } else {
+            $participants = Participant::with('area')
+                ->where('area_id', $exam->area_id)
+                ->whereNotIn('id', $participants_enrolled)
+                ->get();
+        }
 
         //render with inertia
         return inertia('Admin/ExamGroups/Create', [

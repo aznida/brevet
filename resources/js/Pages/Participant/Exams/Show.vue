@@ -19,10 +19,8 @@
                     </div>
                 </div>
                 <div class="card-body">
-
                     <div v-if="question_active !== null">
-
-                        <div>
+                        <div class="no-copy">
                             <p v-html="question_active.question.question"></p>
                         </div>
 
@@ -42,13 +40,12 @@
                                             {{ options[index] }}
                                         </button>
                                     </td>
-                                    <td style="padding: 10px;">
+                                    <td style="padding: 10px;" class="no-copy">
                                         <p v-html="question_active.question['option_'+answer]"></p>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
-
                     </div>
 
                     <div v-else>
@@ -298,7 +295,25 @@
 
 
 
-            //return
+            // Add copy protection
+            if (typeof window !== 'undefined') {
+                document.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                });
+                
+                document.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey) && 
+                        (e.key === 'c' || 
+                         e.key === 'C' || 
+                         e.key === 'u' || 
+                         e.key === 'U' || 
+                         e.key === 'p' || 
+                         e.key === 'P')) {
+                        e.preventDefault();
+                    }
+                });
+            }
+
             return {
                 options,
                 duration,
@@ -311,12 +326,15 @@
                 showModalEndTimeExam,
                 endExam
             }
-
         }
     }
-
 </script>
 
 <style>
-
+.no-copy {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
 </style>

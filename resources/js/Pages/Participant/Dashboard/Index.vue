@@ -49,7 +49,36 @@
                         <div v-if="examTimeRangeChecker(data.exam_group.exam_session.start_time, data.exam_group.exam_session.end_time)">
 
                             <div v-if="data.grade.start_time == null">
-                                <Link :href="`/participant/exam-confirmation/${data.exam_group.id}`" class="btn btn-md btn-success border-0 shadow w-100 mt-2 text-white">Kerjakan</Link>
+                                <button @click="openRecordingModal(data.exam_group.id)" class="btn btn-md btn-success border-0 shadow w-100 mt-2 text-white">Kerjakan</button>
+                                
+                                <!-- Recording Confirmation Modal -->
+                                <div class="modal fade" :id="'recordingModal'+data.exam_group.id" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-dialog-centered modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Konfirmasi Rekaman</h5>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="alert alert-warning">
+                                                    Layar ini sedang direkam oleh sistem
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" v-model="recordingConsent" :id="'consent'+data.exam_group.id">
+                                                    <label class="form-check-label" :for="'consent'+data.exam_group.id">
+                                                        Saya menyetujui untuk direkam
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <Link 
+                                                    v-if="recordingConsent"
+                                                    :href="`/participant/exam-confirmation/${data.exam_group.id}`" 
+                                                    class="btn btn-primary"
+                                                >OK</Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div v-else>
@@ -94,30 +123,32 @@
 <script>
     //import layout participant
     import LayoutParticipant from '../../../Layouts/Participant.vue';
-
-    //import Link from Inertia
-    import {
-        Link
-    } from '@inertiajs/vue3';
+    import { Link } from '@inertiajs/vue3';
+    import { ref } from 'vue';
 
     export default {
-
-        //layout
         layout: LayoutParticipant,
-
-        //register components
         components: {
             Link,
         },
-
-        //register props
         props: {
             exam_groups: Array,
             auth: Object
+        },
+        setup() {
+            const recordingConsent = ref(false);
+
+            const openRecordingModal = (examGroupId) => {
+                const modal = new bootstrap.Modal(document.getElementById('recordingModal' + examGroupId));
+                modal.show();
+            };
+
+            return {
+                recordingConsent,
+                openRecordingModal
+            };
         }
-
     }
-
 </script>
 
 <style>
