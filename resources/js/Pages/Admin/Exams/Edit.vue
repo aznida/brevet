@@ -34,6 +34,18 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-4">
+                                        <label>Tipe Ujian</label> 
+                                        <select class="form-select" v-model="form.exam_type">
+                                            <option value="multiple_choice">Pilihan Ganda</option>
+                                            <option value="rating_scale">Skala Penilaian</option>
+                                        </select>
+                                        <div v-if="errors.exam_type" class="alert alert-danger mt-2">
+                                            {{ errors.exam_type }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-4">
                                         <label>Area</label> 
                                         <select class="form-select" v-model="form.area_id">
                                             <option v-for="(area, index) in areas" :key="index" :value="area.id">{{ area.title }}</option>
@@ -138,7 +150,7 @@
     } from '@inertiajs/vue3';
 
     //import reactive from vue
-    import { reactive } from 'vue';
+    import { reactive, watch } from 'vue';  // Add watch import
 
     //import sweet alert2
     import Swal from 'sweetalert2';
@@ -180,25 +192,13 @@
                 random_question: props.exam.random_question,
                 random_answer: props.exam.random_answer,
                 show_answer: props.exam.show_answer,
+                exam_type: props.exam.exam_type,
             });
 
             //method "submit"
             const submit = () => {
-
-                //send data to server
-                router.put(`/admin/exams/${props.exam.id}`, {
-                    //data
-                    title: form.title,
-                    category_id: form.category_id,
-                    area_id: form.area_id,
-                    duration: form.duration,
-                    description: form.description,
-                    random_question: form.random_question,
-                    random_answer: form.random_answer,
-                    show_answer: form.show_answer,
-                }, {
+                router.put(`/admin/exams/${props.exam.id}`, form, {  // Simplified form data passing
                     onSuccess: () => {
-                        //show success alert
                         Swal.fire({
                             title: 'Success!',
                             text: 'Ujian Berhasil Diupdate!.',
@@ -208,7 +208,6 @@
                         });
                     },
                 });
-
             }
 
             return {

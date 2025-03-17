@@ -99,6 +99,18 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-4">
+                                        <label>Tipe Ujian</label> 
+                                        <select class="form-select" v-model="form.exam_type">
+                                            <option value="multiple_choice">Pilihan Ganda</option>
+                                            <option value="rating_scale">Skala Penilaian</option>
+                                        </select>
+                                        <div v-if="errors.exam_type" class="alert alert-danger mt-2">
+                                            {{ errors.exam_type }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-4">
                                         <label>Durasi (Menit)</label> 
                                         <input type="number" min="1" class="form-control" placeholder="Masukkan Durasi Ujian (Menit)" v-model="form.duration">
                                         <div v-if="errors.duration" class="alert alert-danger mt-2">
@@ -154,25 +166,14 @@
                 random_question: '',
                 random_answer: '',
                 show_answer: '',
+                exam_type: 'multiple_choice', // Add this line
             });
 
-            //method "submit"
             const submit = () => {
-
-                //send data to server
                 router.post('/admin/exams', {
-                    //data
-                    title: form.title,
-                    category_id: form.category_id,
-                    area_id: form.area_id,
-                    duration: form.duration,
-                    description: form.description,
-                    random_question: form.random_question,
-                    random_answer: form.random_answer,
-                    show_answer: form.show_answer,
+                    ...form // Spread operator to include all form fields
                 }, {
                     onSuccess: () => {
-                        //show success alert
                         Swal.fire({
                             title: 'Success!',
                             text: 'Ujian Berhasil Disimpan!.',
@@ -182,7 +183,6 @@
                         });
                     },
                 });
-
             }
 
             return {

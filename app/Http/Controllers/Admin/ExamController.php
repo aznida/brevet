@@ -65,25 +65,27 @@ class ExamController extends Controller
         //validate request
         $request->validate([
             'title'             => 'required',
-            'category_id'         => 'required|integer',
-            'area_id'      => 'required|integer',
+            'category_id'       => 'required|integer',
+            'area_id'          => 'required|integer',
             'duration'          => 'required|integer',
             'description'       => 'required',
             'random_question'   => 'required',
             'random_answer'     => 'required',
             'show_answer'       => 'required',
+            'exam_type'         => 'required|in:multiple_choice,rating_scale',  // Add validation
         ]);
 
         //create exam
         Exam::create([
             'title'             => $request->title,
-            'category_id'         => $request->category_id,
-            'area_id'      => $request->area_id,
+            'category_id'       => $request->category_id,
+            'area_id'          => $request->area_id,
             'duration'          => $request->duration,
             'description'       => $request->description,
             'random_question'   => $request->random_question,
             'random_answer'     => $request->random_answer,
             'show_answer'       => $request->show_answer,
+            'exam_type'         => $request->exam_type,  // Add this line
         ]);
 
         //redirect
@@ -100,11 +102,23 @@ class ExamController extends Controller
     public function show($id)
     {
         //get exam
-        $exam = Exam::with('category', 'area')->findOrFail($id);
-
-        //get relation questions with pagination
-        $exam->setRelation('questions', $exam->questions()->paginate(5));
-
+        $exam = Exam::with(['category', 'area'])->findOrFail($id);
+    
+        //get relation questions with pagination based on exam type
+        $questions = $exam->questions()
+            ->when($exam->exam_type === 'multiple_choice', function($query) {
+                return $query->select('id', 'exam_id', 'question', 'question_type', 
+                    'option_1', 'option_2', 'option_3', 'option_4', 'option_5', 'answer');
+            })
+            ->when($exam->exam_type === 'rating_scale', function($query) {
+                return $query->select('id', 'exam_id', 'question', 'question_type', 'rating_scale');
+            })
+            ->where('question_type', $exam->exam_type)
+            ->paginate(5);
+    
+        //set relation
+        $exam->setRelation('questions', $questions);
+    
         //render with inertia
         return inertia('Admin/Exams/Show', [
             'exam' => $exam,
@@ -117,22 +131,17 @@ class ExamController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Exam $exam)
     {
-        //get exam
-        $exam = Exam::findOrFail($id);
-
-        //get lessons
-        $categories = Category::all();
-
-        //get classrooms
-        $areas = Area::all();
-
-        //render with inertia
+        // Load the exam with its relationships and ensure exam_type is included
+        $exam->load(['category', 'area']);
+        
         return inertia('Admin/Exams/Edit', [
-            'exam' => $exam,
-            'categories' => $categories,
-            'areas' => $areas,
+            'exam' => array_merge($exam->toArray(), [
+                'exam_type' => $exam->exam_type ?? 'multiple_choice' // Provide default if not set
+            ]),
+            'categories' => Category::all(),
+            'areas' => Area::all(),
         ]);
     }
 
@@ -148,25 +157,27 @@ class ExamController extends Controller
         //validate request
         $request->validate([
             'title'             => 'required',
-            'category_id'         => 'required|integer',
-            'area_id'      => 'required|integer',
+            'category_id'       => 'required|integer',
+            'area_id'          => 'required|integer',
             'duration'          => 'required|integer',
             'description'       => 'required',
             'random_question'   => 'required',
             'random_answer'     => 'required',
             'show_answer'       => 'required',
+            'exam_type'         => 'required|in:multiple_choice,rating_scale',  // Add validation
         ]);
 
         //update exam
         $exam->update([
             'title'             => $request->title,
-            'category_id'         => $request->category_id,
-            'area_id'      => $request->area_id,
+            'category_id'       => $request->category_id,
+            'area_id'          => $request->area_id,
             'duration'          => $request->duration,
             'description'       => $request->description,
             'random_question'   => $request->random_question,
             'random_answer'     => $request->random_answer,
             'show_answer'       => $request->show_answer,
+            'exam_type'         => $request->exam_type,  // Add this line
         ]);
 
         //redirect
@@ -213,31 +224,66 @@ class ExamController extends Controller
      */
     public function storeQuestion(Request $request, Exam $exam)
     {
-        //validate request
-        $request->validate([
-            'question'          => 'required',
-            'option_1'          => 'required',
-            'option_2'          => 'required',
-            'option_3'          => 'required',
-            'option_4'          => 'required',
-            'option_5'          => 'required',
-            'answer'            => 'required',
-        ]);
-        
-        //create question
-        Question::create([
-            'exam_id'           => $exam->id,
-            'question'          => $request->question,
-            'option_1'          => $request->option_1,
-            'option_2'          => $request->option_2,
-            'option_3'          => $request->option_3,
-            'option_4'          => $request->option_4,
-            'option_5'          => $request->option_5,
-            'answer'            => $request->answer,
-        ]);
-        
-        //redirect
-        return redirect()->route('admin.exams.show', $exam->id);
+        try {
+            // Base validation rules
+            $rules = [
+                'question' => 'required',
+            ];
+    
+            // Add validation rules based on exam type
+            if ($exam->exam_type === 'multiple_choice') {
+                $rules = array_merge($rules, [
+                    'option_1' => 'required',
+                    'option_2' => 'required',
+                    'option_3' => 'required',
+                    'option_4' => 'required',
+                    'option_5' => 'required',
+                    'answer' => 'required',
+                ]);
+            }
+    
+            $request->validate($rules);
+    
+            // Extract question content
+            $questionContent = $request->question['ops'][0]['insert'] ?? $request->question;
+    
+            // Base question data
+            $questionData = [
+                'exam_id' => $exam->id,
+                'question' => $questionContent,
+                'question_type' => $exam->exam_type,
+            ];
+    
+            // Add type-specific data
+            if ($exam->exam_type === 'multiple_choice') {
+                $questionData = array_merge($questionData, [
+                    'option_1' => $request->option_1['ops'][0]['insert'] ?? $request->option_1,
+                    'option_2' => $request->option_2['ops'][0]['insert'] ?? $request->option_2,
+                    'option_3' => $request->option_3['ops'][0]['insert'] ?? $request->option_3,
+                    'option_4' => $request->option_4['ops'][0]['insert'] ?? $request->option_4,
+                    'option_5' => $request->option_5['ops'][0]['insert'] ?? $request->option_5,
+                    'answer' => $request->answer,
+                    'rating_scale' => null
+                ]);
+            } else {
+                $questionData = array_merge($questionData, [
+                    'option_1' => null,
+                    'option_2' => null,
+                    'option_3' => null,
+                    'option_4' => null,
+                    'option_5' => null,
+                    'answer' => null,
+                    'rating_scale' => 6
+                ]);
+            }
+    
+            Question::create($questionData);
+            return redirect()->route('admin.exams.show', $exam->id);
+            
+        } catch (\Exception $e) {
+            \Log::error('Error creating question: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Failed to create question: ' . $e->getMessage()]);
+        }
     }
     /**
      * editQuestion
@@ -248,7 +294,9 @@ class ExamController extends Controller
      */
     public function editQuestion(Exam $exam, Question $question)
     {
-        //render with inertia
+        // Load the exam with its type
+        $exam->load(['category', 'area']);
+        
         return inertia('Admin/Questions/Edit', [
             'exam' => $exam,
             'question' => $question,
@@ -264,30 +312,66 @@ class ExamController extends Controller
      */
     public function updateQuestion(Request $request, Exam $exam, Question $question)
     {
-        //validate request
-        $request->validate([
-            'question'          => 'required',
-            'option_1'          => 'required',
-            'option_2'          => 'required',
-            'option_3'          => 'required',
-            'option_4'          => 'required',
-            'option_5'          => 'required',
-            'answer'            => 'required',
-        ]);
-        
-        //update question
-        $question->update([
-            'question'          => $request->question,
-            'option_1'          => $request->option_1,
-            'option_2'          => $request->option_2,
-            'option_3'          => $request->option_3,
-            'option_4'          => $request->option_4,
-            'option_5'          => $request->option_5,
-            'answer'            => $request->answer,
-        ]);
-        
-        //redirect
-        return redirect()->route('admin.exams.show', $exam->id);
+        try {
+            // Base validation rules
+            $rules = [
+                'question' => 'required',
+            ];
+    
+            // Add validation rules based on exam type
+            if ($exam->exam_type === 'multiple_choice') {
+                $rules = array_merge($rules, [
+                    'option_1' => 'required',
+                    'option_2' => 'required',
+                    'option_3' => 'required',
+                    'option_4' => 'required',
+                    'option_5' => 'required',
+                    'answer' => 'required',
+                ]);
+            }
+    
+            $request->validate($rules);
+    
+            // Extract content from Quill editor data
+            $questionContent = is_array($request->question) ? 
+                ($request->question['ops'][0]['insert'] ?? '') : $request->question;
+    
+            // Base update data
+            $updateData = [
+                'question' => $questionContent,
+                'question_type' => $exam->exam_type
+            ];
+    
+            // Add type-specific data
+            if ($exam->exam_type === 'multiple_choice') {
+                $updateData = array_merge($updateData, [
+                    'option_1' => is_array($request->option_1) ? ($request->option_1['ops'][0]['insert'] ?? '') : $request->option_1,
+                    'option_2' => is_array($request->option_2) ? ($request->option_2['ops'][0]['insert'] ?? '') : $request->option_2,
+                    'option_3' => is_array($request->option_3) ? ($request->option_3['ops'][0]['insert'] ?? '') : $request->option_3,
+                    'option_4' => is_array($request->option_4) ? ($request->option_4['ops'][0]['insert'] ?? '') : $request->option_4,
+                    'option_5' => is_array($request->option_5) ? ($request->option_5['ops'][0]['insert'] ?? '') : $request->option_5,
+                    'answer' => $request->answer,
+                    'rating_scale' => null
+                ]);
+            } else {
+                $updateData = array_merge($updateData, [
+                    'option_1' => null,
+                    'option_2' => null,
+                    'option_3' => null,
+                    'option_4' => null,
+                    'option_5' => null,
+                    'answer' => null,
+                    'rating_scale' => 6
+                ]);
+            }
+    
+            $question->update($updateData);
+            return redirect()->route('admin.exams.show', $exam->id);
+            
+        } catch (\Exception $e) {
+            \Log::error('Error updating question: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Failed to update question: ' . $e->getMessage()]);
+        }
     }
 
     /**
@@ -325,12 +409,17 @@ class ExamController extends Controller
      */
     public function storeImport(Request $request, Exam $exam)
     {
+        // Validate if exam type is multiple choice
+        if ($exam->exam_type !== 'multiple_choice') {
+            return back()->withErrors(['error' => 'Import is only available for multiple choice questions.']);
+        }
+
         $request->validate([
             'file' => 'required|mimes:csv,xls,xlsx'
         ]);
 
-        // import data
-        Excel::import(new QuestionsImport(), $request->file('file'));
+        // Import data with exam context
+        Excel::import(new QuestionsImport($exam), $request->file('file'));
 
         //redirect
         return redirect()->route('admin.exams.show', $exam->id);

@@ -11,97 +11,44 @@
                         <h5><i class="fa fa-question-circle"></i> Edit Soal Ujian</h5>
                         <hr>
                         <form @submit.prevent="submit">
+                            <!-- Question input always shown -->
+                            <div class="mb-4">
+                                <label>Soal</label>
+                                <QuillEditor theme="snow" v-model:content="form.question" contentType="html" />
+                            </div>
 
-                            <div class="table-responsive mb-4">
+                            <!-- Multiple Choice Form -->
+                            <div v-if="exam.exam_type === 'multiple_choice'" class="table-responsive mb-4">
                                 <table class="table table-bordered table-centered table-nowrap mb-0 rounded">
                                     <tbody>
                                         <tr>
                                             <td style="width:20%" class="fw-bold">Soal</td>
                                             <td>
-                                                <Editor 
-                                                    api-key="bvu9lokg76dk4mx0sipczxrdbcmps5ll9px9olsfpqjywybo" 
-                                                    v-model="form.question" 
-                                                    :init="{
-                                                        menubar: false,
-                                                        plugins: 'lists link image emoticons',
-                                                        toolbar: 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image emoticons'
-                                                    }"
-                                                />
+                                                <QuillEditor theme="snow" v-model:content="form.option_1" contentType="html" />
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="width:20%" class="fw-bold">Pilihan A</td>
                                             <td>
-                                                <Editor 
-                                                    api-key="bvu9lokg76dk4mx0sipczxrdbcmps5ll9px9olsfpqjywybo" 
-                                                    v-model="form.option_1" 
-                                                    :init="{
-                                                        height: 130,
-                                                        menubar: false,
-                                                        plugins: 'lists link image emoticons',
-                                                        toolbar: 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image emoticons'
-                                                    }"
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="width:20%" class="fw-bold">Pilihan B</td>
-                                            <td>
-                                                <Editor 
-                                                    api-key="bvu9lokg76dk4mx0sipczxrdbcmps5ll9px9olsfpqjywybo" 
-                                                    v-model="form.option_2" 
-                                                    :init="{
-                                                        height: 130,
-                                                        menubar: false,
-                                                        plugins: 'lists link image emoticons',
-                                                        toolbar: 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image emoticons'
-                                                    }"
-                                                />
+                                                <QuillEditor theme="snow" v-model:content="form.option_2" contentType="html" />
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="width:20%" class="fw-bold">Pilihan C</td>
                                             <td>
-                                                <Editor 
-                                                    api-key="bvu9lokg76dk4mx0sipczxrdbcmps5ll9px9olsfpqjywybo" 
-                                                    v-model="form.option_3" 
-                                                    :init="{
-                                                        height: 130,
-                                                        menubar: false,
-                                                        plugins: 'lists link image emoticons',
-                                                        toolbar: 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image emoticons'
-                                                    }"
-                                                />
+                                                <QuillEditor theme="snow" v-model:content="form.option_3" contentType="html" />
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="width:20%" class="fw-bold">Pilihan D</td>
                                             <td>
-                                                <Editor 
-                                                    api-key="bvu9lokg76dk4mx0sipczxrdbcmps5ll9px9olsfpqjywybo" 
-                                                    v-model="form.option_4" 
-                                                    :init="{
-                                                        height: 130,
-                                                        menubar: false,
-                                                        plugins: 'lists link image emoticons',
-                                                        toolbar: 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image emoticons'
-                                                    }"
-                                                />
+                                                <QuillEditor theme="snow" v-model:content="form.option_4" contentType="html" />
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="width:20%" class="fw-bold">Pilihan E</td>
                                             <td>
-                                                <Editor 
-                                                    api-key="bvu9lokg76dk4mx0sipczxrdbcmps5ll9px9olsfpqjywybo" 
-                                                    v-model="form.option_5" 
-                                                    :init="{
-                                                        height: 130,
-                                                        menubar: false,
-                                                        plugins: 'lists link image emoticons',
-                                                        toolbar: 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image emoticons'
-                                                    }"
-                                                />
+                                                <QuillEditor theme="snow" v-model:content="form.option_5" contentType="html" />
                                             </td>
                                         </tr>
                                         <tr>
@@ -118,6 +65,22 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                            </div>
+
+                            <!-- Rating Scale Form -->
+                            <div v-if="exam.exam_type === 'rating_scale'" class="mb-4">
+                                <div class="alert alert-info">
+                                    <p class="mb-0">Skala Penilaian:</p>
+                                    <ul class="mb-0">
+                                        <li>1 = Sangat Jarang</li>
+                                        <li>2 = Jarang</li>
+                                        <li>3 = Kadang-kadang</li>
+                                        <li>4 = Sering</li>
+                                        <li>5 = Sangat Sering</li>
+                                        <li>6 = Selalu</li>
+                                    </ul>
+                                </div>
+                                <input type="hidden" v-model="form.rating_scale" value="6">
                             </div>
                             
                             <button type="submit" class="btn btn-md btn-primary border-0 shadow me-2">Simpan</button>
@@ -147,8 +110,9 @@
     //import sweet alert2
     import Swal from 'sweetalert2';
 
-    //import tinyMCE
-    import Editor from '@tinymce/tinymce-vue';
+    //import Quill
+    import { QuillEditor } from '@vueup/vue-quill';
+    import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
     export default {
 
@@ -159,7 +123,7 @@
         components: {
             Head,
             Link,
-            Editor,
+            QuillEditor,
         },
 
         //props
@@ -171,56 +135,68 @@
 
         //inisialisasi composition API
         setup(props) {
-
-            //define form with reactive
             const form = reactive({
                 question: props.question.question,
-                option_1: props.question.option_1,
-                option_2: props.question.option_2,
-                option_3: props.question.option_3,
-                option_4: props.question.option_4,
-                option_5: props.question.option_5,
-                answer: props.question.answer,
+                question_type: props.exam.exam_type,
+                option_1: props.question.option_1 || null,
+                option_2: props.question.option_2 || null,
+                option_3: props.question.option_3 || null,
+                option_4: props.question.option_4 || null,
+                option_5: props.question.option_5 || null,
+                answer: props.question.answer || null,
+                rating_scale: '6' // Fixed to 6-point scale
             });
-
-            //method "submit"
+        
             const submit = () => {
-
-                //send data to server
-                router.put(`/admin/exams/${props.exam.id}/questions/${props.question.id}/update`, {
-                    //data
+                const formData = {
                     question: form.question,
-                    option_1: form.option_1,
-                    option_2: form.option_2,
-                    option_3: form.option_3,
-                    option_4: form.option_4,
-                    option_5: form.option_5,
-                    answer: form.answer,
-                }, {
-                    onSuccess: () => {
-                        //show success alert
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Soal Ujian Berhasil Dipdate!.',
-                            icon: 'success',
-                            showConfirmButton: false,
-                            timer: 2000
-                        });
-                    },
-                });
-
+                    question_type: props.exam.exam_type, // Use exam type directly
+                };
+        
+                if (props.exam.exam_type === 'multiple_choice') {
+                    Object.assign(formData, {
+                        option_1: form.option_1,
+                        option_2: form.option_2,
+                        option_3: form.option_3,
+                        option_4: form.option_4,
+                        option_5: form.option_5,
+                        answer: form.answer,
+                        rating_scale: null
+                    });
+                } else {
+                    Object.assign(formData, {
+                        option_1: null,
+                        option_2: null,
+                        option_3: null,
+                        option_4: null,
+                        option_5: null,
+                        answer: null,
+                        rating_scale: '6' // Fixed 6-point scale
+                    });
+                }
+        
+                router.put(`/admin/exams/${props.exam.id}/questions/${props.question.id}/update`, 
+                    formData,
+                    {
+                        onSuccess: () => {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: 'Soal Ujian Berhasil Diupdate!',
+                                icon: 'success',
+                                showConfirmButton: false,
+                                timer: 2000
+                            });
+                        },
+                    }
+                );
             }
-
-            //return
+        
             return {
                 form,
                 submit,
             }
-
         }
-
     }
-
 </script>
 
 <style>

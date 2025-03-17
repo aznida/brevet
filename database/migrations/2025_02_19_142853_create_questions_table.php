@@ -15,12 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('exam_id')->references('id')->on('exams')->cascadeOnDelete();
             $table->text('question');
+            $table->enum('question_type', ['multiple_choice', 'rating_scale'])->default('multiple_choice');
             $table->text('option_1')->nullable();
             $table->text('option_2')->nullable();
             $table->text('option_3')->nullable();
             $table->text('option_4')->nullable();
             $table->text('option_5')->nullable();
-            $table->integer('answer');
+            $table->integer('answer')->nullable();
+            $table->integer('rating_scale')->nullable();
             $table->timestamps();
         });
     }

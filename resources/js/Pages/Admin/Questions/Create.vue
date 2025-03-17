@@ -11,117 +11,89 @@
                         <h5><i class="fa fa-question-circle"></i> Tambah Soal Ujian</h5>
                         <hr>
                         <form @submit.prevent="submit">
-
-                            <div class="table-responsive mb-4">
-                                <table class="table table-bordered table-centered table-nowrap mb-0 rounded">
-                                    <tbody>
-                                        <tr>
-                                            <td style="width:20%" class="fw-bold">Soal</td>
-                                            <td>
-                                                <Editor 
-                                                    api-key="bvu9lokg76dk4mx0sipczxrdbcmps5ll9px9olsfpqjywybo" 
-                                                    v-model="form.question" 
-                                                    :init="{
-                                                        menubar: false,
-                                                        plugins: 'lists link image emoticons',
-                                                        toolbar: 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image emoticons'
-                                                    }"
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="width:20%" class="fw-bold">Pilihan A</td>
-                                            <td>
-                                                <Editor 
-                                                    api-key="bvu9lokg76dk4mx0sipczxrdbcmps5ll9px9olsfpqjywybo" 
-                                                    v-model="form.option_1" 
-                                                    :init="{
-                                                        height: 130,
-                                                        menubar: false,
-                                                        plugins: 'lists link image emoticons',
-                                                        toolbar: 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image emoticons'
-                                                    }"
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="width:20%" class="fw-bold">Pilihan B</td>
-                                            <td>
-                                                <Editor 
-                                                    api-key="bvu9lokg76dk4mx0sipczxrdbcmps5ll9px9olsfpqjywybo" 
-                                                    v-model="form.option_2" 
-                                                    :init="{
-                                                        height: 130,
-                                                        menubar: false,
-                                                        plugins: 'lists link image emoticons',
-                                                        toolbar: 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image emoticons'
-                                                    }"
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="width:20%" class="fw-bold">Pilihan C</td>
-                                            <td>
-                                                <Editor 
-                                                    api-key="bvu9lokg76dk4mx0sipczxrdbcmps5ll9px9olsfpqjywybo" 
-                                                    v-model="form.option_3" 
-                                                    :init="{
-                                                        height: 130,
-                                                        menubar: false,
-                                                        plugins: 'lists link image emoticons',
-                                                        toolbar: 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image emoticons'
-                                                    }"
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="width:20%" class="fw-bold">Pilihan D</td>
-                                            <td>
-                                                <Editor 
-                                                    api-key="bvu9lokg76dk4mx0sipczxrdbcmps5ll9px9olsfpqjywybo" 
-                                                    v-model="form.option_4" 
-                                                    :init="{
-                                                        height: 130,
-                                                        menubar: false,
-                                                        plugins: 'lists link image emoticons',
-                                                        toolbar: 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image emoticons'
-                                                    }"
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="width:20%" class="fw-bold">Pilihan E</td>
-                                            <td>
-                                                <Editor 
-                                                    api-key="bvu9lokg76dk4mx0sipczxrdbcmps5ll9px9olsfpqjywybo" 
-                                                    v-model="form.option_5" 
-                                                    :init="{
-                                                        height: 130,
-                                                        menubar: false,
-                                                        plugins: 'lists link image emoticons',
-                                                        toolbar: 'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image emoticons'
-                                                    }"
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="width:20%" class="fw-bold">Jawaban Benar</td>
-                                            <td>
-                                                <select class="form-control" v-model="form.answer">
-                                                    <option value="1">A</option>
-                                                    <option value="2">B</option>
-                                                    <option value="3">C</option>
-                                                    <option value="4">D</option>
-                                                    <option value="5">E</option>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <!-- Question input -->
+                            <div class="mb-4">
+                                <label>Soal</label>
+                                <QuillEditor
+                                    v-model:content="form.question"
+                                    contentType="html"
+                                    theme="snow"
+                                    :toolbar="[
+                                        ['bold', 'italic', 'underline'],
+                                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                        ['link', 'image'],
+                                    ]"
+                                />
                             </div>
-                            
-                            <button type="submit" class="btn btn-md btn-primary border-0 shadow me-2">Simpan</button>
-                            <button type="reset" class="btn btn-md btn-warning border-0 shadow">Reset</button>
+
+                            <!-- Multiple Choice options -->
+                            <div v-if="isMultipleChoice">
+                                <div class="mb-4">
+                                    <label>Pilihan A</label>
+                                    <QuillEditor
+                                        v-model:content="form.option_1"
+                                        contentType="html"
+                                        theme="snow"
+                                        :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]"
+                                    />
+                                    <div v-if="errors.option_1" class="alert alert-danger mt-2">{{ errors.option_1 }}</div>
+                                </div>
+                                <div class="mb-4">
+                                    <label>Pilihan B</label>
+                                    <QuillEditor
+                                        v-model:content="form.option_2"
+                                        contentType="html"
+                                        theme="snow"
+                                        :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]"
+                                    />
+                                    <div v-if="errors.option_2" class="alert alert-danger mt-2">{{ errors.option_2 }}</div>
+                                </div>
+                                <div class="mb-4">
+                                    <label>Pilihan C</label>
+                                    <QuillEditor v-model:content="form.option_3" contentType="html" theme="snow" :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]" />
+                                    <div v-if="errors.option_3" class="alert alert-danger mt-2">{{ errors.option_3 }}</div>
+                                </div>
+                                <div class="mb-4">
+                                    <label>Pilihan D</label>
+                                    <QuillEditor v-model:content="form.option_4" contentType="html" theme="snow" :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]" />
+                                    <div v-if="errors.option_4" class="alert alert-danger mt-2">{{ errors.option_4 }}</div>
+                                </div>
+                                <div class="mb-4">
+                                    <label>Pilihan E</label>
+                                    <QuillEditor v-model:content="form.option_5" contentType="html" theme="snow" :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]" />
+                                    <div v-if="errors.option_5" class="alert alert-danger mt-2">{{ errors.option_5 }}</div>
+                                </div>
+                                <div class="mb-4">
+                                    <label>Jawaban Benar</label>
+                                    <select class="form-select" v-model="form.answer">
+                                        <option value="">-- Pilih Jawaban Benar --</option>
+                                        <option value="1">A</option>
+                                        <option value="2">B</option>
+                                        <option value="3">C</option>
+                                        <option value="4">D</option>
+                                        <option value="5">E</option>
+                                    </select>
+                                    <div v-if="errors.answer" class="alert alert-danger mt-2">{{ errors.answer }}</div>
+                                </div>
+                            </div>
+
+                            <!-- Rating Scale options -->
+                            <div v-if="isRatingScale">
+                                <div class="alert alert-info">
+                                    <p class="mb-0">Skala Penilaian:</p>
+                                    <ul class="mb-0">
+                                        <li>1 = Sangat Jarang</li>
+                                        <li>2 = Jarang</li>
+                                        <li>3 = Kadang-kadang</li>
+                                        <li>4 = Sering</li>
+                                        <li>5 = Sangat Sering</li>
+                                        <li>6 = Selalu</li>
+                                    </ul>
+                                </div>
+                                <input type="hidden" v-model="form.rating_scale" value="6">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary shadow-sm rounded-3 mt-3">SIMPAN</button>
                         </form>
                     </div>
                 </div>
@@ -131,97 +103,121 @@
 </template>
 
 <script>
-    //import layout
-    import LayoutAdmin from '../../../Layouts/Admin.vue';
+//import layout
+import LayoutAdmin from '../../../Layouts/Admin.vue';
 
-    //import Heade and Link from Inertia
-    import {
+//import components
+import { Head, Link, router } from '@inertiajs/vue3'
+import { reactive, onMounted, ref } from 'vue'  // Added ref here
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css'
+import Swal from 'sweetalert2'
+
+export default {
+    layout: LayoutAdmin,
+    components: {
         Head,
         Link,
-        router
-    } from '@inertiajs/vue3';
+        QuillEditor,
+    },
+    props: {
+        errors: Object,
+        exam: Object,
+    },
 
-    //import reactive from vue
-    import { reactive } from 'vue';
-
-    //import sweet alert2
-    import Swal from 'sweetalert2';
-
-    //import tinyMCE
-    import Editor from '@tinymce/tinymce-vue';
-
-    export default {
-
-        //layout
-        layout: LayoutAdmin,
-
-        //register components
-        components: {
-            Head,
-            Link,
-            Editor,
-        },
-
-        //props
-        props: {
-            errors: Object,
-            exam: Object,
-        },
-
-        //inisialisasi composition API
-        setup(props) {
-
-            //define form with reactive
-            const form = reactive({
-                question: '',
-                option_1: '',
-                option_2: '',
-                option_3: '',
-                option_4: '',
-                option_5: '',
-                answer: '',
-            });
-
-            //method "submit"
-            const submit = () => {
-
-                //send data to server
-                router.post(`/admin/exams/${props.exam.id}/questions/store`, {
-                    //data
-                    question: form.question,
+    setup(props) {
+        const examType = props.exam.exam_type;
+        
+        const form = reactive({
+            question: '',
+            question_type: examType,
+            option_1: null,
+            option_2: null,
+            option_3: null,
+            option_4: null,
+            option_5: null,
+            answer: null,
+            rating_scale: examType === 'rating_scale' ? '6' : null
+        });
+    
+        const submit = () => {
+            const formData = {
+                question: form.question,
+                question_type: examType,
+            };
+    
+            if (examType === 'multiple_choice') {
+                Object.assign(formData, {
                     option_1: form.option_1,
                     option_2: form.option_2,
                     option_3: form.option_3,
                     option_4: form.option_4,
                     option_5: form.option_5,
                     answer: form.answer,
-                }, {
-                    onSuccess: () => {
-                        //show success alert
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Soal Ujian Berhasil Disimpan!.',
-                            icon: 'success',
-                            showConfirmButton: false,
-                            timer: 2000
-                        });
-                    },
+                    rating_scale: null
                 });
-
+            } else {
+                Object.assign(formData, {
+                    option_1: null,
+                    option_2: null,
+                    option_3: null,
+                    option_4: null,
+                    option_5: null,
+                    answer: null,
+                    rating_scale: '6'
+                });
             }
+    
+            router.post(`/admin/exams/${props.exam.id}/questions/store`, formData, {
+                onSuccess: () => {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Soal Ujian Berhasil Disimpan!',
+                        icon: 'success',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                },
+            });
+        };
 
-            //return
-            return {
-                form,
-                submit,
-            };
-
-        }
-
+        return {
+            form,
+            submit,
+            isMultipleChoice: examType === 'multiple_choice',
+            isRatingScale: examType === 'rating_scale'
+        };
     }
-
+}
 </script>
 
 <style>
+.ql-editor {
+    min-height: 120px;
+}
 
+.ql-toolbar.ql-snow,
+.ql-container.ql-snow {
+    border: 1px solid #ced4da;
+}
+
+.rating-legend {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.scale-description {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.scale-item {
+    padding: 5px 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
 </style>

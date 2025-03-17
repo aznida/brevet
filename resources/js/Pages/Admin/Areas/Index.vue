@@ -35,6 +35,7 @@
                                     <tr class="border-0">
                                         <th class="border-0 rounded-start" style="width:5%">No.</th>
                                         <th class="border-0">Area Ujian</th>
+                                        <th class="border-0">Area ID</th>
                                         <th class="border-0 rounded-end" style="width:15%">Aksi</th>
                                     </tr>
                                 </thead>
@@ -43,6 +44,7 @@
                                     <tr v-for="(area, index) in areas.data" :key="index">
                                         <td class="fw-bold text-center">{{ ++index + (areas.current_page - 1) * areas.per_page }}</td>
                                         <td>{{ area.title }}</td>
+                                        <td>{{ area.id }}</td>
                                         <td class="text-center">
                                             <Link :href="`/admin/areas/${area.id}/edit`" class="btn btn-sm btn-info border-0 shadow me-2" type="button"><i class="fa fa-pencil-alt"></i></Link>
                                             <button @click.prevent="destroy(area.id)" class="btn btn-sm btn-danger border-0"><i class="fa fa-trash"></i></button>

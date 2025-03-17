@@ -35,6 +35,7 @@
                                     <tr class="border-0">
                                         <th class="border-0 rounded-start" style="width:5%">No.</th>
                                         <th class="border-0">Ujian</th>
+                                        <th class="border-0">Tipe Ujian</th>
                                         <th class="border-0">Kategori</th>
                                         <th class="border-0">Area</th>
                                         <th class="border-0">Jumlah Soal</th>
@@ -46,6 +47,7 @@
                                     <tr v-for="(exam, index) in exams.data" :key="index">
                                         <td class="fw-bold text-center">{{ ++index + (exams.current_page - 1) * exams.per_page }}</td>
                                         <td>{{ exam.title }}</td>
+                                        <td>{{ exam.exam_type === 'multiple_choice' ? 'Pilihan Ganda' : 'Skala Penilaian' }}</td>
                                         <td>{{ exam.category.title }}</td>
                                         <td class="text-center">{{ exam.area.title }}</td>
                                         <td class="text-center">{{ exam.questions.length }}</td>
