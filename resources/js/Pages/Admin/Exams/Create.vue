@@ -118,6 +118,15 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="mb-4">
+                                        <label>Jumlah Soal yang ditampilkan</label> 
+                                        <input type="number" min="1" class="form-control" placeholder="Masukkan Jumlah Soal yang ditampilkan" v-model="form.showqty">
+                                        <div v-if="errors.showqty" class="alert alert-danger mt-2">
+                                            {{ errors.showqty }}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <button type="submit" class="btn btn-md btn-primary border-0 shadow me-2">Simpan</button>
@@ -162,6 +171,7 @@
                 category_id: '',
                 area_id: '',
                 duration: '',
+                showqty: '',
                 description: '',
                 random_question: '',
                 random_answer: '',

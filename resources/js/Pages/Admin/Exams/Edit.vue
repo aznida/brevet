@@ -34,18 +34,6 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-4">
-                                        <label>Tipe Ujian</label> 
-                                        <select class="form-select" v-model="form.exam_type">
-                                            <option value="multiple_choice">Pilihan Ganda</option>
-                                            <option value="rating_scale">Skala Penilaian</option>
-                                        </select>
-                                        <div v-if="errors.exam_type" class="alert alert-danger mt-2">
-                                            {{ errors.exam_type }}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-4">
                                         <label>Area</label> 
                                         <select class="form-select" v-model="form.area_id">
                                             <option v-for="(area, index) in areas" :key="index" :value="area.id">{{ area.title }}</option>
@@ -119,10 +107,31 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-4">
+                                        <label>Tipe Ujian</label> 
+                                        <select class="form-select" v-model="form.exam_type">
+                                            <option value="multiple_choice">Pilihan Ganda</option>
+                                            <option value="rating_scale">Skala Penilaian</option>
+                                        </select>
+                                        <div v-if="errors.exam_type" class="alert alert-danger mt-2">
+                                            {{ errors.exam_type }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-4">
                                         <label>Durasi (Menit)</label> 
                                         <input type="number" min="1" class="form-control" placeholder="Masukkan Durasi Ujian (Menit)" v-model="form.duration">
                                         <div v-if="errors.duration" class="alert alert-danger mt-2">
                                             {{ errors.duration }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-4">
+                                        <label>Jumlah Soal yang ditampilkan</label> 
+                                        <input type="number" min="1" class="form-control" placeholder="Masukkan Jumlah Soal yang ditampilkan" v-model="form.showqty">
+                                        <div v-if="errors.showqty" class="alert alert-danger mt-2">
+                                            {{ errors.showqty }}
                                         </div>
                                     </div>
                                 </div>
@@ -188,6 +197,7 @@
                 category_id: props.exam.category_id,
                 area_id: props.exam.area_id,
                 duration: props.exam.duration,
+                showqty: props.exam.showqty,
                 description: props.exam.description,
                 random_question: props.exam.random_question,
                 random_answer: props.exam.random_answer,

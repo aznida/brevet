@@ -32,8 +32,12 @@
                                         <td>{{ exam.exam_type === 'multiple_choice' ? 'Pilihan Ganda' : 'Skala Penilaian' }}</td>
                                     </tr>
                                     <tr>
-                                        <td class="fw-bold">Jumlah Soal</td>
-                                        <td>{{ exam.questions.data.length }}</td>
+                                        <td class="fw-bold">Total Bank Soal</td>
+                                        <td>{{ exam.questions.total }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Jumlah soal ditampilkan</td>
+                                        <td>{{ exam.showqty }}</td>
                                     </tr>
                                     <tr>
                                         <td class="fw-bold">Durasi (Menit)</td>

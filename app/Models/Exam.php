@@ -19,6 +19,7 @@ class Exam extends Model
         'category_id',
         'area_id',
         'duration',
+        'showqty',
         'description',
         'random_question',
         'random_answer',

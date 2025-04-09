@@ -156,6 +156,7 @@ class ExamController extends Controller
                         ->where('participant_id', auth()->guard('participant')->user()->id)
                         ->where('exam_id', $exam_group->exam->id)
                         ->orderBy('question_order', 'ASC')
+                        ->take($exam_group->exam->showqty) // Add limit based on showqty
                         ->get();
 
         //count all question answered
