@@ -110,13 +110,13 @@ class ExamController extends Controller
         $questions = $exam->questions()
             ->when($exam->exam_type === 'multiple_choice', function($query) {
                 return $query->select('id', 'exam_id', 'question', 'question_type', 
-                    'option_1', 'option_2', 'option_3', 'option_4', 'option_5', 'answer');
+                    'option_1', 'option_2', 'option_3', 'option_4', 'option_5', 'answer', 'level');
             })
             ->when($exam->exam_type === 'rating_scale', function($query) {
                 return $query->select('id', 'exam_id', 'question', 'question_type', 'rating_scale');
             })
             ->where('question_type', $exam->exam_type)
-            ->paginate(5);
+            ->paginate(10);
     
         //set relation
         $exam->setRelation('questions', $questions);
@@ -243,6 +243,7 @@ class ExamController extends Controller
                     'option_4' => 'required',
                     'option_5' => 'required',
                     'answer' => 'required',
+                    'level ' => 'required',
                 ]);
             }
     
@@ -267,6 +268,7 @@ class ExamController extends Controller
                     'option_4' => $request->option_4['ops'][0]['insert'] ?? $request->option_4,
                     'option_5' => $request->option_5['ops'][0]['insert'] ?? $request->option_5,
                     'answer' => $request->answer,
+                    'level' => $request->level,
                     'rating_scale' => null
                 ]);
             } else {
@@ -277,6 +279,7 @@ class ExamController extends Controller
                     'option_4' => null,
                     'option_5' => null,
                     'answer' => null,
+                    'level' => null,
                     'rating_scale' => 6
                 ]);
             }
@@ -331,6 +334,7 @@ class ExamController extends Controller
                     'option_4' => 'required',
                     'option_5' => 'required',
                     'answer' => 'required',
+                    'level' => 'required',
                 ]);
             }
     
@@ -355,6 +359,7 @@ class ExamController extends Controller
                     'option_4' => is_array($request->option_4) ? ($request->option_4['ops'][0]['insert'] ?? '') : $request->option_4,
                     'option_5' => is_array($request->option_5) ? ($request->option_5['ops'][0]['insert'] ?? '') : $request->option_5,
                     'answer' => $request->answer,
+                    'level' =>  $request->level,
                     'rating_scale' => null
                 ]);
             } else {
@@ -365,6 +370,7 @@ class ExamController extends Controller
                     'option_4' => null,
                     'option_5' => null,
                     'answer' => null,
+                    'level' => null,
                     'rating_scale' => 6
                 ]);
             }

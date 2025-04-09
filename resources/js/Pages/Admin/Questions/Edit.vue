@@ -63,6 +63,17 @@
                                                 </select>
                                             </td>
                                         </tr>
+                                        <tr>
+                                            <td style="width:20%" class="fw-bold">Level Soal</td>
+                                            <td>
+                                                <select class="form-control" v-model="form.level">
+                                                    <option value="Basic">Basic 🔥</option>
+                                                    <option value="Intermediate">Intermediate 🔥🔥</option>
+                                                    <option value="Advanced">Advanced 🔥🔥🔥</option>
+                                                    <option value="Expert">Expert 💎</option>
+                                                </select>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -144,6 +155,7 @@
                 option_4: props.question.option_4 || null,
                 option_5: props.question.option_5 || null,
                 answer: props.question.answer || null,
+                level: props.question.level || null,
                 rating_scale: '6' // Fixed to 6-point scale
             });
         
@@ -161,6 +173,7 @@
                         option_4: form.option_4,
                         option_5: form.option_5,
                         answer: form.answer,
+                        level: form.level,
                         rating_scale: null
                     });
                 } else {
@@ -171,6 +184,7 @@
                         option_4: null,
                         option_5: null,
                         answer: null,
+                        level: null, // Remove level from formData if not needed for rating_scale di
                         rating_scale: '6' // Fixed 6-point scale
                     });
                 }

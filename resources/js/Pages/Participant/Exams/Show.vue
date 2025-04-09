@@ -70,7 +70,14 @@
         <div class="col-md-5">
             <div class="card border-0 shadow">
                 <div class="card-header text-center">
-                    <div class="badge bg-success p-2"> {{ question_answered }} dikerjakan</div>
+                    <div class="badge bg-success p-2 me-2">{{ question_answered }} dikerjakan</div>
+                    <!-- <div v-if="question_active" class="badge bg-warning p-2">
+                        Level: 
+                        <span v-if="question_active.question.level === 'Basic'">Basic 🔥</span>
+                        <span v-else-if="question_active.question.level === 'Intermediate'">Intermediate 🔥🔥</span>
+                        <span v-else-if="question_active.question.level === 'Advanced'">Advanced 🔥🔥🔥</span>
+                        <span v-else>Expert 💎</span>
+                    </div> -->
                 </div>
                 <div class="card-body" style="height: 330px;overflow-y: auto">
 

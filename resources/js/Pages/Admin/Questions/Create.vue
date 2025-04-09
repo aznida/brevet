@@ -12,6 +12,7 @@
                         <hr>
                         <form @submit.prevent="submit">
                             <!-- Question input -->
+                            
                             <div class="mb-4">
                                 <label>Soal</label>
                                 <QuillEditor
@@ -63,17 +64,34 @@
                                     <QuillEditor v-model:content="form.option_5" contentType="html" theme="snow" :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]" />
                                     <div v-if="errors.option_5" class="alert alert-danger mt-2">{{ errors.option_5 }}</div>
                                 </div>
-                                <div class="mb-4">
-                                    <label>Jawaban Benar</label>
-                                    <select class="form-select" v-model="form.answer">
-                                        <option value="">-- Pilih Jawaban Benar --</option>
-                                        <option value="1">A</option>
-                                        <option value="2">B</option>
-                                        <option value="3">C</option>
-                                        <option value="4">D</option>
-                                        <option value="5">E</option>
-                                    </select>
-                                    <div v-if="errors.answer" class="alert alert-danger mt-2">{{ errors.answer }}</div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-4">
+                                            <label>Jawaban Benar</label>
+                                            <select class="form-select" v-model="form.answer">
+                                                <option value="">-- Pilih Jawaban Benar --</option>
+                                                <option value="1">A</option>
+                                                <option value="2">B</option>
+                                                <option value="3">C</option>
+                                                <option value="4">D</option>
+                                                <option value="5">E</option>
+                                            </select>
+                                            <div v-if="errors.answer" class="alert alert-danger mt-2">{{ errors.answer }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-4">
+                                            <label>Level Soal Ujian</label>
+                                            <select class="form-select" v-model="form.level">
+                                                <option value="">-- Pilih level soal --</option>
+                                                <option value="Basic">Basic 🔥</option>
+                                                <option value="Intermediate">Intermediate 🔥🔥</option>
+                                                <option value="Advanced">Advanced 🔥🔥🔥</option>
+                                                <option value="Expert">Expert 💎</option>
+                                            </select>
+                                            <div v-if="errors.level" class="alert alert-danger mt-2">{{ errors.level }}</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -137,6 +155,7 @@ export default {
             option_4: null,
             option_5: null,
             answer: null,
+            level: null,
             rating_scale: examType === 'rating_scale' ? '6' : null
         });
     
@@ -154,6 +173,7 @@ export default {
                     option_4: form.option_4,
                     option_5: form.option_5,
                     answer: form.answer,
+                    level: form.level,
                     rating_scale: null
                 });
             } else {
@@ -164,6 +184,7 @@ export default {
                     option_4: null,
                     option_5: null,
                     answer: null,
+                    level: null,
                     rating_scale: '6'
                 });
             }

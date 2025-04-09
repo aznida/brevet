@@ -151,14 +151,72 @@ class ExamController extends Controller
             return redirect()->route('participant.dashboard');
         }
 
-        //get all questions
-        $all_questions = Answer::with('question')
+        // Get total questions to show
+        $totalQuestions = $exam_group->exam->showqty;
+        
+        // Calculate proportions for each level
+        $basicCount = round($totalQuestions * 0.30);      // 30% Basic (2 questions)
+        $intermediateCount = round($totalQuestions * 0.30); // 30% Intermediate (2 questions)
+        $advancedCount = round($totalQuestions * 0.30);    // 30% Advanced (2 questions)
+        $expertCount = $totalQuestions - ($basicCount + $intermediateCount + $advancedCount); // 10% Expert (1 question)
+
+        // Get all questions by level with proportions
+        $all_questions = collect();
+
+        // Add Basic questions
+        $basicQuestions = Answer::with('question')
+                        ->whereHas('question', function($q) {
+                            $q->where('level', 'Basic');
+                        })
                         ->where('participant_id', auth()->guard('participant')->user()->id)
                         ->where('exam_id', $exam_group->exam->id)
-                        ->orderBy('question_order', 'ASC')
-                        ->take($exam_group->exam->showqty) // Add limit based on showqty
+                        ->inRandomOrder()
+                        ->take($basicCount)
                         ->get();
+        $all_questions = $all_questions->concat($basicQuestions);
 
+        // Add Intermediate questions
+        $intermediateQuestions = Answer::with('question')
+                        ->whereHas('question', function($q) {
+                            $q->where('level', 'Intermediate');
+                        })
+                        ->where('participant_id', auth()->guard('participant')->user()->id)
+                        ->where('exam_id', $exam_group->exam->id)
+                        ->inRandomOrder()
+                        ->take($intermediateCount)
+                        ->get();
+        $all_questions = $all_questions->concat($intermediateQuestions);
+
+        // Add Advanced questions
+        $advancedQuestions = Answer::with('question')
+                        ->whereHas('question', function($q) {
+                            $q->where('level', 'Advanced');
+                        })
+                        ->where('participant_id', auth()->guard('participant')->user()->id)
+                        ->where('exam_id', $exam_group->exam->id)
+                        ->inRandomOrder()
+                        ->take($advancedCount)
+                        ->get();
+        $all_questions = $all_questions->concat($advancedQuestions);
+
+        // Add Expert questions
+        $expertQuestions = Answer::with('question')
+                        ->whereHas('question', function($q) {
+                            $q->where('level', 'Expert');
+                        })
+                        ->where('participant_id', auth()->guard('participant')->user()->id)
+                        ->where('exam_id', $exam_group->exam->id)
+                        ->inRandomOrder()
+                        ->take($expertCount)
+                        ->get();
+        $all_questions = $all_questions->concat($expertQuestions);
+
+        // Ensure we only have showqty number of questions
+        $all_questions = $all_questions->take($totalQuestions)->values();
+
+        // Get question active based on available questions
+        $question_active = $all_questions->where('question_order', $page)->first();
+        
         //count all question answered
         $question_answered = Answer::with('question')
                         ->where('participant_id', auth()->guard('participant')->user()->id)

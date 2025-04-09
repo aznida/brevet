@@ -83,6 +83,15 @@
                                                     <li v-html="question.option_4" :class="{ 'text-success fw-bold': question.answer == '4' }"></li>
                                                     <li v-html="question.option_5" :class="{ 'text-success fw-bold': question.answer == '5' }"></li>
                                                 </ol>
+                                                <div class="mt-2">
+                                                    <i><b style="font-size:14px">Level Soal : </b> 
+                                                        <span v-if="question.level === 'Basic'" class="badge bg-info p-2">Basic 🔥</span>
+                                                        <span v-else-if="question.level === 'Intermediate'" class="badge bg-warning p-2">Intermediate 🔥🔥</span>
+                                                        <span v-else-if="question.level === 'Advanced'" class="badge bg-success p-2">Advanced 🔥🔥🔥</span>
+                                                        <span v-else-if="question.level === 'Expert'" class="badge bg-danger p-2">Expert 💎</span>
+                                                        <span v-else style="color:danger; font-size:14px"><b>Belum ada Level</b></span>
+                                                    </i>
+                                                </div>
                                             </template>
                                             <!-- Rating Scale Info -->
                                             <template v-else>

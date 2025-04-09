@@ -33,6 +33,7 @@ class QuestionsImport implements ToModel, WithHeadingRow
             'option_4'      => $row['option_4'],
             'option_5'      => $row['option_5'],
             'answer'        => $row['answer'],
+            'level'        => $row['level'],
             'rating_scale'  => null
         ]);
     }

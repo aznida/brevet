@@ -19,6 +19,7 @@ class Question extends Model
         'option_4',
         'option_5',
         'answer',
+        'level',
         'rating_scale'
     ];
 
@@ -63,6 +64,7 @@ class Question extends Model
                 $question->option_4 = null;
                 $question->option_5 = null;
                 $question->answer = null;
+                $question->level = null;
                 $question->rating_scale = 6;
             }
         });
