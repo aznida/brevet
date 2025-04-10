@@ -1,5 +1,10 @@
 <template>
-    <nav id="sidebarMenu" class="sidebar d-lg-block bg-gray-800 text-white collapse" data-simplebar>
+    <nav id="sidebarMenu" 
+         class="sidebar d-lg-block bg-gray-800 text-white collapse" 
+         :class="{ 'collapsed': collapsed }" 
+         data-simplebar
+         @mouseenter="handleMouseEnter"
+         @mouseleave="handleMouseLeave">
         <div class="sidebar-inner px-4 pt-3">
             <div
                 class="user-card d-flex d-md-none align-items-center justify-content-between justify-content-md-center pb-4">
@@ -177,9 +182,102 @@ export default {
         Link
     },
 
+    data() {
+        return {
+            collapsed: localStorage.getItem('sidebarCollapsed') === 'true' || this.$page.props.sidebarCollapsed || false,
+            isTransitioning: false,
+            mouseTimer: null
+        }
+    },
+    methods: {
+        handleMouseEnter() {
+            clearTimeout(this.mouseTimer);
+            if (this.isTransitioning || !this.collapsed) return;
+            
+            this.isTransitioning = true;
+            document.body.classList.remove('sidebar-collapsed');
+            document.querySelector('#sidebarMenu').classList.remove('collapsed');
+            
+            setTimeout(() => {
+                this.isTransitioning = false;
+            }, 300);
+        },
+        handleMouseLeave() {
+            if (!this.collapsed) return;
+            
+            clearTimeout(this.mouseTimer);
+            this.mouseTimer = setTimeout(() => {
+                if (this.isTransitioning) return;
+                
+                this.isTransitioning = true;
+                document.body.classList.add('sidebar-collapsed');
+                document.querySelector('#sidebarMenu').classList.add('collapsed');
+                
+                setTimeout(() => {
+                    this.isTransitioning = false;
+                }, 300);
+            }, 100);
+        }
+    },
+    watch: {
+        '$page.props.sidebarCollapsed'(newValue) {
+            this.collapsed = newValue;
+            localStorage.setItem('sidebarCollapsed', newValue);
+            if (newValue) {
+                document.body.classList.add('sidebar-collapsed');
+                document.querySelector('#sidebarMenu').classList.add('collapsed');
+            } else {
+                document.body.classList.remove('sidebar-collapsed');
+                document.querySelector('#sidebarMenu').classList.remove('collapsed');
+            }
+        }
+    }
 }
-
 </script>
 
 <style>
+.sidebar {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 250px;
+    overflow: hidden;
+    z-index: 1030;
+}
+
+.sidebar.collapsed {
+    width: 70px !important;
+    margin-left: 0 !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-text,
+.user-card {
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.sidebar.collapsed .sidebar-text,
+.sidebar.collapsed .user-card {
+    opacity: 0;
+    display: none !important;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.sidebar.collapsed .sidebar-icon {
+    margin-right: 0 !important;
+    justify-content: center;
+    width: 100%;
+}
+
+.sidebar.collapsed .nav-link {
+    padding: 0.5rem !important;
+    display: flex;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        margin-left: -250px;
+        width: 0;
+    }
+}
 </style>

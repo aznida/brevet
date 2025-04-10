@@ -37,7 +37,7 @@
             <div class="col-md-12">
                 <div class="card border-0 shadow">
                     <div class="card-body">
-
+                        <!-- <h4 class="mb-0 text-dark p-2 mb-2">Management Partisipants</h4> -->
                         <div class="table-responsive">
                             <table class="table table-bordered table-centered table-nowrap mb-0 rounded">
                                 <thead class="thead-dark">
@@ -45,9 +45,12 @@
                                         <th class="border-0 rounded-start" style="width:5%">No.</th>
                                         <th class="border-0">NIK</th>
                                         <th class="border-0">Nama</th>
-                                        <th class="border-0">Area</th>
-                                        <th class="border-0">Jenis Kelamin</th>
-                                        <th class="border-0">Password</th>
+                                        <th class="border-0">Email</th>
+                                        <th class="border-0">No. Hp</th>
+                                        <!-- <th class="border-0">Jenis Kelamin</th> -->
+                                        <th class="border-0">TREG</th>
+                                        <th class="border-0">Witel/Kota</th>
+                                        <!-- <th class="border-0">Password</th> -->
                                         <th class="border-0 rounded-end" style="width:15%">Aksi</th>
                                     </tr>
                                 </thead>
@@ -58,9 +61,12 @@
                                             {{ ++index + (participants.current_page - 1) * participants.per_page }}</td>
                                         <td>{{ participant.nik }}</td>
                                         <td>{{ participant.name }}</td>
-                                        <td class="text-center">{{ participant.area.title }}</td>
-                                        <td class="text-center">{{ participant.gender }}</td>
-                                        <td>{{ participant.password }}</td>
+                                        <td>{{ participant.email }}</td>
+                                        <td>{{ participant.hp }}</td>
+                                        <td>{{ participant.area.title }}</td>
+                                        <td>{{ participant.witel }}</td>
+                                        <!-- <td class="text-center">{{ participant.gender }}</td> -->
+                                        <!-- <td>{{ participant.password }}</td> -->
                                         <td class="text-center">
                                             <Link :href="`/admin/participants/${participant.id}/edit`" class="btn btn-sm btn-info border-0 shadow me-2" type="button"><i class="fa fa-pencil-alt"></i></Link>
                                             <button @click.prevent="destroy(participant.id)" class="btn btn-sm btn-danger border-0"><i class="fa fa-trash"></i></button>
