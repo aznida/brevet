@@ -16,5 +16,6 @@ class Area extends Model
      */
     protected $fillable = [
         'title',
+        'kota',
     ];
 }

@@ -8,16 +8,25 @@
                 <Link href="/admin/areas" class="btn btn-md btn-primary border-0 shadow mb-3" type="button"><i class="fa fa-long-arrow-alt-left me-2"></i> Kembali</Link>
                 <div class="card border-0 shadow">
                     <div class="card-body">
-                        <h5><i class="fa fa-clone"></i> Tambah Area</h5>
+                        <h5><i class="fa fa-clone"></i> Tambah TREG - Area</h5>
                         <hr>
                         <form @submit.prevent="submit">
 
                             <div class="mb-4">
-                                <label>Area Ujian</label> 
-                                <input type="text" class="form-control" placeholder="Masukkan Nama Area" v-model="form.title">
+                                <label>Treg - Area</label> 
+                                <input type="text" class="form-control" placeholder="Masukkan Nama TREG - Area" v-model="form.title">
                                 
                                 <div v-if="errors.title" class="alert alert-danger mt-2">
                                     {{ errors.title }}
+                                </div>
+
+                            </div>
+                            <div class="mb-4">
+                                <label>Kota</label> 
+                                <input type="text" class="form-control" placeholder="Masukkan Nama Kota" v-model="form.kota">
+                                
+                                <div v-if="errors.kota" class="alert alert-danger mt-2">
+                                    {{ errors.kota }}
                                 </div>
 
                             </div>
@@ -71,6 +80,7 @@
             //define form with reactive
             const form = reactive({
                 title: '',
+                kota: '',
             });
 
             //method "submit"
@@ -80,6 +90,7 @@
                 router.post('/admin/areas', {
                     //data
                     title: form.title,
+                    kota: form.kota,
                 }, {
                     onSuccess: () => {
                         //show success alert

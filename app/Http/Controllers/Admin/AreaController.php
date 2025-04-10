@@ -18,7 +18,7 @@ class AreaController extends Controller
         //get areas
         $areas = Area::when(request()->q, function($areas) {
             $areas = $areas->where('title', 'like', '%'. request()->q . '%');
-        })->latest()->paginate(5);
+        })->oldest()->paginate(20);
 
         //append query string to pagination links
         $areas->appends(['q' => request()->q]);
@@ -50,12 +50,14 @@ class AreaController extends Controller
     {
         //validate request
         $request->validate([
-            'title' => 'required|string|unique:areas'
+            'title' => 'required|string|unique:areas',
+            'kota' => 'required|string'
         ]);
 
         //create classroom
         Area::create([
             'title' => $request->title,
+            'kota' => $request->kota,
         ]);
 
         //redirect
@@ -91,11 +93,13 @@ class AreaController extends Controller
         //validate request
         $request->validate([
             'title' => 'required|string|unique:areas,title,'.$area->id,
+            'kota' =>'required|string'
         ]);
 
         //update area
         $area->update([
             'title' => $request->title,
+            'kota' => $request->kota,
         ]);
 
         //redirect
