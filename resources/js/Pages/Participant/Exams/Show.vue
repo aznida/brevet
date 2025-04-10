@@ -84,12 +84,32 @@
                     <div v-for="(question, index) in all_questions" :key="index">
                         <div width="20%" style="width: 20%; float: left;">
                             <div style="padding: 5px;">
-
-                                <button @click.prevent="clickQuestion(index)" v-if="index+1 == page" class="btn btn-gray-400 btn-sm w-100">{{ index + 1 }}</button>
-
-                                <button @click.prevent="clickQuestion(index)" v-if="index+1 != page && question.answer == 0" class="btn btn-outline-info btn-sm w-100">{{ index + 1 }}</button>
-
-                                <button @click.prevent="clickQuestion(index)" v-if="index+1 != page && question.answer != 0" class="btn btn-info btn-sm w-100">{{ index + 1 }}</button>
+                                <!-- Current question (gray) -->
+                                <button 
+                                    @click.prevent="clickQuestion(index)" 
+                                    v-if="index+1 == page" 
+                                    class="btn btn-gray-400 btn-sm w-100"
+                                >
+                                    {{ index + 1 }}
+                                </button>
+                                
+                                <!-- Unanswered question (white/outline) -->
+                                <button 
+                                    @click.prevent="clickQuestion(index)" 
+                                    v-else-if="question.answer === 0" 
+                                    class="btn btn-outline-info btn-sm w-100"
+                                >
+                                    {{ index + 1 }}
+                                </button>
+                                
+                                <!-- Answered question (blue) -->
+                                <button 
+                                    @click.prevent="clickQuestion(index)" 
+                                    v-else
+                                    class="btn btn-info btn-sm w-100"
+                                >
+                                    {{ index + 1 }}
+                                </button>
                             </div>
                         </div>
                     </div>

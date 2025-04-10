@@ -7,13 +7,13 @@
             <div class="col-md-12">
                 <div class="card border-0 shadow mb-4">
                     <div class="card-body">
-                        <h5><i class="fa fa-filter"></i> Filter Hasil Ujian</h5>
+                        <h5><i class="fa fa-filter"></i> Filter Hasil Assement Online</h5>
                         <hr>
                         <form @submit.prevent="filter">
                             
                             <div class="row">
                                 <div class="col-md-9">
-                                    <label class="control-label" for="name">Ujian</label>
+                                    <label class="control-label" for="name">Assesment</label>
                                     <select class="form-select" v-model="form.exam_id">
                                         <option v-for="(exam, index) in exams" :key="index" :value="exam.id">{{ exam.title }} — Area : {{ exam.area.title }} — Kategori : {{ exam.category.title }}</option>
                                     </select>
@@ -35,7 +35,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-9 col-12">
-                                <h5 class="mt-2"><i class="fa fa-chart-line"></i> Laporan Hasil Ujian</h5>
+                                <h5 class="mt-2"><i class="fa fa-chart-line"></i> Laporan Hasil Assement Online</h5>
                             </div>
                             <div class="col-md-3 col-12">
                                 <a :href="`/admin/reports/export?exam_id=${form.exam_id}`" target="_blank" class="btn btn-success btn-md border-0 shadow w-100 text-white"><i class="fa fa-file-excel"></i> DOWNLOAD EXCEL</a>
@@ -53,6 +53,7 @@
                                         <th class="border-0">Area</th>
                                         <th class="border-0">Kategori</th>
                                         <th class="border-0">Hasil</th>
+                                        <th class="border-0">Level Stream</th>
                                     </tr>
                                 </thead>
                                 <div class="mt-2"></div>
@@ -67,6 +68,13 @@
                                         <td class="text-center">{{ grade.exam.area.title }}</td>
                                         <td>{{ grade.exam.category.title }}</td>
                                         <td class="fw-bold text-center">{{ grade.grade }}</td>
+                                        <td class="fw-bold text-center">
+                                            <span v-if="grade.grade >= 0 && grade.grade <= 30">Starter 🌱</span>
+                                            <span v-else-if="grade.grade >= 31 && grade.grade <= 60">Basic 🔥</span>
+                                            <span v-else-if="grade.grade >= 61 && grade.grade <= 70">Intermediate 🔥🔥</span>
+                                            <span v-else-if="grade.grade >= 71 && grade.grade <= 90">Advanced 🔥🔥🔥</span>
+                                            <span v-else-if="grade.grade >= 91 && grade.grade <= 100">Expert 💎</span>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>

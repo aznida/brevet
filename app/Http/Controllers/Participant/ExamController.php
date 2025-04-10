@@ -214,6 +214,13 @@ class ExamController extends Controller
         // Ensure we only have showqty number of questions
         $all_questions = $all_questions->take($totalQuestions)->values();
 
+        // Combine all questions and ensure proper ordering
+        $all_questions = $basicQuestions->concat($intermediateQuestions)
+                        ->concat($advancedQuestions)
+                        ->concat($expertQuestions)
+                        ->sortBy('question_order')
+                        ->values();
+
         // Get question active based on available questions
         $question_active = $all_questions->where('question_order', $page)->first();
         
