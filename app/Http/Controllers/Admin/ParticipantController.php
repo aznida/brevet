@@ -20,7 +20,7 @@ class ParticipantController extends Controller
         //get participants
         $participants = Participant::when(request()->q, function($participants) {
             $participants = $participants->where('name', 'like', '%'. request()->q . '%');
-        })->with('area')->latest()->paginate(5);
+        })->with('area')->latest()->paginate(50);
 
         //append query string to pagination links
         $participants->appends(['q' => request()->q]);
@@ -56,14 +56,20 @@ class ParticipantController extends Controller
         $request->validate([
             'name'          => 'required|string|max:255',
             'nik'           => 'required|unique:participants',
+            'email'         =>'required|unique:participants',
+            'hp'            =>'required|unique:participants',
             'gender'        => 'required|string',
             'password'      => 'required|confirmed',
-            'area_id'       => 'required'
+            'area_id'       => 'required',
+            'witel'         =>'required',
         ]);
 
         //create participant
         Participant::create([
             'name'          => $request->name,
+            'email'         => $request->email,
+            'hp'            => $request->hp,
+            'witel'         => $request->witel,
             'nik'           => $request->nik,
             'gender'        => $request->gender,
             'password'      => $request->password,
@@ -114,9 +120,12 @@ class ParticipantController extends Controller
         //validate request
         $request->validate([
             'name'          => 'required|string|max:255',
+            'email'         =>'required|unique:participants',
+            'hp'            =>'required',
             'nik'           => 'required|unique:participants,nik,'.$participant->id,
             'gender'        => 'required|string',
             'area_id'       => 'required',
+            'witel'         =>'required',
             'password'      => 'confirmed'
         ]);
 
@@ -126,6 +135,9 @@ class ParticipantController extends Controller
             //update participant without password
             $participant->update([
                 'name'          => $request->name,
+                'email'         => $request->email,
+                'hp'            => $request->hp,
+                'witel'         => $request->witel,
                 'nik'           => $request->nik,
                 'gender'        => $request->gender,
                 'area_id'       => $request->area_id
@@ -136,6 +148,9 @@ class ParticipantController extends Controller
             //update participant with password
             $participant->update([
                 'name'          => $request->name,
+                'email'         => $request->email,
+                'hp'            => $request->hp,
+                'witel'         => $request->witel,
                 'nik'           => $request->nik,
                 'gender'        => $request->gender,
                 'password'      => $request->password,

@@ -19,6 +19,9 @@ class Participant extends Authenticatable
         'area_id',
         'nik',
         'name',
+        'email',
+        'hp',
+        'witel',
         'password',
         'gender'
     ];

@@ -32,16 +32,45 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-4">
+                                        <label>Email</label> 
+                                        <input type="text" class="form-control" placeholder="Masukkan Email Partisipan" v-model="form.email">
+                                        <div v-if="errors.email" class="alert alert-danger mt-2">
+                                            {{ errors.email }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-4">
+                                        <label>Nomor Handphone</label> 
+                                        <input type="text" class="form-control" placeholder="Masukkan No. Hp Partisipan" v-model="form.hp">
+                                        <div v-if="errors.hp" class="alert alert-danger mt-2">
+                                            {{ errors.hp }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-4">
-                                        <label>Area Ujian</label> 
+                                        <label>TREG - Area Ujian</label> 
                                         <select class="form-select" v-model="form.area_id">
                                             <option v-for="(area, index) in areas" :key="index" :value="area.id">{{ area.title }}</option>
                                         </select>
                                         <div v-if="errors.area_id" class="alert alert-danger mt-2">
                                             {{ errors.area_id }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-4">
+                                        <label>Witel/Kota</label> 
+                                        <input type="text" class="form-control" placeholder="Masukkan Witel / Kota" v-model="form.witel">
+                                        <div v-if="errors.witel" class="alert alert-danger mt-2">
+                                            {{ errors.witel }}
                                         </div>
                                     </div>
                                 </div>
@@ -129,6 +158,9 @@
             const form = reactive({
                 nik: '',
                 name: '',
+                email: '',
+                hp: '',
+                witel: '',
                 area_id: '',
                 gender: '',
                 password: '',
@@ -143,6 +175,9 @@
                     //data
                     nik: form.nik,
                     name: form.name,
+                    email: form.email,
+                    hp: form.hp,
+                    witel: form.witel,
                     area_id: form.area_id,
                     gender: form.gender,
                     password: form.password,

@@ -19,6 +19,9 @@ class ParticipantsImport implements ToModel, WithHeadingRow, WithValidation
         return new Participant([
             'nik'          => (int) $row['nik'],
             'name'          => $row['name'],
+            'email'         => $row['email'],
+            'hp'            => (int) $row['hp'],
+            'witel'         => $row['witel'],
             'password'      => $row['password'],
             'gender'        => $row['gender'],
             'area_id'  => (int) $row['area_id'],
