@@ -32,6 +32,11 @@ class Question extends Model
         'rating_scale' => 'integer'
     ];
 
+    // Add answer to nullable fields
+    protected $nullable = [
+        'answer'
+    ];
+
     public function exam()
     {
         return $this->belongsTo(Exam::class);

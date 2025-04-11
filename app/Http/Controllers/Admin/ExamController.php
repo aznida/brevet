@@ -278,7 +278,7 @@ class ExamController extends Controller
                     'option_3' => null,
                     'option_4' => null,
                     'option_5' => null,
-                    'answer' => null,
+                    'answer' => null,  // Allowed to be null for rating_scale
                     'level' => null,
                     'rating_scale' => 6
                 ]);
