@@ -9,7 +9,7 @@
     </footer>
 </template>
 
-<style scoped>
+<style scoped> 
 .footer {
     border-radius: 0 !important;
     margin: 0 !important;
