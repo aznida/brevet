@@ -16,7 +16,7 @@
                 <!-- Navbar links -->
                 <ul class="navbar-nav align-items-center" >
                     <li class="nav-item dropdown ms-lg-3">
-                        <a class="nav-link dropdown-toggle pt-1 px-0" href="#" role="button" data-bs-toggle="dropdown"
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
                             <div class="media d-flex align-items-center">
                                 <img class="avatar rounded-circle" alt="Image placeholder" :src="`https://ui-avatars.com/api/?name=${$page.props.auth.user.name}&amp;background=4e73df&amp;color=ffffff&amp;size=100`">
@@ -57,11 +57,26 @@ export default {
     },
     methods: {
         toggleSidebar() {
-            this.isSidebarCollapsed = !this.isSidebarCollapsed;
-            this.$page.props.sidebarCollapsed = this.isSidebarCollapsed;
-            localStorage.setItem('sidebarCollapsed', this.isSidebarCollapsed);
-            document.body.classList.toggle('sidebar-collapsed');
-            document.querySelector('#sidebarMenu').classList.toggle('collapsed');
+            if (window.innerWidth <= 768) {
+                // Mobile behavior
+                const sidebar = document.querySelector('#sidebarMenu');
+                sidebar.classList.toggle('show');
+                
+                if (sidebar.classList.contains('show')) {
+                    document.body.classList.add('sidebar-mobile-open');
+                    this.$el.style.transform = 'translateX(250px)';
+                } else {
+                    document.body.classList.remove('sidebar-mobile-open');
+                    this.$el.style.transform = 'translateX(0)';
+                }
+            } else {
+                // Desktop behavior remains the same
+                this.isSidebarCollapsed = !this.isSidebarCollapsed;
+                this.$page.props.sidebarCollapsed = this.isSidebarCollapsed;
+                localStorage.setItem('sidebarCollapsed', this.isSidebarCollapsed);
+                document.body.classList.toggle('sidebar-collapsed');
+                document.querySelector('#sidebarMenu').classList.toggle('collapsed');
+            }
         }
     },
     computed: {
@@ -104,6 +119,10 @@ export default {
     top: 0 !important;
     left: 0 !important;
     right: 0 !important;
+    z-index: 1020 !important;  /* Lowered z-index to stay behind sidebar */
+    background-color: white !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1) !important;
+    transition: transform 0.3s ease-in-out !important;
 }
 
 .container-fluid {
@@ -151,6 +170,48 @@ main {
     .ms-sidebar,
     main {
         margin-left: 0 !important;
+        width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    .navbar {
+        width: 100% !important;
+        overflow: hidden !important;
+    }
+
+    body {
+        overflow-x: hidden !important;
+        overflow-y: visible !important;
+        position: relative !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    .container-fluid {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    main {
+        padding-right: 15px !important;
+        padding-left: 15px !important;
+        padding-bottom: 100px !important;
+        height: auto !important;
+        min-height: 100% !important;
+        position: relative !important;
+        overflow-y: visible !important;
+        transform: none !important;
+    }
+
+    #app {
+        height: auto !important;
+        min-height: 100% !important;
+        overflow-y: visible !important;
+        position: relative !important;
+    }
+
+    .sidebar-mobile-open main {
+        transform: translateX(250px) !important;
     }
 }
 

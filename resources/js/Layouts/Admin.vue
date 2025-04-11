@@ -13,20 +13,31 @@
         </div>
     </nav>
 
-    <!-- sidebar -->
     <Sidebar />
 
     <main class="content">
-
-        <!-- navbar -->
         <Navbar />
-
-        <!-- content -->
+        
+        <!-- Move slot before footer -->
         <slot />
-
+        
+       
     </main>
-
+     <!-- Footer at the bottom -->
+     <Footer />
 </template>
+
+<style>
+.content {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+slot {
+    flex: 1;
+}
+</style>
 
 <script>
     //import navbar
@@ -34,18 +45,17 @@
 
     //import sidebar
     import Sidebar from '../Components/Sidebar.vue';
+import Footer from "../Components/Footer.vue";
 
     export default {
 
         //register components
         components: {
             Navbar,
-            Sidebar
+            Sidebar,
+            Footer,
+
         },
     }
 
 </script>
-
-<style>
-
-</style>

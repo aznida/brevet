@@ -35,4 +35,12 @@ class Participant extends Authenticatable
     {
         return $this->belongsTo(Area::class);
     }
+
+    /**
+     * Get the grades for the participant.
+     */
+    public function grades()
+    {
+        return $this->hasMany(Grade::class);
+    }
 }

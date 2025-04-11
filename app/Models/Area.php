@@ -18,4 +18,9 @@ class Area extends Model
         'title',
         'kota',
     ];
+
+    public function participants()
+    {
+        return $this->hasMany(Participant::class);
+    }
 }
