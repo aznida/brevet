@@ -400,7 +400,7 @@
             this.modal.show();
         },
         
-        // In showAllParticipantsByLevel method
+        // In showAllParticipantsByLevel method 
         showAllParticipantsByLevel(level) {
             const levelEmoji = {
                 'starter': '🌱',
