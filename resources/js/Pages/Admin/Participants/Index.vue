@@ -45,8 +45,8 @@
                                         <th class="border-0 rounded-start" style="width:5%">No.</th>
                                         <th class="border-0">NIK</th>
                                         <th class="border-0">Nama</th>
-                                        <th class="border-0">Email</th>
-                                        <th class="border-0">No. Hp</th>
+                                        <!-- <th class="border-0">Email</th> -->
+                                        <!-- <th class="border-0">No. Hp</th> -->
                                         <!-- <th class="border-0">Jenis Kelamin</th> -->
                                         <th class="border-0">TREG</th>
                                         <th class="border-0">Witel/Kota</th>
@@ -61,15 +61,22 @@
                                             {{ ++index + (participants.current_page - 1) * participants.per_page }}</td>
                                         <td>{{ participant.nik }}</td>
                                         <td>{{ participant.name }}</td>
-                                        <td>{{ participant.email }}</td>
-                                        <td>{{ participant.hp }}</td>
+                                        <!-- <td>{{ participant.email }}</td> -->
+                                        <!-- <td>{{ participant.hp }}</td> -->
                                         <td>{{ participant.area.title }}</td>
                                         <td>{{ participant.witel }}</td>
                                         <!-- <td class="text-center">{{ participant.gender }}</td> -->
                                         <!-- <td>{{ participant.password }}</td> -->
                                         <td class="text-center">
-                                            <Link :href="`/admin/participants/${participant.id}/edit`" class="btn btn-sm btn-info border-0 shadow me-2" type="button"><i class="fa fa-pencil-alt"></i></Link>
-                                            <button @click.prevent="destroy(participant.id)" class="btn btn-sm btn-danger border-0"><i class="fa fa-trash"></i></button>
+                                            <button @click="showModal(participant)" class="btn btn-sm btn-success border-0 shadow me-2" type="button">
+                                                <i class="fa fa-eye text-white"></i>
+                                            </button>
+                                            <Link :href="`/admin/participants/${participant.id}/edit`" class="btn btn-sm btn-info border-0 shadow me-2" type="button">
+                                                <i class="fa fa-pencil-alt"></i>
+                                            </Link>
+                                            <button @click.prevent="destroy(participant.id)" class="btn btn-sm btn-danger border-0">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -80,101 +87,138 @@
                 </div>
             </div>
         </div>
+        <!-- Modal Detail -->
+        <div class="modal fade" id="detailModal" tabindex="-1">
+            <div class="modal-dialog ">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-light">
+                        <h5 class="modal-title fw-bold">Detail Partisipan</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body px-4 py-3" v-if="selectedParticipant">
+                        <table class="table table-bordered mb-0">
+                            <tr>
+                                <td class="fw-bold bg-light" width="35%">NIK</td>
+                                <td>{{ selectedParticipant.nik }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold bg-light">Nama</td>
+                                <td>{{ selectedParticipant.name }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold bg-light">Email</td>
+                                <td>{{ selectedParticipant.email }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold bg-light">No. HP</td>
+                                <td>{{ selectedParticipant.hp || '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold bg-light">TREG</td>
+                                <td>{{ selectedParticipant.area.title }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold bg-light">Witel/Kota</td>
+                                <td>{{ selectedParticipant.witel }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold bg-light">Jenis Kelamin</td>
+                                <td>{{ selectedParticipant.gender === 'P' ? 'Perempuan' : 'Laki-Laki' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
     //import layout
     import LayoutAdmin from '../../../Layouts/Admin.vue';
-
-    //import component pagination
     import Pagination from '../../../Components/Pagination.vue';
-
-    //import ref from vue
-    import {
-        ref
-    } from 'vue';
-
-    //import sweet alert2
+    import { ref, onMounted } from 'vue';
     import Swal from 'sweetalert2';
-
-    //import Heade and Link from Inertia
-    import {
-        Head,
-        Link,
-        router
-    } from '@inertiajs/vue3';
+    import { Head, Link, router } from '@inertiajs/vue3';
 
     export default {
-        //layout
         layout: LayoutAdmin,
-
-        //register component
         components: {
             Head,
             Link,
             Pagination
         },
-
-        //props
         props: {
             participants: Object,
         },
-
-        //inisialisasi composition API
         setup() {
-
-            //define state search
             const search = ref('' || (new URL(document.location)).searchParams.get('q'));
+            const selectedParticipant = ref(null);
+            let modal = null;
 
-            //define method search
+            onMounted(() => {
+                modal = new bootstrap.Modal(document.getElementById('detailModal'));
+            });
+
+            const showModal = (participant) => {
+                selectedParticipant.value = participant;
+                modal.show();
+            }
+
             const handleSearch = () => {
                 router.get('/admin/participants', {
-
-                    //send params "q" with value from state "search"
                     q: search.value,
-                 }); 
+                }); 
             }
 
-            //define method destroy
             const destroy = (id) => {
                 Swal.fire({
-                        title: 'Apakah Anda yakin?',
-                        text: "Anda tidak akan dapat mengembalikan ini!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, delete it!'
-                    })
-                    .then((result) => {
-                        if (result.isConfirmed) {
-
-                            router.delete(`/admin/participants/${id}`);
-
-                            Swal.fire({
-                                title: 'Deleted!',
-                                text: 'Data Partisipan Berhasil Dihapus!.',
-                                icon: 'success',
-                                timer: 2000,
-                                showConfirmButton: false,
-                            });
-                        }
-                    })
+                    title: 'Apakah Anda yakin?',
+                    text: "Anda tidak akan dapat mengembalikan ini!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                })
+                .then((result) => {
+                    if (result.isConfirmed) {
+                        router.delete(`/admin/participants/${id}`);
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'Data Partisipan Berhasil Dihapus!.',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false,
+                        });
+                    }
+                })
             }
 
-        //return
-        return {
+            return {
                 search,
                 handleSearch,
                 destroy,
+                showModal,
+                selectedParticipant
             }
-
         }
     }
-
 </script>
 
 <style>
-
+.modal-dialog {
+    max-width: 500px;
+}
+.table td {
+    padding: 0.75rem;
+    vertical-align: middle;
+}
+.modal-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+.bg-light {
+    background-color: #f8f9fa !important;
+}
 </style>

@@ -10,7 +10,7 @@
             
             <!-- Only show import option for multiple choice -->
             <template v-if="exam.exam_type === 'multiple_choice'">
-                <a href="/assets/excel/questions.xls" target="_blank"
+                <a href="/assets/excel/Form_Questions.xls" target="_blank"
                     class="btn btn-md btn-success border-0 shadow mb-3 text-white" type="button">
                     <i class="fa fa-file-excel me-2"></i> Contoh Format
                 </a>

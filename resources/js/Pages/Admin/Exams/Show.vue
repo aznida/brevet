@@ -64,14 +64,14 @@
                                     <tr class="border-0">
                                         <th class="border-0 rounded-start" style="width:5%">No.</th>
                                         <th class="border-0">Soal</th>
-                                        <th class="border-0 rounded-end" style="width:15%">Aksi</th>
+                                        <th class="border-0 rounded-end" style="width:10%">Aksi</th>
                                     </tr>
                                 </thead>
                                 <div class="mt-2"></div>
                                 <tbody>
                                     <tr v-for="(question, index) in exam.questions.data" :key="index">
                                         <td class="fw-bold text-center">{{ ++index + (exam.questions.current_page - 1) * exam.questions.per_page }}</td>
-                                        <td>
+                                        <td style="min-width: 200px; max-width: 70%; white-space: normal; word-wrap: break-word;">
                                             <div class="fw-bold" v-html="question.question"></div>
                                             <!-- Multiple Choice Options -->
                                             <template v-if="exam.exam_type === 'multiple_choice'">
