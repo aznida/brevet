@@ -77,6 +77,16 @@ Route::prefix('admin')->group(function() {
         //route index reports export
         Route::get('/reports/export', [\App\Http\Controllers\Admin\ReportController::class, 'export'])->name('admin.reports.export');
 
+        //route resource performance_assessments    
+        Route::resource('/performance_assessments', \App\Http\Controllers\Admin\PerformanceAssessmentController::class, ['as' => 'admin']);
+
+        //custom route for assign assessor
+        Route::get('/performance_assessments/{assessment}/assign', [\App\Http\Controllers\Admin\PerformanceAssessmentController::class, 'assign'])->name('admin.performance_assessments.assign');
+
+        //custom route for store assessor
+        Route::post('/performance_assessments/{assessment}/store-assessor', [\App\Http\Controllers\Admin\PerformanceAssessmentController::class, 'storeAssessor'])->name('admin.performance_assessments.storeAssessor');
+
+        
     });
 });
 
@@ -124,6 +134,15 @@ Route::prefix('participant')->group(function() {
         
         //route exam result
         Route::get('/exam-result/{exam_group_id}', [App\Http\Controllers\Participant\ExamController::class, 'resultExam'])->name('participant.exams.resultExam');
+    
+        //route performance assessment list
+        Route::get('/performance-assessments', [App\Http\Controllers\Participant\PerformanceAssessmentController::class, 'index'])->name('participant.performance_assessments.index');
+    
+        //route performance assessment show
+        Route::get('/performance-assessments/{assessment}', [App\Http\Controllers\Participant\PerformanceAssessmentController::class, 'show'])->name('participant.performance_assessments.show');
+    
+        //route performance assessment submit
+        Route::post('/performance-assessments/{assessment}/submit', [App\Http\Controllers\Participant\PerformanceAssessmentController::class, 'submit'])->name('participant.performance_assessments.submit');
     
     });
 });

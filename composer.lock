@@ -6,7 +6,7 @@
     ],
     "content-hash": "890bf4c134e3ac7cf49a7296f1bdee35",
     "packages": [
-        { 
+        {
             "name": "bacon/bacon-qr-code",
             "version": "2.0.8",
             "source": {

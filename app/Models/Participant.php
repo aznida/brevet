@@ -23,7 +23,9 @@ class Participant extends Authenticatable
         'hp',
         'witel',
         'password',
-        'gender'
+        'gender',
+        'status',
+        'role',
     ];
 
     /**
