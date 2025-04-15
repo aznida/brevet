@@ -54,9 +54,10 @@
                                 <!-- Recording Confirmation Modal -->
                                 <div class="modal fade" :id="'recordingModal'+data.exam_group.id" tabindex="-1">
                                     <div class="modal-dialog">
-                                        <div class="modal-dialog-centered modal-content">
+                                        <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title">Konfirmasi Rekaman</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="alert alert-warning">
@@ -74,6 +75,7 @@
                                                     v-if="recordingConsent"
                                                     :href="`/participant/exam-confirmation/${data.exam_group.id}`" 
                                                     class="btn btn-primary"
+                                                    @click="closeModal(data.exam_group.id)"
                                                 >OK</Link>
                                             </div>
                                         </div>
@@ -143,9 +145,21 @@
                 modal.show();
             };
 
+            const closeModal = (examGroupId) => {
+                const modalElement = document.getElementById('recordingModal' + examGroupId);
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                modal.hide();
+                document.body.classList.remove('modal-open');
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.remove();
+                }
+            };
+
             return {
                 recordingConsent,
-                openRecordingModal
+                openRecordingModal,
+                closeModal
             };
         }
     }

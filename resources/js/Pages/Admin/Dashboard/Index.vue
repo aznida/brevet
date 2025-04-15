@@ -191,7 +191,7 @@
                         </div>
     <!-- Modal -->
     <div class="modal fade" id="participantsModal" tabindex="-1" aria-labelledby="participantsModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
+            <div class="modal-dialog">
                 <div class="modal-dialog  modal-xl modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">

@@ -59,9 +59,10 @@
                                 <thead class="thead-dark">
                                     <tr class="border-0">
                                         <th class="border-0 rounded-start" style="width:5%">No.</th>
-                                        <th class="border-0">Nama Partisipan</th>
-                                        <th class="border-0">Area</th>
-                                        <th class="border-0">Jenis Kelamin</th>
+                                        <th class="border-0 text-center">Nama Partisipan</th>
+                                        <th class="border-0 text-center">TREG - Area</th>
+                                        <th class="border-0 text-center">Witel</th>
+                                        <th class="border-0 text-center">Job Role</th>
                                         <th class="border-0 rounded-end" style="width:15%">Aksi</th>
                                     </tr>
                                 </thead>
@@ -71,7 +72,8 @@
                                         <td class="fw-bold text-center">{{ ++index + (exam_session.exam_groups.current_page - 1) * exam_session.exam_groups.per_page }}</td>
                                         <td>{{ data.participant.name }}</td>
                                         <td class="text-center">{{ data.participant.area.title }}</td>
-                                        <td class="text-center">{{ data.participant.gender }}</td>
+                                        <td class="text-center">{{ data.participant.witel }}</td>
+                                        <td class="text-center">{{ data.participant.role }}</td>
                                         <td class="text-center">
                                             <button @click.prevent="destroy(exam_session.id, data.id)" class="btn btn-sm btn-danger border-0"><i class="fa fa-trash"></i></button>
                                         </td>

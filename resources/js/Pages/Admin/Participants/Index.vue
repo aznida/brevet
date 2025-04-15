@@ -47,9 +47,10 @@
                                         <th class="border-0">Nama</th>
                                         <!-- <th class="border-0">Email</th> -->
                                         <!-- <th class="border-0">No. Hp</th> -->
-                                        <!-- <th class="border-0">Jenis Kelamin</th> -->
+                                        
                                         <th class="border-0">TREG</th>
                                         <th class="border-0">Witel/Kota</th>
+                                        <th class="border-0">Status</th>
                                         <!-- <th class="border-0">Password</th> -->
                                         <th class="border-0 rounded-end" style="width:15%">Aksi</th>
                                     </tr>
@@ -65,7 +66,11 @@
                                         <!-- <td>{{ participant.hp }}</td> -->
                                         <td>{{ participant.area.title }}</td>
                                         <td>{{ participant.witel }}</td>
-                                        <!-- <td class="text-center">{{ participant.gender }}</td> -->
+                                        <td class="text-center">
+                                            <span v-if="participant.status === 'Aktif'" class="badge bg-success">{{ participant.status }}</span>
+                                            <span v-else-if="participant.status === 'Block'" class="badge bg-danger">{{ participant.status }}</span>
+                                            <span v-else>{{ participant.status }}</span>
+                                        </td>
                                         <!-- <td>{{ participant.password }}</td> -->
                                         <td class="text-center">
                                             <button @click="showModal(participant)" class="btn btn-sm btn-success border-0 shadow me-2" type="button">
@@ -120,6 +125,18 @@
                             <tr>
                                 <td class="fw-bold bg-light">Witel/Kota</td>
                                 <td>{{ selectedParticipant.witel }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold bg-light">Job Role</td>
+                                <td>{{ selectedParticipant.role }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold bg-light">Status</td>
+                                <td>
+                                    <span v-if="selectedParticipant.status === 'Aktif'" class="badge bg-success">{{ selectedParticipant.status }}</span>
+                                    <span v-else-if="selectedParticipant.status === 'Block'" class="badge bg-danger">{{ selectedParticipant.status }}</span>
+                                    <span v-else>{{ selectedParticipant.status }}</span>
+                                </td>
                             </tr>
                             <tr>
                                 <td class="fw-bold bg-light">Jenis Kelamin</td>

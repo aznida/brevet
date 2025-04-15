@@ -76,6 +76,30 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-4">
+                                        <label>Job Role</label> 
+                                        <select class="form-select" v-model="form.role">
+                                            <option value="Teknisi">Teknisi</option>
+                                            <option value="Supervisor">Supervisor</option>
+                                        </select>
+                                        <div v-if="errors.role" class="alert alert-danger mt-2">
+                                            {{ errors.role }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-4">
+                                        <label>Status</label> 
+                                        <select class="form-select" v-model="form.status">
+                                            <option value="Aktif">Aktif</option>
+                                            <option value="Block">Block</option>
+                                        </select>
+                                        <div v-if="errors.status" class="alert alert-danger mt-2">
+                                            {{ errors.status }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-4">
                                         <label>Jenis Kelamin</label> 
                                         <select class="form-select" v-model="form.gender">
                                             <option value="L">Laki - Laki</option>
@@ -163,6 +187,8 @@
                 witel: '',
                 area_id: '',
                 gender: '',
+                role: '',
+                status: '',
                 password: '',
                 password_confirmation: ''
             });
@@ -180,6 +206,8 @@
                     witel: form.witel,
                     area_id: form.area_id,
                     gender: form.gender,
+                    role: form.role,
+                    status: form.status,
                     password: form.password,
                     password_confirmation: form.password_confirmation
                 }, {
