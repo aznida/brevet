@@ -59,6 +59,8 @@ class ParticipantController extends Controller
             'email'         =>'required|unique:participants',
             'hp'            =>'required|unique:participants',
             'gender'        => 'required|string',
+            'status'        =>'required|string',
+            'role'          =>'required|string',
             'password'      => 'required|confirmed',
             'area_id'       => 'required',
             'witel'         =>'required',
@@ -72,6 +74,8 @@ class ParticipantController extends Controller
             'witel'         => $request->witel,
             'nik'           => $request->nik,
             'gender'        => $request->gender,
+            'role'          => $request->role,
+            'status'        => $request->status,
             'password'      => $request->password,
             'area_id'       => $request->area_id
         ]);
@@ -120,10 +124,12 @@ class ParticipantController extends Controller
         //validate request
         $request->validate([
             'name'          => 'required|string|max:255',
-            'email'         =>'required|unique:participants',
+            'email'         =>'required',
             'hp'            =>'required',
             'nik'           => 'required|unique:participants,nik,'.$participant->id,
             'gender'        => 'required|string',
+            'role'          =>'required|string',
+            'status'        =>'required|string',
             'area_id'       => 'required',
             'witel'         =>'required',
             'password'      => 'confirmed'
@@ -140,6 +146,8 @@ class ParticipantController extends Controller
                 'witel'         => $request->witel,
                 'nik'           => $request->nik,
                 'gender'        => $request->gender,
+                'role'          => $request->role,
+                'status'        => $request->status,
                 'area_id'       => $request->area_id
             ]);
 
@@ -153,6 +161,8 @@ class ParticipantController extends Controller
                 'witel'         => $request->witel,
                 'nik'           => $request->nik,
                 'gender'        => $request->gender,
+                'status'        => $request->status,
+                'role'          => $request->role,
                 'password'      => $request->password,
                 'area_id'       => $request->area_id
             ]);

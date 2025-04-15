@@ -31,9 +31,11 @@ class ParticipantsImport implements ToModel, WithHeadingRow, WithValidation
             'name'          => $row['nama'],           // Changed from 'Nama' to 'nama'
             'email'         => $row['email'],          // Changed from 'Email' to 'email'
             'hp'            => (int) $row['hp'],       // Changed from 'HP' to 'hp'
-            'witel'         => $row['witel'],          // Changed from 'Witel' to 'witel'
+            'witel'         => $row['witel'],
             'password'      => $password,
-            'gender'        => $row['gender'],         // Changed from 'Gender' to 'gender'
+            'role'          => $row['role'],
+            'gender'        => $row['gender'],
+            'status'        => 'Aktif',    // Set default status to Aktif
             'area_id'       => $areaId,
         ]);
     }

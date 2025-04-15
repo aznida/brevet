@@ -1,6 +1,6 @@
 <template>
-    <footer class="footer bg-white shadow-sm">
-        <div class="container-fluid px-0">
+    <footer class="footer bg-white shadow-sm" style="top: 10px;">
+        <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center px-3 ms-sidebar">
                 <span class="text-gray-700 text-truncate">Copyright © {{ new Date().getFullYear() }} Brevet Teams, All rights reserved.</span>
                 <span class="text-primary text-nowrap">Buatan anak bangsa dengan <span class="text-danger">❤️</span></span>

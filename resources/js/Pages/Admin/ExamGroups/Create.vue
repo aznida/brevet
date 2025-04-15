@@ -5,8 +5,24 @@
     <div class="container-fluid mb-5 mt-5">
         <div class="row">
             <div class="col-md-12">
-                <Link :href="`/admin/exam_sessions/${exam_session.id}`" class="btn btn-md btn-primary border-0 shadow mb-3" type="button"><i
-                    class="fa fa-long-arrow-alt-left me-2"></i> Kembali</Link>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <Link :href="`/admin/exam_sessions/${exam_session.id}`" class="btn btn-md btn-primary border-0 shadow" type="button">
+                        <i class="fa fa-long-arrow-alt-left me-2"></i> Kembali
+                    </Link>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <input 
+                                type="text" 
+                                v-model="search" 
+                                class="form-control border-0 shadow" 
+                                placeholder="masukkan kata kunci..."
+                            >
+                            <span class="input-group-text border-0 shadow">
+                                <i class="fa fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
                 <div class="card border-0 shadow">
                     <div class="card-body">
                         <h5><i class="fa fa-user-plus"></i> Enrolled Participan</h5>
@@ -20,9 +36,10 @@
                                             <th class="border-0 rounded-start" style="width:5%">
                                                 <input type="checkbox" v-model="form.allSelected" @change="selectAll" />
                                             </th>
-                                            <th class="border-0">Nama Partisipan</th>
-                                            <th class="border-0">Area</th>
-                                            <th class="border-0">Jenis Kelamin</th>
+                                            <th class="border-0 text-center">Nama Partisipan</th>
+                                            <th class="border-0 text-center">TREG - Area</th>
+                                            <th class="border-0 text-center">Witel</th>
+                                            <th class="border-0 text-center">Job Role</th>
                                         </tr>
                                     </thead>
                                     <div class="mt-3"></div>
@@ -33,7 +50,8 @@
                                             </td>
                                             <td>{{ participant.name }}</td>
                                             <td class="text-center">{{ participant.area.title }}</td>
-                                            <td class="text-center">{{ participant.gender }}</td>
+                                            <td class="text-center">{{ participant.witel }}</td>
+                                            <td class="text-center">{{ participant.role }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -67,7 +85,8 @@
     //import reactive from vue
     import {
       computed,
-        reactive
+        reactive,
+        ref
     } from 'vue';
 
     //import sweet alert2
@@ -94,6 +113,19 @@
 
         //inisialisasi composition API
         setup(props) {
+            const search = ref('');
+            
+            const activeParticipants = computed(() => {
+                const searchTerm = search.value.toLowerCase();
+                return props.participants
+                    .filter(participant => participant.status === 'Aktif')
+                    .filter(participant => {
+                        return participant.name.toLowerCase().includes(searchTerm) ||
+                               participant.area.title.toLowerCase().includes(searchTerm) ||
+                               participant.witel.toLowerCase().includes(searchTerm) ||
+                               participant.role.toLowerCase().includes(searchTerm);
+                    });
+            });
 
             //define form with reactive
             const form = reactive({
@@ -105,7 +137,7 @@
             //define method "selectAll"
             const selectAll = () => {
                 if (form.allSelected) {
-                    form.participant_id = props.participants.map(participant => participant.id);
+                    form.participant_id = activeParticipants.value.map(participant => participant.id);
                 } else {
                     form.participant_id = [];
                 }
@@ -139,6 +171,8 @@
                 form,
                 selectAll,
                 submit,
+                search,
+                participants: activeParticipants,
             };
 
         }
