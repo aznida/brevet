@@ -17,12 +17,14 @@
         "@vitejs/plugin-vue": "^5.0.4",
         "@vuepic/vue-datepicker": "^3.2.2",
         "@vueup/vue-quill": "^1.2.0",
+        "apexcharts": "^4.5.0",
         "chart.js": "^3.9.1",
         "date-fns": "^4.1.0",
         "sweetalert2": "^11.18.0",
         "update": "^0.4.2",
         "vue": "^3.4.21",
         "vue-chartjs": "^4.1.2",
-        "vue-sweetalert2": "^5.0.2"
+        "vue-sweetalert2": "^5.0.2",
+        "vue3-apexcharts": "^1.8.0"
     }
 }
