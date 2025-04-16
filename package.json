@@ -19,6 +19,7 @@
         "@vueup/vue-quill": "^1.2.0",
         "chart.js": "^3.9.1",
         "date-fns": "^4.1.0",
+        "sweetalert2": "^11.18.0",
         "update": "^0.4.2",
         "vue": "^3.4.21",
         "vue-chartjs": "^4.1.2",

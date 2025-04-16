@@ -51,33 +51,39 @@ class PerformanceAssessmentController extends Controller
 
     public function storeAssessor(Request $request, PerformanceAssessment $assessment)
     {
-        $request->validate([
+        $validated = $request->validate([
             'assessor_id' => 'required|exists:participants,id',
-            'assessee_id' => 'required|exists:participants,id|different:assessor_id',
+            'assessee_id' => 'required|exists:participants,id',
         ]);
-
-        $assessor = Participant::find($request->assessor_id);
-        $assessee = Participant::find($request->assessee_id);
-
-        if ($assessor->area_id !== $assessee->area_id) {
-            return back()->withErrors(['message' => 'Participants must be in the same area']);
-        }
 
         $assessment->assessments()->create([
-            'assessor_id' => $request->assessor_id,
-            'assessee_id' => $request->assessee_id,
+            'assessment_id' => $assessment->id,
+            'assessor_id' => $validated['assessor_id'],
+            'assessee_id' => $validated['assessee_id'],
             'status' => 'pending'
         ]);
-
-        return redirect()->route('admin.performance_assessments.show', $assessment);
+        
+        return redirect()->back();
     }
 
-    public function show(PerformanceAssessment $assessment)
+    public function show($id)  // Change parameter to $id instead of model binding
     {
-        $assignedAssessments = $assessment->assessments()->with(['assessor', 'assessee'])->get();
+        $assessment = PerformanceAssessment::with([
+            'area',
+            'assessments.assessor',
+            'assessments.assessee'
+        ])->findOrFail($id);
+    
+        // Debug the loaded data
+        \Log::info('Assessment data:', [
+            'id' => $assessment->id,
+            'area_id' => $assessment->area_id,
+            'assessments' => $assessment->assessments->count(),
+            'sql' => $assessment->toSql()
+        ]);
+    
         return Inertia::render('Admin/PerformanceAssessments/Show', [
-            'assessment' => $assessment,
-            'assignedAssessments' => $assignedAssessments
+            'assessment' => $assessment
         ]);
     }
 }

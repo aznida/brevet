@@ -18,13 +18,14 @@
     <main class="content">
         <Navbar />
         
-        <!-- Move slot before footer -->
-        <slot />
-        
-       
+        <div class="content-wrapper">
+            <!-- Wrap slot in a div to better control rendering -->
+            <slot v-if="$slots.default"></slot>
+        </div>
     </main>
-     <!-- Footer at the bottom -->
-     <Footer />
+    
+    <!-- Footer at the bottom -->
+    <Footer />
 </template>
 
 <style>
@@ -34,7 +35,7 @@
     flex-direction: column;
 }
 
-slot {
+.content-wrapper {
     flex: 1;
 }
 </style>
@@ -45,17 +46,14 @@ slot {
 
     //import sidebar
     import Sidebar from '../Components/Sidebar.vue';
-import Footer from "../Components/Footer.vue";
+    import Footer from "../Components/Footer.vue";
 
     export default {
-
         //register components
         components: {
             Navbar,
             Sidebar,
             Footer,
-
         },
     }
-
 </script>

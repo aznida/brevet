@@ -12,9 +12,14 @@ class PerformanceAssessment extends Model
     protected $fillable = [
         'name',
         'description',
-        'area_id',  // Add this
+        'area_id',
         'start_date',
         'end_date'
+    ];
+
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date'
     ];
 
     public function area()
@@ -22,24 +27,9 @@ class PerformanceAssessment extends Model
         return $this->belongsTo(Area::class);
     }
 
-    public function questions()
-    {
-        return $this->hasMany(PerformanceQuestion::class);
-    }
-
-    public function assessors()
-    {
-        return $this->belongsToMany(Participant::class, 'performance_assessment_assignments', 'assessment_id', 'assessor_id')
-            ->withPivot(['assessee_id', 'status']);
-    }
-
     public function assessments()
     {
-        return $this->hasMany(PerformanceAssessmentAssignment::class);
-    }
-
-    public function answers()
-    {
-        return $this->hasMany(PerformanceAnswer::class);
+        return $this->hasMany(PerformanceAssessmentAssignment::class, 'assessment_id')
+            ->with(['assessor', 'assessee']);
     }
 }
