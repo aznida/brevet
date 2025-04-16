@@ -86,9 +86,16 @@ Route::prefix('admin')->group(function() {
 
         //custom route for store assessor
         Route::post('/performance_assessments/{assessment}/store-assessor', [\App\Http\Controllers\Admin\PerformanceAssessmentController::class, 'storeAssessor'])->name('admin.performance_assessments.storeAssessor');
-
-        
+        Route::middleware(['auth', 'role:admin'])->group(function() {
+            Route::get('/admin/pending-exams', [PendingExamController::class, 'index'])->name('admin.pending-exams.index');
+            Route::get('/admin/pending-exams/export', [PendingExamController::class, 'export'])->name('admin.pending-exams.export');
+        });
     });
+    //route pending exams
+    Route::get('/pending-exams', [\App\Http\Controllers\Admin\PendingExamController::class, 'index'])
+        ->name('admin.pending-exams.index');
+    Route::get('/pending-exams/export', [\App\Http\Controllers\Admin\PendingExamController::class, 'export'])
+        ->name('admin.pending-exams.export');
 });
 
 //route homepage
