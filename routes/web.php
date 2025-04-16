@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Participant\ExamPraktikController;
 
 
 Route::get('/', function () {
@@ -144,5 +145,13 @@ Route::prefix('participant')->group(function() {
         //route performance assessment submit
         Route::post('/performance-assessments/{assessment}/submit', [App\Http\Controllers\Participant\PerformanceAssessmentController::class, 'submit'])->name('participant.performance_assessments.submit');
     
+    });
+    Route::middleware(['auth:participant'])->group(function () {
+        // Praktik exam routes
+        Route::get('/exam-praktik-start/{exam_group}', [ExamPraktikController::class, 'startExam'])->name('participant.exam.praktik.start');
+        Route::get('/exam-praktik/{exam_group}', [ExamPraktikController::class, 'show'])->name('participant.exam.praktik');
+        Route::put('/exam-praktik-duration/update/{grade}', [ExamPraktikController::class, 'updateDuration'])->name('participant.exam.praktik.duration.update');
+        Route::post('/exam-praktik-submit/{exam_group}', [ExamPraktikController::class, 'store'])->name('participant.exam.praktik.submit');
+        Route::post('/exam-praktik-end', [ExamPraktikController::class, 'endExam'])->name('participant.exam.praktik.end');
     });
 });

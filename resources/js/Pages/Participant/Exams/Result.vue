@@ -24,6 +24,14 @@
                                     <td>{{ exam_group.participant.area.title }}</td>
                                 </tr>
                                 <tr>
+                                    <td class="fw-bold">Witel</td>
+                                    <td>{{ exam_group.participant.witel }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Job Role</td>
+                                    <td>{{ exam_group.participant.role }}</td>
+                                </tr>
+                                <tr>
                                     <td class="fw-bold">Ujian</td>
                                     <td>{{ exam_group.exam.title }}</td>
                                 </tr>
@@ -53,6 +61,14 @@
                         </table>
                     </div>    
                 </div>
+            </div>
+            <div class="text-center mt-3">
+                <Link 
+                    href="/participant/dashboard" 
+                    class="btn btn-md btn-primary shadow-sm"
+                >
+                    <i class="fa fa-arrow-left me-2"></i> Kembali ke Dashboard
+                </Link>
             </div>
         </div>
     </div>

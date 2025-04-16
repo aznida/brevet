@@ -53,20 +53,27 @@
                                 
                                 <!-- Recording Confirmation Modal -->
                                 <div class="modal fade" :id="'recordingModal'+data.exam_group.id" tabindex="-1">
-                                    <div class="modal-dialog">
+                                    <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Konfirmasi Rekaman</h5>
+                                            <div class="modal-header bg-warning text-dark">
+                                                <h5 class="modal-title fw-bold">⚠️ PERINGATAN UJIAN!</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
-                                            <div class="modal-body">
+                                            <div class="modal-body p-4">
                                                 <div class="alert alert-warning">
-                                                    Layar ini sedang direkam oleh sistem
+                                                    <p class="mb-2"><b>⚠️ Perhatian!</b></p>
+                                                    <ul class="mb-0">
+                                                        <li>Dilarang keras bekerja sama dalam bentuk apapun selama ujian berlangsung</li>
+                                                        <li>Dilarang membuka tab baru atau mencari jawaban di Google</li>
+                                                        <li>Konsekuensi pelanggaran: <b>DIBERHENTIKAN KONTRAK!</b></li>
+                                                        <li>Sistem akan merekam <b>Layar, Camera Device</b> dan <b>Suara</b> melalui mikrofon selama ujian berlangsung</li>
+                                                        <li>Jawaban perserta akan <b>otomatis disimpan</b>, jika ada kendala dengan device / jaringan dapat dilanjutkan kembali sesuai waktu yang telah ditentukan.</li>
+                                                    </ul>
                                                 </div>
-                                                <div class="form-check">
+                                                <div class="form-check mt-3">
                                                     <input class="form-check-input" type="checkbox" v-model="recordingConsent" :id="'consent'+data.exam_group.id">
                                                     <label class="form-check-label" :for="'consent'+data.exam_group.id">
-                                                        Saya menyetujui untuk direkam
+                                                        Saya memahami dan menyetujui semua ketentuan di atas
                                                     </label>
                                                 </div>
                                             </div>
@@ -84,7 +91,13 @@
                             </div>
 
                             <div v-else>
-                                <Link :href="`/participant/exam/${data.exam_group.id}/1`" class="btn btn-md btn-info border-0 shadow w-100 mt-2">Lanjut Kerjakan</Link>
+                                <Link 
+                                    :href="data.exam_group.exam.exam_type === 'ujian_pratik' 
+                                        ? `/participant/exam-praktik-start/${data.exam_group.id}/`
+                                        : `/participant/exam/${data.exam_group.id}/1`" 
+                                    class="btn btn-md btn-info border-0 shadow w-100 mt-2">
+                                    Lanjut Kerjakan
+                                </Link>
                             </div>
 
                         </div>
@@ -166,5 +179,12 @@
 </script>
 
 <style>
+.modal-lg {
+    max-width: 900px !important;
+    width: 90% !important;
+}
 
+.modal-content {
+    margin: 0 auto;
+}
 </style>

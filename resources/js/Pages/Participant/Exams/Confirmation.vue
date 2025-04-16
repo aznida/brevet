@@ -39,6 +39,14 @@
                                     <td>{{ exam_group.participant.area.title }}</td>
                                 </tr>
                                 <tr>
+                                    <td class="fw-bold">Witel</td>
+                                    <td>{{ exam_group.participant.witel }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Job Role</td>
+                                    <td>{{ exam_group.participant.role }}</td>
+                                </tr>
+                                <tr>
                                     <td class="fw-bold">Ujian</td>
                                     <td>{{ exam_group.exam.title }}</td>
                                 </tr>
@@ -54,8 +62,18 @@
                         </table>
                     </div>
                     <div v-if="grade.end_time == null">
-                        <Link :href="`/participant/exam-start/${exam_group.id}`"
-                            class="btn btn-md btn-success border-0 shadow w-100 mt-2 text-white">Mulai</Link>
+                        <Link 
+                            v-if="exam_group.exam.exam_type === 'ujian_pratik'"
+                            :href="`/participant/exam-praktik-start/${exam_group.id}`"
+                            class="btn btn-md btn-success border-0 shadow w-100 mt-2 text-white">
+                            Mulai Ujian Praktik
+                        </Link>
+                        <Link 
+                            v-else
+                            :href="`/participant/exams/start/${exam_group.id}`"
+                            class="btn btn-md btn-success border-0 shadow w-100 mt-2 text-white">
+                            Mulai
+                        </Link>
                     </div>
                     <div v-else>
                         <button class="btn btn-md btn-primary border-0 shadow w-100 mt-2" disabled>Sudah

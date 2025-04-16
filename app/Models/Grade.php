@@ -18,11 +18,13 @@ class Grade extends Model
         'exam_id',
         'exam_session_id',
         'participant_id',
+        'exam_type',
         'duration',
         'start_time',
         'end_time',
         'total_correct',
         'grade',
+        'is_completed',
     ];
 
     /**

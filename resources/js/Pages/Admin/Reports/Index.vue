@@ -47,32 +47,34 @@
                                 <thead class="thead-dark">
                                     <tr class="border-0">
                                         <th class="border-0 rounded-start" style="width:5%">No.</th>
+                                        <th class="border-0">Nama Partisipan</th>
+                                        <th class="border-0">Witel</th>
                                         <th class="border-0">Ujian</th>
                                         <th class="border-0">Sesi</th>
-                                        <th class="border-0">Nama Partisipan</th>
-                                        <th class="border-0">Area</th>
-                                        <th class="border-0">Kategori</th>
+                                        <th class="border-0">Area Ujian</th>
+                                        <!-- <th class="border-0">Kategori</th> -->
                                         <th class="border-0">Hasil</th>
                                         <th class="border-0">Level Stream</th>
                                     </tr>
                                 </thead>
                                 <div class="mt-2"></div>
                                 <tbody>
-                                    <tr v-for="(grade, index) in grades" :key="grade.id">
+                                    <tr v-for="(grade, index) in filteredGrades" :key="grade.id">
                                         <td class="fw-bold text-center">
                                             {{ index + 1 }}
                                         </td>
+                                        <td>{{ grade.participant.name }}</td>
+                                        <td>{{ grade.participant.witel }}</td>
                                         <td>{{ grade.exam.title }}</td>
                                         <td>{{ grade.exam_session.title }}</td>
-                                        <td>{{ grade.participant.name }}</td>
                                         <td class="text-center">{{ grade.exam.area.title }}</td>
-                                        <td>{{ grade.exam.category.title }}</td>
+                                        <!-- <td>{{ grade.exam.category.title }}</td> -->
                                         <td class="fw-bold text-center">{{ grade.grade }}</td>
                                         <td class="fw-bold text-center">
                                             <span v-if="grade.grade >= 0 && grade.grade <= 30">Starter 🌱</span>
-                                            <span v-else-if="grade.grade >= 31 && grade.grade <= 60">Basic 🔥</span>
-                                            <span v-else-if="grade.grade >= 61 && grade.grade <= 70">Intermediate 🔥🔥</span>
-                                            <span v-else-if="grade.grade >= 71 && grade.grade <= 90">Advanced 🔥🔥🔥</span>
+                                            <span v-else-if="grade.grade >= 31 && grade.grade <= 60">Basic 🥉</span>
+                                            <span v-else-if="grade.grade >= 61 && grade.grade <= 70">Intermediate 🥈</span>
+                                            <span v-else-if="grade.grade >= 71 && grade.grade <= 90">Advanced 🥇</span>
                                             <span v-else-if="grade.grade >= 91 && grade.grade <= 100">Expert 💎</span>
                                         </td>
                                     </tr>
@@ -114,6 +116,19 @@
             errors: Object,
             exams: Array,
             grades: Array,
+        },
+
+        computed: {
+            filteredGrades() {
+                return this.grades.filter(grade => {
+                    // For practical exam type
+                    if (grade.exam.category.title === 'Assesment Praktik') {
+                        return grade.grade > 0;
+                    }
+                    // For other exam types
+                    return true;
+                });
+            }
         },
 
         //inisialisasi composition API

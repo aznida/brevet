@@ -84,9 +84,9 @@
                                             <label>Level Soal Ujian</label>
                                             <select class="form-select" v-model="form.level">
                                                 <option value="">-- Pilih level soal --</option>
-                                                <option value="Basic">Basic 🔥</option>
-                                                <option value="Intermediate">Intermediate 🔥🔥</option>
-                                                <option value="Advanced">Advanced 🔥🔥🔥</option>
+                                                <option value="Basic">Basic 🥉</option>
+                                                <option value="Intermediate">Intermediate 🥈</option>
+                                                <option value="Advanced">Advanced 🥇</option>
                                                 <option value="Expert">Expert 💎</option>
                                             </select>
                                             <div v-if="errors.level" class="alert alert-danger mt-2">{{ errors.level }}</div>
