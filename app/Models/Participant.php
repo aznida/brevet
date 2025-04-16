@@ -2,40 +2,35 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Participant extends Authenticatable
+class Participant extends Model
 {
-    use HasFactory;
-
-    /**
-     * fillable
-     *
-     * @var array
-     */
     protected $fillable = [
         'area_id',
         'nik',
         'name',
-        'email',
-        'hp',
-        'witel',
         'password',
-        'gender',
-        'status',
-        'role',
+        'gender'
     ];
 
-    /**
-     * classroom
-     *
-     * @return void
-     */
+    protected $hidden = [
+        'password'
+    ];
+
     public function area()
     {
         return $this->belongsTo(Area::class);
+    }
+
+    public function assessorAssignments()
+    {
+        return $this->hasMany(PerformanceAssessmentAssignment::class, 'assessor_id');
+    }
+
+    public function assesseeAssignments()
+    {
+        return $this->hasMany(PerformanceAssessmentAssignment::class, 'assessee_id');
     }
 
     /**
@@ -43,6 +38,6 @@ class Participant extends Authenticatable
      */
     public function grades()
     {
-        return $this->hasMany(Grade::class);
+        return $this->hasMany(Grade::class, 'participant_id');
     }
 }

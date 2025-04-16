@@ -164,3 +164,8 @@ class DashboardController extends Controller
         ]);
     }
 }
+
+// Around line 43, you likely have something like:
+$participants = Participant::with('grades')->get();
+
+// Make sure your Grade model exists and has the correct table/fields

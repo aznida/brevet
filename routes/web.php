@@ -140,7 +140,8 @@ Route::prefix('participant')->group(function() {
         Route::get('/performance-assessments', [App\Http\Controllers\Participant\PerformanceAssessmentController::class, 'index'])->name('participant.performance_assessments.index');
     
         //route performance assessment show
-        Route::get('/performance-assessments/{assessment}', [App\Http\Controllers\Participant\PerformanceAssessmentController::class, 'show'])->name('participant.performance_assessments.show');
+        Route::get('/admin/performance_assessments/{id}', [PerformanceAssessmentController::class, 'show'])
+            ->name('admin.performance-assessments.show');
     
         //route performance assessment submit
         Route::post('/performance-assessments/{assessment}/submit', [App\Http\Controllers\Participant\PerformanceAssessmentController::class, 'submit'])->name('participant.performance_assessments.submit');
