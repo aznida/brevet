@@ -47,7 +47,11 @@
                                     <tr v-for="(exam, index) in exams.data" :key="index">
                                         <td class="fw-bold text-center">{{ ++index + (exams.current_page - 1) * exams.per_page }}</td>
                                         <td>{{ exam.title }}</td>
-                                        <td>{{ exam.exam_type === 'multiple_choice' ? 'Pilihan Ganda' : 'Skala Penilaian' }}</td>
+                                        <td>{{ 
+                                            exam.exam_type === 'multiple_choice' ? 'Pilihan Ganda' : 
+                                            exam.exam_type === 'rating_scale' ? 'Penilaian Skala' :
+                                            exam.exam_type === 'ujian_pratik' ? 'Ujian Praktik' : ''
+                                        }}</td>
                                         <td>{{ exam.category.title }}</td>
                                         <td class="text-center">{{ exam.area.title }}</td>
                                         <td class="text-center">{{ exam.questions.length }}</td>

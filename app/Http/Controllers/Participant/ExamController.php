@@ -155,71 +155,43 @@ class ExamController extends Controller
         $totalQuestions = $exam_group->exam->showqty;
         
         // Calculate proportions for each level
-        $basicCount = round($totalQuestions * 0.30);      // 30% Basic (2 questions)
-        $intermediateCount = round($totalQuestions * 0.30); // 30% Intermediate (2 questions)
-        $advancedCount = round($totalQuestions * 0.30);    // 30% Advanced (2 questions)
-        $expertCount = $totalQuestions - ($basicCount + $intermediateCount + $advancedCount); // 10% Expert (1 question)
+        $basicCount = ceil($totalQuestions * 0.30);      // 30% Basic
+        $intermediateCount = ceil($totalQuestions * 0.30); // 30% Intermediate
+        $advancedCount = ceil($totalQuestions * 0.30);    // 30% Advanced
+        $expertCount = $totalQuestions - ($basicCount + $intermediateCount + $advancedCount); // remaining for Expert
 
-        // Get all questions by level with proportions
+        // Get questions from answers table
+        $questions = Answer::with('question')
+            ->where('participant_id', auth()->guard('participant')->user()->id)
+            ->where('exam_id', $exam_group->exam->id)
+            ->get()
+            ->groupBy(function($item) {
+                return $item->question->level;
+            });
+
+        // Initialize collection
         $all_questions = collect();
 
         // Add Basic questions
-        $basicQuestions = Answer::with('question')
-                        ->whereHas('question', function($q) {
-                            $q->where('level', 'Basic');
-                        })
-                        ->where('participant_id', auth()->guard('participant')->user()->id)
-                        ->where('exam_id', $exam_group->exam->id)
-                        ->inRandomOrder()
-                        ->take($basicCount)
-                        ->get();
-        $all_questions = $all_questions->concat($basicQuestions);
+        if(isset($questions['Basic'])) {
+            $all_questions = $all_questions->concat($questions['Basic']->take($basicCount));
+        }
+        if(isset($questions['Intermediate'])) {
+            $all_questions = $all_questions->concat($questions['Intermediate']->take($intermediateCount));
+        }
+        if(isset($questions['Advanced'])) {
+            // If Expert questions don't exist, add extra Advanced questions to make up for it
+            $advancedToTake = isset($questions['Expert']) ? $advancedCount : ($advancedCount + $expertCount);
+            $all_questions = $all_questions->concat($questions['Advanced']->take($advancedToTake));
+        }
+        if(isset($questions['Expert'])) {
+            $all_questions = $all_questions->concat($questions['Expert']->take($expertCount));
+        }
 
-        // Add Intermediate questions
-        $intermediateQuestions = Answer::with('question')
-                        ->whereHas('question', function($q) {
-                            $q->where('level', 'Intermediate');
-                        })
-                        ->where('participant_id', auth()->guard('participant')->user()->id)
-                        ->where('exam_id', $exam_group->exam->id)
-                        ->inRandomOrder()
-                        ->take($intermediateCount)
-                        ->get();
-        $all_questions = $all_questions->concat($intermediateQuestions);
-
-        // Add Advanced questions
-        $advancedQuestions = Answer::with('question')
-                        ->whereHas('question', function($q) {
-                            $q->where('level', 'Advanced');
-                        })
-                        ->where('participant_id', auth()->guard('participant')->user()->id)
-                        ->where('exam_id', $exam_group->exam->id)
-                        ->inRandomOrder()
-                        ->take($advancedCount)
-                        ->get();
-        $all_questions = $all_questions->concat($advancedQuestions);
-
-        // Add Expert questions
-        $expertQuestions = Answer::with('question')
-                        ->whereHas('question', function($q) {
-                            $q->where('level', 'Expert');
-                        })
-                        ->where('participant_id', auth()->guard('participant')->user()->id)
-                        ->where('exam_id', $exam_group->exam->id)
-                        ->inRandomOrder()
-                        ->take($expertCount)
-                        ->get();
-        $all_questions = $all_questions->concat($expertQuestions);
-
-        // Ensure we only have showqty number of questions
-        $all_questions = $all_questions->take($totalQuestions)->values();
-
-        // Combine all questions and ensure proper ordering
-        $all_questions = $basicQuestions->concat($intermediateQuestions)
-                        ->concat($advancedQuestions)
-                        ->concat($expertQuestions)
-                        ->sortBy('question_order')
-                        ->values();
+        // Ensure exact number of questions and proper ordering
+        $all_questions = $all_questions->take($totalQuestions)
+                                     ->sortBy('question_order')
+                                     ->values();
 
         // Get question active based on available questions
         $question_active = $all_questions->where('question_order', $page)->first();
@@ -339,6 +311,9 @@ class ExamController extends Controller
      */
     public function endExam(Request $request)
     {
+        //get exam group to get showqty
+        $exam_group = ExamGroup::with('exam')->find($request->exam_group_id);
+        
         //count jawaban benar
         $count_correct_answer = Answer::where('exam_id', $request->exam_id)
                             ->where('exam_session_id', $request->exam_session_id)
@@ -346,11 +321,11 @@ class ExamController extends Controller
                             ->where('is_correct', 'Y')
                             ->count();
 
-        //count jumlah soal
-        $count_question = Question::where('exam_id', $request->exam_id)->count();
+        //use showqty instead of total questions
+        $total_questions = $exam_group->exam->showqty;
 
         //hitung nilai
-        $grade_exam = round($count_correct_answer/$count_question*100, 2);
+        $grade_exam = round($count_correct_answer/$total_questions*100, 2);
 
         //update nilai di table grades
         $grade = Grade::where('exam_id', $request->exam_id)
@@ -360,7 +335,8 @@ class ExamController extends Controller
         
         $grade->end_time        = Carbon::now();
         $grade->total_correct   = $count_correct_answer;
-        $grade->grade           = $grade_exam;
+        $grade->grade          = $grade_exam;
+        $grade->exam_type      = $exam_group->exam->exam_type;
         $grade->update();
 
         //redirect hasil

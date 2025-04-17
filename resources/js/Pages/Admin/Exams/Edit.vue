@@ -109,8 +109,9 @@
                                     <div class="mb-4">
                                         <label>Tipe Ujian</label> 
                                         <select class="form-select" v-model="form.exam_type">
-                                            <option value="multiple_choice">Pilihan Ganda</option>
-                                            <option value="rating_scale">Skala Penilaian</option>
+                                            <option value="multiple_choice">Pilihan Ganda (Ujian Tulis)</option>
+                                            <option value="rating_scale">Skala Penilaian (360 Atitute)</option>
+                                            <option value="ujian_pratik">Assesment Kemampuan (Ujian Praktik)</option>
                                         </select>
                                         <div v-if="errors.exam_type" class="alert alert-danger mt-2">
                                             {{ errors.exam_type }}

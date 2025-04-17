@@ -120,24 +120,33 @@
         </div>
 
         <div class="row mb-4">
-            <div class="col-md-6">
+            <div class="col-md-8">
                 <div class="card border-0 shadow">
                     <div class="card-body">
-                        <h5><i class="fa fa-chart-line"></i> Assement Result</h5>
+                        <h5><i class="fa fa-chart-line"></i> Assesment Result</h5>
                         <div class="chart-container">
-                            <div class="text-center pt-5">No data available</div>
+                            <apexchart
+                                type="bar"
+                                :options="assessmentChartOptions"
+                                :series="assessmentSeries"
+                                height="310"
+                            ></apexchart>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="card border-0 shadow">
                     <div class="card-body">
                         <h5><i class="fa fa-chart-line"></i> Level Stream</h5>
                         <div class="chart-container">
-                            <div class="text-center pt-5">No data available</div>
+                            <apexchart
+                                type="pie"
+                                :options="levelStreamChartOptions"
+                                :series="levelStreamSeries"
+                                height="320"
+                            ></apexchart>
                         </div>
-                        
                     </div>
                 </div>
             </div>
@@ -191,53 +200,51 @@
                         </div>
     <!-- Modal -->
     <div class="modal fade" id="participantsModal" tabindex="-1" aria-labelledby="participantsModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-dialog  modal-xl modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="participantsModalLabel">{{ modalTitle }}</h5>
-                            <div>
-                                <button @click="exportToExcel" class="btn btn-success btn-sm me-2 text-white">
-                                    <i class="fas fa-file-excel me-1 text-white"></i> Export Excel
-                                </button>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
+        <div class="modal-dialog modal-fullwidth">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="participantsModalLabel">{{ modalTitle }}</h5>
+                    <div>
+                        <button @click="exportToExcel" class="btn btn-success btn-sm me-2 text-white">
+                            <i class="fas fa-file-excel me-1 text-white"></i> Export Excel
+                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div v-if="selectedParticipants && selectedParticipants.length > 0">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-centered table-nowrap mb-0 rounded">
+                                <thead class="thead-dark">
+                                    <tr class="border-0">
+                                        <th class="border-0 rounded-start" style="width:10%">No.</th>
+                                        <th class="border-0">Nama</th>
+                                        <th class="border-0">TREG - Area</th>
+                                        <th class="border-0">Witel</th>
+                                        <th class="border-0">Nilai</th>
+                                        <th class="border-0 rounded-end" style="width:20%">Level Stream</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(participant, index) in selectedParticipants" :key="index">
+                                        <td class="text-center">{{ index + 1 }}</td>
+                                        <td>{{ participant.name }}</td>
+                                        <td>{{ participant.areas }}</td>
+                                        <td>{{ participant.witel || '-' }}</td>
+                                        <td class="text-center">{{ participant.grade }}</td>
+                                        <td class="text-center">{{ participant.level }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="modal-body">
-                            <div v-if="selectedParticipants && selectedParticipants.length > 0">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-centered table-nowrap mb-0 rounded">
-                                        <thead class="thead-dark">
-                                            <tr class="border-0">
-                                                <th class="border-0 rounded-start" style="width:10%">No.</th>
-                                                <th class="border-0">Nama</th>
-                                                <th class="border-0">TREG - Area</th>
-                                                <th class="border-0">Witel</th>
-                                                <th class="border-0">Nilai</th>
-                                                <th class="border-0 rounded-end" style="width:20%">Level Stream</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr v-for="(participant, index) in selectedParticipants" :key="index">
-                                                <td class="text-center">{{ index + 1 }}</td>
-                                                <td>{{ participant.name }}</td>
-                                                <td>{{ participant.areas }}</td>
-                                                <td>{{ participant.witel || '-' }}</td>
-                                                <td class="text-center">{{ participant.grade }}</td>
-                                                <td class="text-center">{{ participant.level }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div v-else class="text-center">
-                                No participants found
-                            </div>
-                        </div>
+                    </div>
+                    <div v-else class="text-center">
+                        No participants found
                     </div>
                 </div>
             </div>
         </div>
+    </div>
         </div>
         </div>
         </div>
@@ -246,7 +253,7 @@
         <!-- End Dashboard tabel level stream per regional -->
 
         <div class="row mb-4">
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <div class="card border-0 shadow">
                     <div class="card-body">
                         <h5><i class="fa fa-chart-line"></i> Top Participant per Regional</h5>
@@ -264,14 +271,19 @@
                                 </thead>
                                 <tbody>
                                     <template v-if="topParticipantsByRegional.length > 0">
-                                        <tr v-for="(participant, index) in topParticipantsByRegional" :key="index">
-                                            <td class="text-center">{{ index + 1 }}</td>
-                                            <td>{{ participant.regional }}</td>
-                                            <td>{{ participant.name }}</td>
-                                            <td>{{ participant.witel }}</td>
-                                            <td class="text-center">{{ participant.grade }}</td>
-                                            <td class="text-center">{{ participant.level }}</td>
-                                        </tr>
+                                        <template v-for="(participant, index) in topParticipantsByRegional" :key="index">
+                                            <tr>
+                                                <td class="text-center">{{ index + 1 }}</td>
+                                                <td v-if="index === 0 || participant.regional !== topParticipantsByRegional[index-1].regional" 
+                                                    :rowspan="getRegionalRowspan(participant.regional)">
+                                                    {{ participant.regional }}
+                                                </td>
+                                                <td>{{ participant.name }}</td>
+                                                <td>{{ participant.witel }}</td>
+                                                <td class="text-center">{{ participant.grade }}</td>
+                                                <td class="text-center">{{ participant.level }}</td>
+                                            </tr>
+                                        </template>
                                     </template>
                                     <tr v-else>
                                         <td colspan="6" class="text-center">No data available</td>
@@ -282,28 +294,16 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow">
-                    <div class="card-body">
-                        <h5><i class="fa fa-chart-line"></i> Mechanical</h5>
-                        <div class="chart-container">
-                            <div class="text-center pt-5">No data available</div>
-                        </div>
-                        
-                    </div>
-                </div>
-            </div>
         </div>
 </template>
 
 <script>
-    //import layout Admin
-    import LayoutAdmin from '../../../Layouts/Admin.vue';
-
-    //import Heade from Inertia
-    import {
-        Head,
-    } from '@inertiajs/vue3';
+//import layout Admin
+import LayoutAdmin from '../../../Layouts/Admin.vue';
+//import Head from Inertia
+import { Head } from '@inertiajs/vue3';
+//import ApexCharts
+import VueApexCharts from 'vue3-apexcharts';
 
     export default {
 
@@ -312,7 +312,8 @@
 
         //register components
         components: {
-            Head
+            Head,
+            apexchart: VueApexCharts
         },
 
         //props
@@ -325,9 +326,18 @@
         },
 
         computed: {
-        filteredAreaStats() {
-            if (!this.areaLevelStats) return [];
-            return this.areaLevelStats.filter(stat => !stat.title.toLowerCase().includes('nasional'));
+            filteredAreaStats() {
+                if (!this.areaLevelStats) return [];
+                return this.areaLevelStats.filter(stat => !stat.title.toLowerCase().includes('nasional'));
+            },
+        levelStreamSeries() {
+            return [
+                this.getTotalByLevel('starter'),
+                this.getTotalByLevel('basic'),
+                this.getTotalByLevel('intermediate'),
+                this.getTotalByLevel('advanced'),
+                this.getTotalByLevel('expert')
+            ];
         },
         topParticipantsByRegional() {
             if (!this.areaLevelStats) return [];
@@ -371,7 +381,107 @@
         return {
             modalTitle: '',
             selectedParticipants: [],
-            modal: null
+            modal: null,
+            assessmentSeries: [{
+                name: 'Starter 🌱',
+                data: [3, 10, 3, 1, 2]
+            }, {
+                name: 'Basic 🥉',
+                data: [4, 2, 9, 5, 5]
+            }, {
+                name: 'Intermediate 🥈',
+                data: [4, 8, 2, 4, 9]
+            }, {
+                name: 'Advanced 🥇',
+                data: [7, 6, 8, 8, 3]
+            }, {
+                name: 'Expert 💎',
+                data: [2, 1, 1, 5, 2]
+            }],
+            assessmentChartOptions: {
+                chart: {
+                    type: 'bar',
+                    stacked: false,
+                    toolbar: {
+                        show: true
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '90%',  // Changed from 55% to 70%
+                        endingShape: 'flat'
+                    }
+                },
+                grid: {
+                    borderColor: '#e7e7e7',
+                    row: {
+                        colors: ['transparent', 'transparent'],
+                        opacity: 0.5
+                    }
+                },
+                xaxis: {
+                    categories: ['MECHANICAL', 'ELECTRICAL', 'MAINTENANCE', 'MONITORING', 'AUTOMATION'],
+                    labels: {
+                        style: {
+                            fontSize: '12px'
+                        }
+                    }
+                },  // Added missing comma here
+                yaxis: {
+                    title: {
+                        text: 'Number of Participants'
+                    },
+                    min: 0,
+                    max: 10,
+                    tickAmount: 6
+                },
+                colors: ['#00e396', '#008ffb', '#feb019', '#ff6178', '#8b75d7'],
+                legend: {
+                    position: 'bottom',
+                    horizontalAlign: 'center',
+                    fontSize: '12px'
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                tooltip: {
+                    shared: true,
+                    intersect: false,
+                    y: {
+                        formatter: function (val) {
+                            return val + " participants"
+                        }
+                    }
+                }
+            },
+            levelStreamChartOptions: {
+                chart: {
+                    type: 'pie',
+                },
+                labels: ['Starter 🌱', 'Basic 🥉', 'Intermediate 🥈', 'Advanced 🥇', 'Expert 💎'],
+                colors: ['#00e396', '#008ffb', '#feb019', '#ff6178', '#8b75d7'], // Updated colors to match the reference
+                legend: {
+                    position: 'bottom'
+                },
+                dataLabels: {
+                    enabled: true,
+                    formatter: function (val, opts) {
+                        return opts.w.config.series[opts.seriesIndex]
+                    }
+                },
+                responsive: [{
+                    breakpoint: 480,
+                    options: {
+                        chart: {
+                            width: 200
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }]
+            }
         }
     },
 
@@ -399,7 +509,9 @@
             })) || [];
             this.modal.show();
         },
-        
+        getRegionalRowspan(regional) {
+            return this.topParticipantsByRegional.filter(p => p.regional === regional).length;
+        },
         // In showAllParticipantsByLevel method 
         showAllParticipantsByLevel(level) {
             const levelEmoji = {
@@ -523,5 +635,10 @@
 }
 .cursor-pointer:hover {
     background-color: rgba(0,0,0,0.05);
+}
+.modal-fullwidth {
+    max-width: 70%;
+    width: 70%;
+    margin: 1.75rem auto;
 }
 </style>

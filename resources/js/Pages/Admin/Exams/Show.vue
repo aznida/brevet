@@ -29,7 +29,11 @@
                                     </tr>
                                     <tr>
                                         <td class="fw-bold">Tipe Ujian</td>
-                                        <td>{{ exam.exam_type === 'multiple_choice' ? 'Pilihan Ganda' : 'Skala Penilaian' }}</td>
+                                        <td>{{ 
+                                            exam.exam_type === 'multiple_choice' ? 'Pilihan Ganda' : 
+                                            exam.exam_type === 'rating_scale' ? 'Penilaian Skala' :
+                                            exam.exam_type === 'ujian_pratik' ? 'Ujian Praktik' : ''
+                                        }}</td>
                                     </tr>
                                     <tr>
                                         <td class="fw-bold">Total Bank Soal</td>

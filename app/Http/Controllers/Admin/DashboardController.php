@@ -34,10 +34,12 @@ class DashboardController extends Controller
         // Get area level statistics
         $areaLevelStats = Area::select('id', 'title')
             ->with(['participants' => function($query) {
-                $query->select('id', 'name', 'area_id', 'witel')  // Add witel to the select
+                $query->select('id', 'name', 'area_id', 'witel')
                     ->with(['grades' => function($q) {
-                        $q->select('id', 'participant_id', 'grade', 'exam_id')
-                            ->whereNotNull('end_time');
+                        $q->select('id', 'participant_id', 'grade', 'exam_id', 'exam_type')
+                            ->whereNotNull('end_time')
+                            ->where('grade', '>', 0)
+                            ->whereNotNull('grade');
                     }]);
             }])
             ->get()
@@ -51,30 +53,76 @@ class DashboardController extends Controller
                 ];
 
                 foreach ($area->participants as $participant) {
-                    // Get the highest grade for the participant
-                    $highestGrade = $participant->grades->max('grade');
+                    if ($participant->grades->isEmpty()) continue;
                     
-                    // Skip if no grades
-                    if ($highestGrade === null) continue;
+                    // Group grades by exam_type and calculate average for each type
+                    $examTypeAverages = [];
+                    $grades = $participant->grades->groupBy('exam_type');
                     
-                    $participantData = [
-                        'name' => $participant->name,
-                        'grade' => $highestGrade,
-                        'witel' => $participant->witel  // Add witel field
+                    // Define all weights
+                    $weights = [
+                        'multiple_choice' => 0.35,
+                        'rating_scale' => 0.15,
+                        'ujian_pratik' => 0.50
                     ];
-                    
-                    // Categorize based on highest grade
-                    if ($highestGrade >= 0 && $highestGrade <= 30) {
-                        $participantsByLevel['starter'][] = $participantData;
-                    } elseif ($highestGrade <= 60) {
-                        $participantsByLevel['basic'][] = $participantData;
-                    } elseif ($highestGrade <= 70) {
-                        $participantsByLevel['intermediate'][] = $participantData;
-                    } elseif ($highestGrade <= 90) {
-                        $participantsByLevel['advanced'][] = $participantData;
-                    } else {
-                        $participantsByLevel['expert'][] = $participantData;
+
+                    // Calculate averages for available exam types
+                    foreach ($grades as $examType => $typeGrades) {
+                        if ($examType === null) continue;
+                        
+                        $validGrades = $typeGrades->filter(function($grade) {
+                            return $grade->grade > 0;
+                        });
+                        
+                        if ($validGrades->isNotEmpty()) {
+                            $examTypeAverages[$examType] = $validGrades->avg('grade');
+                        }
                     }
+
+                    // Calculate weighted sum
+                    $weightedSum = 0;
+                    $totalWeight = 0;
+
+                    // Apply weights for all exam types, use 0 for missing ones
+                    foreach ($weights as $examType => $weight) {
+                        $grade = $examTypeAverages[$examType] ?? 0;
+                        $weightedSum += $grade * $weight;
+                        $totalWeight += $weight;
+                    }
+
+                    // Only process if there are any valid grades
+                    if (!empty($examTypeAverages)) {
+                        $averageGrade = round($weightedSum, 2);
+                        
+                        $participantData = [
+                            'name' => $participant->name,
+                            'grade' => $averageGrade,
+                            'witel' => $participant->witel
+                        ];
+                    
+                        // Categorize based on average grade
+                        if ($averageGrade >= 0 && $averageGrade <= 30) {
+                            if (!collect($participantsByLevel['starter'])->contains('name', $participant->name)) {
+                                $participantsByLevel['starter'][] = $participantData;
+                            }
+                        } elseif ($averageGrade <= 60) {
+                            if (!collect($participantsByLevel['basic'])->contains('name', $participant->name)) {
+                                $participantsByLevel['basic'][] = $participantData;
+                            }
+                        } elseif ($averageGrade <= 70) {
+                            if (!collect($participantsByLevel['intermediate'])->contains('name', $participant->name)) {
+                                $participantsByLevel['intermediate'][] = $participantData;
+                            }
+                        } elseif ($averageGrade <= 90) {
+                            if (!collect($participantsByLevel['advanced'])->contains('name', $participant->name)) {
+                                $participantsByLevel['advanced'][] = $participantData;
+                            }
+                        } else {
+                            if (!collect($participantsByLevel['expert'])->contains('name', $participant->name)) {
+                                $participantsByLevel['expert'][] = $participantData;
+                            }
+                        }
+                    } // Added missing closing bracket here
                 }
 
                 // Debug information

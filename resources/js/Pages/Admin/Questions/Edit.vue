@@ -67,9 +67,9 @@
                                             <td style="width:20%" class="fw-bold">Level Soal</td>
                                             <td>
                                                 <select class="form-control" v-model="form.level">
-                                                    <option value="Basic">Basic 🔥</option>
-                                                    <option value="Intermediate">Intermediate 🔥🔥</option>
-                                                    <option value="Advanced">Advanced 🔥🔥🔥</option>
+                                                    <option value="Basic">Basic 🥉</option>
+                                                    <option value="Intermediate">Intermediate 🥈</option>
+                                                    <option value="Advanced">Advanced 🥇</option>
                                                     <option value="Expert">Expert 💎</option>
                                                 </select>
                                             </td>

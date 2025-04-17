@@ -93,6 +93,7 @@ export default {
             if (route.includes('/admin/reports')) return 'Laporan Hasil Ujian';
             if (route.includes('/participant/dashboard')) return 'Dashboard Peserta';
             if (route.includes('/participant/exams')) return 'Ujian';
+            if (route.includes('/admin/pending-exams')) return 'Progres Ujian';
             
             return 'Dashboard';
         }

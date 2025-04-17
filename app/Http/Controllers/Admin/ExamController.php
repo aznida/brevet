@@ -73,7 +73,7 @@ class ExamController extends Controller
             'random_question'   => 'required',
             'random_answer'     => 'required',
             'show_answer'       => 'required',
-            'exam_type'         => 'required|in:multiple_choice,rating_scale',  // Add validation
+            // 'exam_type'         => 'required|in:multiple_choice,rating_scale',  // Add validation
         ]);
 
         //create exam
@@ -116,7 +116,7 @@ class ExamController extends Controller
                 return $query->select('id', 'exam_id', 'question', 'question_type', 'rating_scale');
             })
             ->where('question_type', $exam->exam_type)
-            ->paginate(10);
+            ->paginate(20);
     
         //set relation
         $exam->setRelation('questions', $questions);
@@ -167,7 +167,7 @@ class ExamController extends Controller
             'random_question'   => 'required',
             'random_answer'     => 'required',
             'show_answer'       => 'required',
-            'exam_type'         => 'required|in:multiple_choice,rating_scale',  // Add validation
+            // 'exam_type'         => 'required|in:multiple_choice,rating_scale',  // Add validation
         ]);
 
         //update exam

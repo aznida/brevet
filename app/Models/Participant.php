@@ -11,7 +11,10 @@ class Participant extends Model
         'nik',
         'name',
         'password',
-        'gender'
+        'gender',
+        'witel',
+        'email',
+        'status'
     ];
 
     protected $hidden = [
@@ -39,5 +42,10 @@ class Participant extends Model
     public function grades()
     {
         return $this->hasMany(Grade::class, 'participant_id');
+    }
+
+    public function exam_groups()
+    {
+        return $this->hasMany(ExamGroup::class, 'participant_id')->with(['exam_session', 'grades']);
     }
 }
