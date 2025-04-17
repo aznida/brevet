@@ -86,7 +86,11 @@ Route::prefix('admin')->group(function() {
         //custom route for store assessor
         Route::post('/performance_assessments/{assessment}/store-assessor', [\App\Http\Controllers\Admin\PerformanceAssessmentController::class, 'storeAssessor'])->name('admin.performance_assessments.storeAssessor');
 
+        //delete assignment route
+        Route::delete('/performance_assessments/{assessment}/assignments/{assignment}', [\App\Http\Controllers\Admin\PerformanceAssessmentAssignmentController::class, 'destroy'])->name('admin.performance-assessments.assignments.destroy');
         
+        //update assignment
+        Route::put('/performance_assessments/{assessment}/assignments/{assignment}', [\App\Http\Controllers\Admin\PerformanceAssessmentAssignmentController::class, 'update'])->name('admin.performance-assessments.assignments.update');
     });
 });
 
@@ -144,6 +148,6 @@ Route::prefix('participant')->group(function() {
     
         //route performance assessment submit
         Route::post('/performance-assessments/{assessment}/submit', [App\Http\Controllers\Participant\PerformanceAssessmentController::class, 'submit'])->name('participant.performance_assessments.submit');
-    
+
     });
 });

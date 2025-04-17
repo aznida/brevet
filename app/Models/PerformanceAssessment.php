@@ -29,7 +29,6 @@ class PerformanceAssessment extends Model
 
     public function assessments()
     {
-        return $this->hasMany(PerformanceAssessmentAssignment::class, 'assessment_id')
-            ->with(['assessor', 'assessee']);
+        return $this->hasMany(PerformanceAssessmentAssignment::class, 'assessment_id');
     }
 }
