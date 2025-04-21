@@ -25,33 +25,53 @@
                                             <td style="width:20%" class="fw-bold">Soal</td>
                                             <td>
                                                 <QuillEditor theme="snow" v-model:content="form.option_1" contentType="html" />
+                                                <div v-if="exam.title.toLowerCase().includes('attitude') || exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
+                                                    <label>Bobot Pilihan A</label>
+                                                    <input type="number" class="form-control" v-model="form.option_1_weight" min="0" max="100" />
+                                                </div>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="width:20%" class="fw-bold">Pilihan A</td>
                                             <td>
                                                 <QuillEditor theme="snow" v-model:content="form.option_2" contentType="html" />
+                                                <div v-if="exam.title.toLowerCase().includes('attitude') || exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
+                                                    <label>Bobot Pilihan B</label>
+                                                    <input type="number" class="form-control" v-model="form.option_2_weight" min="0" max="100" />
+                                                </div>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="width:20%" class="fw-bold">Pilihan C</td>
                                             <td>
                                                 <QuillEditor theme="snow" v-model:content="form.option_3" contentType="html" />
+                                                <div v-if="exam.title.toLowerCase().includes('attitude') || exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
+                                                    <label>Bobot Pilihan C</label>
+                                                    <input type="number" class="form-control" v-model="form.option_3_weight" min="0" max="100" />
+                                                </div>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="width:20%" class="fw-bold">Pilihan D</td>
                                             <td>
                                                 <QuillEditor theme="snow" v-model:content="form.option_4" contentType="html" />
+                                                <div v-if="exam.title.toLowerCase().includes('attitude') || exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
+                                                    <label>Bobot Pilihan D</label>
+                                                    <input type="number" class="form-control" v-model="form.option_4_weight" min="0" max="100" />
+                                                </div>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="width:20%" class="fw-bold">Pilihan E</td>
                                             <td>
                                                 <QuillEditor theme="snow" v-model:content="form.option_5" contentType="html" />
+                                                <div v-if="exam.title.toLowerCase().includes('attitude') || exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
+                                                    <label>Bobot Pilihan E</label>
+                                                    <input type="number" class="form-control" v-model="form.option_5_weight" min="0" max="100" />
+                                                </div>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr v-if="!exam.title.toLowerCase().includes('attitude') && !exam.title.toLowerCase().includes('sikap') && !exam.title.toLowerCase().includes('akhlak')">
                                             <td style="width:20%" class="fw-bold">Jawaban Benar</td>
                                             <td>
                                                 <select class="form-control" v-model="form.answer">
@@ -154,9 +174,14 @@
                 option_3: props.question.option_3 || null,
                 option_4: props.question.option_4 || null,
                 option_5: props.question.option_5 || null,
+                option_1_weight: props.question.option_1_weight || null,
+                option_2_weight: props.question.option_2_weight || null,
+                option_3_weight: props.question.option_3_weight || null,
+                option_4_weight: props.question.option_4_weight || null,
+                option_5_weight: props.question.option_5_weight || null,
                 answer: props.question.answer || null,
                 level: props.question.level || null,
-                rating_scale: '6' // Fixed to 6-point scale
+                rating_scale: '6'
             });
         
             const submit = () => {
@@ -172,11 +197,17 @@
                         option_3: form.option_3,
                         option_4: form.option_4,
                         option_5: form.option_5,
+                        option_1_weight: props.exam.title.toLowerCase().includes('attitude') || props.exam.title.toLowerCase().includes('sikap') || props.exam.title.toLowerCase().includes('akhlak') ? form.option_1_weight : null,
+                        option_2_weight: props.exam.title.toLowerCase().includes('attitude') || props.exam.title.toLowerCase().includes('sikap') || props.exam.title.toLowerCase().includes('akhlak') ? form.option_2_weight : null,
+                        option_3_weight: props.exam.title.toLowerCase().includes('attitude') || props.exam.title.toLowerCase().includes('sikap') || props.exam.title.toLowerCase().includes('akhlak') ? form.option_3_weight : null,
+                        option_4_weight: props.exam.title.toLowerCase().includes('attitude') || props.exam.title.toLowerCase().includes('sikap') || props.exam.title.toLowerCase().includes('akhlak') ? form.option_4_weight : null,
+                        option_5_weight: props.exam.title.toLowerCase().includes('attitude') || props.exam.title.toLowerCase().includes('sikap') || props.exam.title.toLowerCase().includes('akhlak') ? form.option_5_weight : null,
                         answer: form.answer,
                         level: form.level,
                         rating_scale: null
                     });
-                } else {
+                }
+                else {
                     Object.assign(formData, {
                         option_1: null,
                         option_2: null,

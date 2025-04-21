@@ -18,6 +18,11 @@ class Question extends Model
         'option_3',
         'option_4',
         'option_5',
+        'option_1_weight',
+        'option_2_weight',
+        'option_3_weight',
+        'option_4_weight',
+        'option_5_weight',
         'answer',
         'level',
         'rating_scale'
@@ -68,6 +73,11 @@ class Question extends Model
                 $question->option_3 = null;
                 $question->option_4 = null;
                 $question->option_5 = null;
+                $question->option_1_weight = null;
+                $question->option_2_weight = null;
+                $question->option_3_weight = null;
+                $question->option_4_weight = null;
+                $question->option_5_weight = null;
                 $question->answer = null;
                 $question->level = null;
                 $question->rating_scale = 6;

@@ -242,8 +242,10 @@ class ExamController extends Controller
                     'option_3' => 'required',
                     'option_4' => 'required',
                     'option_5' => 'required',
-                    'answer' => 'required',
-                    'level ' => 'required',
+                    'answer' => str_contains(strtolower($exam->title), 'attitude') || 
+                               str_contains(strtolower($exam->title), 'sikap') || 
+                               str_contains(strtolower($exam->title), 'akhlak') ? 'nullable' : 'required',
+                    'level' => 'required',
                 ]);
             }
     
@@ -267,6 +269,11 @@ class ExamController extends Controller
                     'option_3' => $request->option_3['ops'][0]['insert'] ?? $request->option_3,
                     'option_4' => $request->option_4['ops'][0]['insert'] ?? $request->option_4,
                     'option_5' => $request->option_5['ops'][0]['insert'] ?? $request->option_5,
+                    'option_1_weight' => $request->filled('option_1_weight') ? $request->option_1_weight : null,
+                    'option_2_weight' => $request->filled('option_2_weight') ? $request->option_2_weight : null,
+                    'option_3_weight' => $request->filled('option_3_weight') ? $request->option_3_weight : null,
+                    'option_4_weight' => $request->filled('option_4_weight') ? $request->option_4_weight : null,
+                    'option_5_weight' => $request->filled('option_5_weight') ? $request->option_5_weight : null,
                     'answer' => $request->answer,
                     'level' => $request->level,
                     'rating_scale' => null
@@ -278,6 +285,11 @@ class ExamController extends Controller
                     'option_3' => null,
                     'option_4' => null,
                     'option_5' => null,
+                    'option_1_weight' => null,
+                    'option_2_weight' => null,
+                    'option_3_weight' => null,
+                    'option_4_weight' => null,
+                    'option_5_weight' => null,
                     'answer' => null,  // Allowed to be null for rating_scale
                     'level' => null,
                     'rating_scale' => 6
@@ -358,8 +370,13 @@ class ExamController extends Controller
                     'option_3' => is_array($request->option_3) ? ($request->option_3['ops'][0]['insert'] ?? '') : $request->option_3,
                     'option_4' => is_array($request->option_4) ? ($request->option_4['ops'][0]['insert'] ?? '') : $request->option_4,
                     'option_5' => is_array($request->option_5) ? ($request->option_5['ops'][0]['insert'] ?? '') : $request->option_5,
+                    'option_1_weight' => $request->filled('option_1_weight') ? $request->option_1_weight : null,
+                    'option_2_weight' => $request->filled('option_2_weight') ? $request->option_2_weight : null,
+                    'option_3_weight' => $request->filled('option_3_weight') ? $request->option_3_weight : null,
+                    'option_4_weight' => $request->filled('option_4_weight') ? $request->option_4_weight : null,
+                    'option_5_weight' => $request->filled('option_5_weight') ? $request->option_5_weight : null,
                     'answer' => $request->answer,
-                    'level' =>  $request->level,
+                    'level' => $request->level,
                     'rating_scale' => null
                 ]);
             } else {
@@ -369,6 +386,11 @@ class ExamController extends Controller
                     'option_3' => null,
                     'option_4' => null,
                     'option_5' => null,
+                    'option_1_weight' => null,
+                    'option_2_weight' => null,
+                    'option_3_weight' => null,
+                    'option_4_weight' => null,
+                    'option_5_weight' => null,
                     'answer' => null,
                     'level' => null,
                     'rating_scale' => 6

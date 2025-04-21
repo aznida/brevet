@@ -1,9 +1,9 @@
 public function create(Exam $exam)
 {
-    $exam = $exam->load(['category', 'area', 'questions']);
+    // Explicitly load the category relationship
+    $exam = $exam->load(['category']);
     
     return inertia('Admin/Questions/Create', [
-        'exam' => $exam,
-        'questions' => $exam->questions
+        'exam' => $exam
     ]);
 }

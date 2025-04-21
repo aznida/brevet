@@ -9,6 +9,14 @@
                 <div class="card border-0 shadow">
                     <div class="card-body">
                         <h5><i class="fa fa-question-circle"></i> Tambah Soal Ujian</h5>
+                        <div>
+                            <span class="badge bg-primary me-2">
+                                {{ exam.category?.title }} | {{ exam.title }}
+                            </span>
+                            <span class="badge bg-secondary">
+                                {{ exam.exam_type }}
+                            </span>
+                        </div>
                         <hr>
                         <form @submit.prevent="submit">
                             <!-- Question input -->
@@ -25,6 +33,9 @@
                                         ['link', 'image'],
                                     ]"
                                 />
+                                <div v-if="errors.question" class="alert alert-danger mt-2">
+                                    {{ errors.question }}
+                                </div>
                             </div>
 
                             <!-- Multiple Choice options -->
@@ -37,6 +48,10 @@
                                         theme="snow"
                                         :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]"
                                     />
+                                    <div v-if="exam.title.toLowerCase().includes('attitude')|| exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
+                                        <label>Bobot Pilihan A</label>
+                                        <input type="number" class="form-control" v-model="form.option_1_weight" min="0" max="100" />
+                                    </div>
                                     <div v-if="errors.option_1" class="alert alert-danger mt-2">{{ errors.option_1 }}</div>
                                 </div>
                                 <div class="mb-4">
@@ -47,25 +62,49 @@
                                         theme="snow"
                                         :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]"
                                     />
+                                    <div v-if="exam.title.toLowerCase().includes('attitude')|| exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
+                                        <label>Bobot Pilihan B</label>
+                                        <input type="number" class="form-control" v-model="form.option_2_weight" min="0" max="100" />
+                                    </div>
                                     <div v-if="errors.option_2" class="alert alert-danger mt-2">{{ errors.option_2 }}</div>
                                 </div>
                                 <div class="mb-4">
                                     <label>Pilihan C</label>
                                     <QuillEditor v-model:content="form.option_3" contentType="html" theme="snow" :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]" />
+                                    <div v-if="exam.title.toLowerCase().includes('attitude')|| exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
+                                        <label>Bobot Pilihan C</label>
+                                        <input type="number" class="form-control" v-model="form.option_3_weight" min="0" max="100" />
+                                    </div>
                                     <div v-if="errors.option_3" class="alert alert-danger mt-2">{{ errors.option_3 }}</div>
                                 </div>
                                 <div class="mb-4">
                                     <label>Pilihan D</label>
                                     <QuillEditor v-model:content="form.option_4" contentType="html" theme="snow" :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]" />
+                                    <div v-if="exam.title.toLowerCase().includes('attitude')|| exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
+                                        <label>Bobot Pilihan D</label>
+                                        <input type="number" class="form-control" v-model="form.option_4_weight" min="0" max="100" />
+                                    </div>
                                     <div v-if="errors.option_4" class="alert alert-danger mt-2">{{ errors.option_4 }}</div>
                                 </div>
                                 <div class="mb-4">
                                     <label>Pilihan E</label>
                                     <QuillEditor v-model:content="form.option_5" contentType="html" theme="snow" :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]" />
+                                    <div v-if="exam.title.toLowerCase().includes('attitude')|| exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
+                                        <label>Bobot Pilihan E</label>
+                                        <input type="number" class="form-control" v-model="form.option_5_weight" min="0" max="100" />
+                                    </div>
                                     <div v-if="errors.option_5" class="alert alert-danger mt-2">{{ errors.option_5 }}</div>
                                 </div>
+                                <!-- Add weight validation warning -->
+                                <div v-if="exam.title.toLowerCase().includes('attitude') || exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" 
+                                    class="alert" :class="totalWeight === 100 ? 'alert-success' : 'alert-danger'" role="alert">
+                                    Total Bobot: {{ totalWeight }}
+                                    <div v-if="totalWeight !== 100">
+                                        Total bobot harus sama dengan 100!
+                                    </div>
+                                </div>
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-6" v-if="!exam.title.toLowerCase().includes('attitude') && !exam.title.toLowerCase().includes('sikap') && !exam.title.toLowerCase().includes('akhlak')">
                                         <div class="mb-4">
                                             <label>Jawaban Benar</label>
                                             <select class="form-select" v-model="form.answer">
@@ -126,7 +165,7 @@ import LayoutAdmin from '../../../Layouts/Admin.vue';
 
 //import components
 import { Head, Link, router } from '@inertiajs/vue3'
-import { reactive, onMounted, ref } from 'vue'  // Added ref here
+import { reactive, onMounted, ref, computed } from 'vue'  // Added computed here
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import Swal from 'sweetalert2'
@@ -143,6 +182,7 @@ export default {
         exam: Object,
     },
 
+    // In the setup function, add the weight fields to the form
     setup(props) {
         const examType = props.exam.exam_type;
         
@@ -154,12 +194,46 @@ export default {
             option_3: null,
             option_4: null,
             option_5: null,
+            option_1_weight: null,
+            option_2_weight: null,
+            option_3_weight: null,
+            option_4_weight: null,
+            option_5_weight: null,
             answer: null,
             level: null,
             rating_scale: examType === 'rating_scale' ? '6' : null
         });
     
+        // Update submit function to include weights
+        // Add computed property for total weight
+        const totalWeight = computed(() => {
+            if (props.exam.title.toLowerCase().includes('attitude') || 
+                props.exam.title.toLowerCase().includes('sikap') || 
+                props.exam.title.toLowerCase().includes('akhlak')) {
+                return Number(form.option_1_weight || 0) +
+                       Number(form.option_2_weight || 0) +
+                       Number(form.option_3_weight || 0) +
+                       Number(form.option_4_weight || 0) +
+                       Number(form.option_5_weight || 0);
+            }
+            return 0;
+        });
+
         const submit = () => {
+            // Add weight validation before submit
+            if ((props.exam.title.toLowerCase().includes('attitude') || 
+                 props.exam.title.toLowerCase().includes('sikap') || 
+                 props.exam.title.toLowerCase().includes('akhlak')) && 
+                totalWeight.value !== 100) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Total bobot harus sama dengan 100!',
+                    icon: 'error',
+                    confirmButtonText: 'Ok'
+                });
+                return;
+            }
+
             const formData = {
                 question: form.question,
                 question_type: examType,
@@ -172,6 +246,11 @@ export default {
                     option_3: form.option_3,
                     option_4: form.option_4,
                     option_5: form.option_5,
+                    option_1_weight: props.exam.title.toLowerCase().includes('attitude') || props.exam.title.toLowerCase().includes('sikap') || props.exam.title.toLowerCase().includes('akhlak') ? form.option_1_weight : null,
+                    option_2_weight: props.exam.title.toLowerCase().includes('attitude') || props.exam.title.toLowerCase().includes('sikap') || props.exam.title.toLowerCase().includes('akhlak') ? form.option_2_weight : null,
+                    option_3_weight: props.exam.title.toLowerCase().includes('attitude') || props.exam.title.toLowerCase().includes('sikap') || props.exam.title.toLowerCase().includes('akhlak') ? form.option_3_weight : null,
+                    option_4_weight: props.exam.title.toLowerCase().includes('attitude') || props.exam.title.toLowerCase().includes('sikap') || props.exam.title.toLowerCase().includes('akhlak') ? form.option_4_weight : null,
+                    option_5_weight: props.exam.title.toLowerCase().includes('attitude') || props.exam.title.toLowerCase().includes('sikap') || props.exam.title.toLowerCase().includes('akhlak') ? form.option_5_weight : null,
                     answer: form.answer,
                     level: form.level,
                     rating_scale: null
@@ -206,7 +285,8 @@ export default {
             form,
             submit,
             isMultipleChoice: examType === 'multiple_choice',
-            isRatingScale: examType === 'rating_scale'
+            isRatingScale: examType === 'rating_scale',
+            totalWeight
         };
     }
 }
