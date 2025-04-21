@@ -57,7 +57,12 @@
                   </span>
                 </td>
                 <td>
-                  <!-- Actions -->
+                  <button 
+                    @click="deleteAssignment(assignment.id)"
+                    class="btn btn-danger btn-sm"
+                  >
+                    <i class="fas fa-trash"></i> Delete
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -72,7 +77,8 @@
 import AdminLayout from '@/Layouts/Admin.vue';
 import { Link } from '@inertiajs/vue3';
 import { format } from 'date-fns';
-import { defineProps } from 'vue';
+import { router } from '@inertiajs/vue3';
+import { defineProps, watch } from 'vue';  // Added watch import
 
 const props = defineProps({
     assessment: {
@@ -100,16 +106,30 @@ const formatDate = (date) => {
 
 const getStatusColor = (status) => {
     switch (status) {
-        case 'pending':
-            return 'warning';
         case 'completed':
             return 'success';
         case 'in_progress':
             return 'primary';
-        case 'rejected':
-            return 'danger';
         default:
             return 'secondary';
     }
 };
+
+const deleteAssignment = (assignmentId) => {
+  if (confirm('Are you sure you want to delete this assignment?')) {
+    router.delete(`/admin/performance_assessments/${props.assessment.id}/assignments/${assignmentId}`, {
+      preserveScroll: true,
+      preserveState: true,
+      onFinish: () => {
+        router.reload({ only: ['assessment'] });
+      },
+    });
+  }
+};
+
+// Now watch will work properly
+watch(() => props.assessment, (newVal) => {
+  console.log('Assessment Updated:', newVal);
+  console.log('Assignments:', newVal?.assessments);
+}, { deep: true });
 </script>

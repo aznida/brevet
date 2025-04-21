@@ -53,37 +53,65 @@ class PerformanceAssessmentController extends Controller
     {
         $validated = $request->validate([
             'assessor_id' => 'required|exists:participants,id',
-            'assessee_id' => 'required|exists:participants,id',
+            'assessee_id' => 'required|exists:participants,id|different:assessor_id',
         ]);
-
+    
+        // Check for existing assignment
+        $exists = $assessment->assessments()
+            ->where('assessor_id', $validated['assessor_id'])
+            ->where('assessee_id', $validated['assessee_id'])
+            ->exists();
+    
+        if ($exists) {
+            return redirect()->back()
+                ->withErrors(['duplicate' => 'This assessment pair already exists.'])
+                ->withInput();
+        }
+    
         $assessment->assessments()->create([
             'assessment_id' => $assessment->id,
             'assessor_id' => $validated['assessor_id'],
             'assessee_id' => $validated['assessee_id'],
-            'status' => 'pending'
+            'status' => 'in_progress'
         ]);
         
-        return redirect()->back();
+        return redirect()->route('admin.performance_assessments.show', $assessment->id);
     }
 
-    public function show($id)  // Change parameter to $id instead of model binding
+    public function show($id)
     {
         $assessment = PerformanceAssessment::with([
             'area',
             'assessments.assessor',
             'assessments.assessee'
         ])->findOrFail($id);
-    
+
         // Debug the loaded data
-        \Log::info('Assessment data:', [
+        \Log::info('Show method assessment data:', [
             'id' => $assessment->id,
-            'area_id' => $assessment->area_id,
-            'assessments' => $assessment->assessments->count(),
-            'sql' => $assessment->toSql()
+            'assessments_count' => $assessment->assessments->count(),
+            'has_relationships' => [
+                'area' => $assessment->area !== null,
+                'assessments' => $assessment->assessments !== null
+            ]
         ]);
-    
+
         return Inertia::render('Admin/PerformanceAssessments/Show', [
             'assessment' => $assessment
         ]);
+    }
+
+    // When assessment starts
+    public function startAssessment($id)
+    {
+        $assignment = PerformanceAssessmentAssignment::findOrFail($id);
+        $assignment->update(['status' => 'in_progress']);
+    }
+
+    // When assessment ends
+    public function endAssessment($id)
+    {
+        $assignment = PerformanceAssessmentAssignment::findOrFail($id);
+        $assignment->update(['status' => 'completed']);
     }
 }
