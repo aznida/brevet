@@ -2,50 +2,54 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Participant extends Model
+class Participant extends Authenticatable
 {
+    use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
-        'area_id',
         'nik',
         'name',
         'password',
-        'gender',
+        'area_id',
         'witel',
-        'email',
-        'status'
+        'role'
     ];
 
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
     protected $hidden = [
-        'password'
+        'password',
+        'remember_token',
     ];
 
+    /**
+     * area
+     *
+     * @return void
+     */
     public function area()
     {
         return $this->belongsTo(Area::class);
     }
 
-    public function assessorAssignments()
-    {
-        return $this->hasMany(PerformanceAssessmentAssignment::class, 'assessor_id');
-    }
-
-    public function assesseeAssignments()
-    {
-        return $this->hasMany(PerformanceAssessmentAssignment::class, 'assessee_id');
-    }
-
     /**
-     * Get the grades for the participant.
+     * grades
+     *
+     * @return void
      */
     public function grades()
     {
-        return $this->hasMany(Grade::class, 'participant_id');
-    }
-
-    public function exam_groups()
-    {
-        return $this->hasMany(ExamGroup::class, 'participant_id')->with(['exam_session', 'grades']);
+        return $this->hasMany(Grade::class);
     }
 }
