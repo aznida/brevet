@@ -5,7 +5,11 @@
     "isEntry": true
   },
   "resources/js/app.js": {
+<<<<<<< HEAD
     "file": "assets/app-BxQdcSt1.js",
+=======
+    "file": "assets/app-Bgab0Xsj.js",
+>>>>>>> 0ea787f4b174655779f9fa56f336757f42d2c3d8
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,

@@ -86,14 +86,26 @@ Route::prefix('admin')->group(function() {
 
         //custom route for store assessor
         Route::post('/performance_assessments/{assessment}/store-assessor', [\App\Http\Controllers\Admin\PerformanceAssessmentController::class, 'storeAssessor'])->name('admin.performance_assessments.storeAssessor');
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0ea787f4b174655779f9fa56f336757f42d2c3d8
 
         //delete assignment route
         Route::delete('/performance_assessments/{assessment}/assignments/{assignment}', [\App\Http\Controllers\Admin\PerformanceAssessmentAssignmentController::class, 'destroy'])->name('admin.performance-assessments.assignments.destroy');
         
         //update assignment
         Route::put('/performance_assessments/{assessment}/assignments/{assignment}', [\App\Http\Controllers\Admin\PerformanceAssessmentAssignmentController::class, 'update'])->name('admin.performance-assessments.assignments.update');
+<<<<<<< HEAD
+=======
+
+        Route::middleware(['auth', 'role:admin'])->group(function() {
+            Route::get('/admin/pending-exams', [PendingExamController::class, 'index'])->name('admin.pending-exams.index');
+            Route::get('/admin/pending-exams/export', [PendingExamController::class, 'export'])->name('admin.pending-exams.export');
+        });
+>>>>>>> 0ea787f4b174655779f9fa56f336757f42d2c3d8
     });
-    //route pending exams
+    //route pending exams (remove duplicate routes)
     Route::get('/pending-exams', [\App\Http\Controllers\Admin\PendingExamController::class, 'index'])
         ->name('admin.pending-exams.index');
     Route::get('/pending-exams/export', [\App\Http\Controllers\Admin\PendingExamController::class, 'export'])
@@ -102,12 +114,10 @@ Route::prefix('admin')->group(function() {
 
 //route homepage
 Route::get('/', function () {
-
     //cek session participant
     if(auth()->guard('participant')->check()) {
         return redirect()->route('participant.dashboard');
     }
-
     //return view login
     return \Inertia\Inertia::render('Participant/Login/Index');
 });
@@ -117,7 +127,6 @@ Route::post('/participants/login', \App\Http\Controllers\Participant\LoginContro
 
 //prefix "participant"
 Route::prefix('participant')->group(function() {
-
     //middleware "participant"
     Route::group(['middleware' => 'participant'], function () {
         
@@ -153,7 +162,22 @@ Route::prefix('participant')->group(function() {
             ->name('admin.performance-assessments.show');
     
         //route performance assessment submit
-        Route::post('/performance-assessments/{assessment}/submit', [App\Http\Controllers\Participant\PerformanceAssessmentController::class, 'submit'])->name('participant.performance_assessments.submit');
+        Route::post('/performance-assessments/{assessment}/submit', [App\Http\Controllers\Participant\PerformanceAssessmentController::class, 'submit'])
+            ->name('participant.performance_assessments.submit');
 
+<<<<<<< HEAD
+=======
+        // Praktik exam routes
+        Route::get('/exam-praktik-start/{exam_group}', [ExamPraktikController::class, 'startExam'])
+            ->name('participant.exam.praktik.start');
+        Route::get('/exam-praktik/{exam_group}', [ExamPraktikController::class, 'show'])
+            ->name('participant.exam.praktik');
+        Route::put('/exam-praktik-duration/update/{grade}', [ExamPraktikController::class, 'updateDuration'])
+            ->name('participant.exam.praktik.duration.update');
+        Route::post('/exam-praktik-submit/{exam_group}', [ExamPraktikController::class, 'store'])
+            ->name('participant.exam.praktik.submit');
+        Route::post('/exam-praktik-end', [ExamPraktikController::class, 'endExam'])
+            ->name('participant.exam.praktik.end');
+>>>>>>> 0ea787f4b174655779f9fa56f336757f42d2c3d8
     });
 });
