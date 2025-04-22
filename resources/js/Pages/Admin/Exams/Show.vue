@@ -81,11 +81,36 @@
                                             <template v-if="exam.exam_type === 'multiple_choice'">
                                                 <hr>
                                                 <ol type="A">
-                                                    <li v-html="question.option_1" :class="{ 'text-success fw-bold': question.answer == '1' }"></li>
-                                                    <li v-html="question.option_2" :class="{ 'text-success fw-bold': question.answer == '2' }"></li>
-                                                    <li v-html="question.option_3" :class="{ 'text-success fw-bold': question.answer == '3' }"></li>
-                                                    <li v-html="question.option_4" :class="{ 'text-success fw-bold': question.answer == '4' }"></li>
-                                                    <li v-html="question.option_5" :class="{ 'text-success fw-bold': question.answer == '5' }"></li>
+                                                    <li>
+                                                        <span v-html="question.option_1" :class="{ 'text-success fw-bold': question.answer == '1' }"></span>
+                                                        <span v-if="isAttitudeExam(exam.title)" class="text-muted ms-2 fst-italic">
+                                                            (Bobot: {{ question.option_1_weight || '0' }})
+                                                        </span>
+                                                    </li>
+                                                    <li>
+                                                        <span v-html="question.option_2" :class="{ 'text-success fw-bold': question.answer == '2' }"></span>
+                                                        <span v-if="isAttitudeExam(exam.title)" class="text-muted ms-2 fst-italic">
+                                                            (Bobot: {{ question.option_2_weight || '0' }})
+                                                        </span>
+                                                    </li>
+                                                    <li>
+                                                        <span v-html="question.option_3" :class="{ 'text-success fw-bold': question.answer == '3' }"></span>
+                                                        <span v-if="isAttitudeExam(exam.title)" class="text-muted ms-2 fst-italic">
+                                                            (Bobot: {{ question.option_3_weight || '0' }})
+                                                        </span>
+                                                    </li>
+                                                    <li>
+                                                        <span v-html="question.option_4" :class="{ 'text-success fw-bold': question.answer == '4' }"></span>
+                                                        <span v-if="isAttitudeExam(exam.title)" class="text-muted ms-2 fst-italic">
+                                                            (Bobot: {{ question.option_4_weight || '0' }})
+                                                        </span>
+                                                    </li>
+                                                    <li>
+                                                        <span v-html="question.option_5" :class="{ 'text-success fw-bold': question.answer == '5' }"></span>
+                                                        <span v-if="isAttitudeExam(exam.title)" class="text-muted ms-2 fst-italic">
+                                                            (Bobot: {{ question.option_5_weight || '0' }})
+                                                        </span>
+                                                    </li>
                                                 </ol>
                                                 <div class="mt-2">
                                                     <i><b style="font-size:14px">Level Soal : </b> 
@@ -125,78 +150,63 @@
 <script>
     //import layout
     import LayoutAdmin from '../../../Layouts/Admin.vue';
-
-    //import component pagination
     import Pagination from '../../../Components/Pagination.vue';
-
-    //import Heade and Link from Inertia
-    import {
-        Head,
-        Link,
-        router
-    } from '@inertiajs/vue3';
-
-
-    //import sweet alert2
+    import { Head, Link, router } from '@inertiajs/vue3';
     import Swal from 'sweetalert2';
 
     export default {
-
-        //layout
         layout: LayoutAdmin,
-
-        //register components
+        
         components: {
             Head,
             Link,
             Pagination
         },
 
-        //props
         props: {
             errors: Object,
             exam: Object,
         },
 
-        //inisialisasi composition API
         setup() {
+            const isAttitudeExam = (title) => {
+                if (!title) return false;
+                const lowerTitle = title.toLowerCase();
+                return lowerTitle.includes('attitude') || 
+                       lowerTitle.includes('sikap') || 
+                       lowerTitle.includes('akhlak');
+            };
 
-        //define method destroy
-        const destroy = (exam_id, question_id) => {
-            Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: "Anda tidak akan dapat mengembalikan ini!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            })
-            .then((result) => {
-                if (result.isConfirmed) {
+            const destroy = (exam_id, question_id) => {
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Anda tidak akan dapat mengembalikan ini!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                })
+                .then((result) => {
+                    if (result.isConfirmed) {
+                        router.delete(`/admin/exams/${exam_id}/questions/${question_id}/destroy`);
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'Soal Ujian Berhasil Dihapus!.',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false,
+                        });
+                    }
+                });
+            };
 
-                    router.delete(`/admin/exams/${exam_id}/questions/${question_id}/destroy`);
-
-                    Swal.fire({
-                        title: 'Deleted!',
-                        text: 'Soal Ujian Berhasil Dihapus!.',
-                        icon: 'success',
-                        timer: 2000,
-                        showConfirmButton: false,
-                    });
-                }
-            })
+            return {
+                destroy,
+                isAttitudeExam
+            };
         }
-
-        //return
-        return {
-            destroy,
-        }
-
-    }
-
-}
-
+    };
 </script>
 
 <style>

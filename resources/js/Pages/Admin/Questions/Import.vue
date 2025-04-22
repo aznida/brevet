@@ -96,7 +96,29 @@
 
             //method "submit"
             const submit = () => {
+                // Check if it's an attitude test
+                const isAttitudeExam = props.exam.title.toLowerCase().includes('attitude') || 
+                                      props.exam.title.toLowerCase().includes('sikap') || 
+                                      props.exam.title.toLowerCase().includes('akhlak');
 
+                // If it's an attitude test, show a reminder about weights
+                if (isAttitudeExam) {
+                    Swal.fire({
+                        title: 'Perhatian!',
+                        text: 'Pastikan total bobot untuk setiap soal sama dengan 100! Silakan periksa file Excel Anda terlebih dahulu.',
+                        icon: 'warning',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false
+                    }).then(() => {
+                        // Do nothing, let admin correct the file first
+                    });
+                } else {
+                    uploadFile();
+                }
+            }
+
+            // Extract the upload functionality to a separate method
+            const uploadFile = () => {
                 //send data to server
                 router.post(`/admin/exams/${props.exam.id}/questions/import`, {
                     //data

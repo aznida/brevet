@@ -96,6 +96,15 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                                
+                                <!-- Add weight validation warning -->
+                                <div v-if="exam.title.toLowerCase().includes('attitude') || exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" 
+                                    class="alert" :class="totalWeight === 100 ? 'alert-success' : 'alert-danger'" role="alert">
+                                    Total Bobot: {{ totalWeight }}%
+                                    <div v-if="totalWeight !== 100">
+                                        Total bobot harus sama dengan 100!
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Rating Scale Form -->
@@ -136,7 +145,7 @@
     } from '@inertiajs/vue3';
 
     //import reactive from vue
-    import { reactive } from 'vue';
+    import { reactive, computed } from 'vue';
 
     //import sweet alert2
     import Swal from 'sweetalert2';
@@ -183,8 +192,36 @@
                 level: props.question.level || null,
                 rating_scale: '6'
             });
+            
+            // Add computed property for total weight
+            const totalWeight = computed(() => {
+                if (props.exam.title.toLowerCase().includes('attitude') || 
+                    props.exam.title.toLowerCase().includes('sikap') || 
+                    props.exam.title.toLowerCase().includes('akhlak')) {
+                    return Number(form.option_1_weight || 0) +
+                           Number(form.option_2_weight || 0) +
+                           Number(form.option_3_weight || 0) +
+                           Number(form.option_4_weight || 0) +
+                           Number(form.option_5_weight || 0);
+                }
+                return 0;
+            });
         
             const submit = () => {
+                // Add weight validation before submit
+                if ((props.exam.title.toLowerCase().includes('attitude') || 
+                     props.exam.title.toLowerCase().includes('sikap') || 
+                     props.exam.title.toLowerCase().includes('akhlak')) && 
+                    totalWeight.value !== 100) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Total bobot harus sama dengan 100!',
+                        icon: 'error',
+                        confirmButtonText: 'Ok'
+                    });
+                    return;
+                }
+                
                 const formData = {
                     question: form.question,
                     question_type: props.exam.exam_type, // Use exam type directly
@@ -239,6 +276,7 @@
             return {
                 form,
                 submit,
+                totalWeight
             }
         }
     }

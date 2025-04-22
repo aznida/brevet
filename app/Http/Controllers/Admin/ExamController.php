@@ -110,7 +110,9 @@ class ExamController extends Controller
         $questions = $exam->questions()
             ->when($exam->exam_type === 'multiple_choice', function($query) {
                 return $query->select('id', 'exam_id', 'question', 'question_type', 
-                    'option_1', 'option_2', 'option_3', 'option_4', 'option_5', 'answer', 'level');
+                    'option_1', 'option_2', 'option_3', 'option_4', 'option_5', 
+                    'option_1_weight', 'option_2_weight', 'option_3_weight', 'option_4_weight', 'option_5_weight',
+                    'answer', 'level');
             })
             ->when($exam->exam_type === 'rating_scale', function($query) {
                 return $query->select('id', 'exam_id', 'question', 'question_type', 'rating_scale');
