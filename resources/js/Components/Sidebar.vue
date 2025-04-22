@@ -130,7 +130,7 @@
                     </span>
                     </Link>
                 </li>
-
+                <!---
                 <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/performance_assessments') }">
                     <Link href="/admin/performance_assessments" class="nav-link d-flex justify-content-between">
                     <span>
@@ -146,7 +146,7 @@
                     </span>
                     </Link>
                 </li>
-
+            -->
                 <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/exam_sessions') }">
                     <Link href="/admin/exam_sessions" class="nav-link d-flex justify-content-between">
                     <span>
