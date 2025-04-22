@@ -347,11 +347,13 @@ class ExamController extends Controller
                     'option_3' => 'required',
                     'option_4' => 'required',
                     'option_5' => 'required',
-                    'answer' => 'required',
+                    'answer' => str_contains(strtolower($exam->title), 'attitude') || 
+                               str_contains(strtolower($exam->title), 'sikap') || 
+                               str_contains(strtolower($exam->title), 'akhlak') ? 'nullable' : 'required',
                     'level' => 'required',
                 ]);
             }
-    
+
             $request->validate($rules);
     
             // Extract content from Quill editor data
