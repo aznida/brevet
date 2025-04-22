@@ -10,9 +10,13 @@
             
             <!-- Only show import option for multiple choice -->
             <template v-if="exam.exam_type === 'multiple_choice'">
+                <a href="/assets/excel/Form_Questions_multiple.xls" target="_blank"
+                    class="btn btn-md btn-success border-0 shadow mb-3 text-white me-2" type="button">
+                    <i class="fa fa-file-excel me-2"></i> Format Multiple Test
+                </a>
                 <a href="/assets/excel/Form_Questions.xls" target="_blank"
                     class="btn btn-md btn-success border-0 shadow mb-3 text-white" type="button">
-                    <i class="fa fa-file-excel me-2"></i> Contoh Format
+                    <i class="fa fa-file-excel me-2"></i> Format Atitude Test
                 </a>
                 <div class="card border-0 shadow">
                     <div class="card-body">

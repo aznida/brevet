@@ -23,6 +23,10 @@ class QuestionsImport implements ToModel, WithHeadingRow
     */
     public function model(array $row)
     {
+        $isAttitudeExam = str_contains(strtolower($this->exam->title), 'attitude') || 
+                          str_contains(strtolower($this->exam->title), 'sikap') || 
+                          str_contains(strtolower($this->exam->title), 'akhlak');
+
         return new Question([
             'exam_id'       => $this->exam->id,
             'question'      => $row['question'],
@@ -32,7 +36,12 @@ class QuestionsImport implements ToModel, WithHeadingRow
             'option_3'      => $row['c'],
             'option_4'      => $row['d'],
             'option_5'      => $row['e'],
-            'answer'        => match(strtoupper($row['answer'])) {
+            'option_1_weight' => $isAttitudeExam ? ($row['a_bobot'] ?? null) : null,
+            'option_2_weight' => $isAttitudeExam ? ($row['b_bobot'] ?? null) : null,
+            'option_3_weight' => $isAttitudeExam ? ($row['c_bobot'] ?? null) : null,
+            'option_4_weight' => $isAttitudeExam ? ($row['d_bobot'] ?? null) : null,
+            'option_5_weight' => $isAttitudeExam ? ($row['e_bobot'] ?? null) : null,
+            'answer'        => $isAttitudeExam ? null : match(strtoupper($row['answer'])) {
                 'A' => '1',
                 'B' => '2',
                 'C' => '3',
