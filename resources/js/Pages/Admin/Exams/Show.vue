@@ -84,31 +84,31 @@
                                                     <li>
                                                         <span v-html="question.option_1" :class="{ 'text-success fw-bold': question.answer == '1' }"></span>
                                                         <span v-if="isAttitudeExam(exam.title)" class="text-muted ms-2 fst-italic">
-                                                            (Bobot: {{ question.option_1_weight || '0' }})
+                                                            (Bobot: <b>{{ Math.floor(question.option_1_weight) }}</b>)
                                                         </span>
                                                     </li>
                                                     <li>
                                                         <span v-html="question.option_2" :class="{ 'text-success fw-bold': question.answer == '2' }"></span>
                                                         <span v-if="isAttitudeExam(exam.title)" class="text-muted ms-2 fst-italic">
-                                                            (Bobot: {{ question.option_2_weight || '0' }})
+                                                            (Bobot: <b>{{ Math.floor(question.option_2_weight) }}</b>)
                                                         </span>
                                                     </li>
                                                     <li>
                                                         <span v-html="question.option_3" :class="{ 'text-success fw-bold': question.answer == '3' }"></span>
                                                         <span v-if="isAttitudeExam(exam.title)" class="text-muted ms-2 fst-italic">
-                                                            (Bobot: {{ question.option_3_weight || '0' }})
+                                                            (Bobot: <b>{{ Math.floor(question.option_3_weight) }}</b>)
                                                         </span>
                                                     </li>
                                                     <li>
                                                         <span v-html="question.option_4" :class="{ 'text-success fw-bold': question.answer == '4' }"></span>
                                                         <span v-if="isAttitudeExam(exam.title)" class="text-muted ms-2 fst-italic">
-                                                            (Bobot: {{ question.option_4_weight || '0' }})
+                                                            (Bobot: <b>{{ Math.floor(question.option_4_weight) }}</b>)
                                                         </span>
                                                     </li>
                                                     <li>
                                                         <span v-html="question.option_5" :class="{ 'text-success fw-bold': question.answer == '5' }"></span>
                                                         <span v-if="isAttitudeExam(exam.title)" class="text-muted ms-2 fst-italic">
-                                                            (Bobot: {{ question.option_5_weight || '0' }})
+                                                            (Bobot: <b>{{ Math.floor(question.option_5_weight) }}</b>)
                                                         </span>
                                                     </li>
                                                 </ol>
@@ -120,6 +120,17 @@
                                                         <span v-else-if="question.level === 'Expert'" class="badge bg-danger p-2">Expert 💎</span>
                                                         <span v-else style="color:danger; font-size:14px"><b>Belum ada Level</b></span>
                                                     </i>
+                                                    <span v-if="isAttitudeExam(exam.title)" class="ms-3">
+                                                        <i><b style="font-size:14px">Total Bobot : </b></i>
+                                                        <span :class="{
+                                                            'badge p-2': true,
+                                                            'bg-success': getTotalWeight(question) === 100,
+                                                            'bg-danger': getTotalWeight(question) < 100,
+                                                            'bg-warning': getTotalWeight(question) > 100
+                                                        }">
+                                                            {{ getTotalWeight(question) }}
+                                                        </span>
+                                                    </span>
                                                 </div>
                                             </template>
                                             <!-- Rating Scale Info -->
@@ -177,6 +188,16 @@
                        lowerTitle.includes('akhlak');
             };
 
+            const getTotalWeight = (question) => {
+                return Math.floor(
+                    Number(question.option_1_weight || 0) +
+                    Number(question.option_2_weight || 0) +
+                    Number(question.option_3_weight || 0) +
+                    Number(question.option_4_weight || 0) +
+                    Number(question.option_5_weight || 0)
+                );
+            };
+
             const destroy = (exam_id, question_id) => {
                 Swal.fire({
                     title: 'Apakah Anda yakin?',
@@ -203,7 +224,8 @@
 
             return {
                 destroy,
-                isAttitudeExam
+                isAttitudeExam,
+                getTotalWeight
             };
         }
     };

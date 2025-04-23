@@ -107,10 +107,14 @@
                         title: 'Perhatian!',
                         text: 'Pastikan total bobot untuk setiap soal sama dengan 100! Silakan periksa file Excel Anda terlebih dahulu.',
                         icon: 'warning',
-                        confirmButtonText: 'OK',
-                        allowOutsideClick: false
-                    }).then(() => {
-                        // Do nothing, let admin correct the file first
+                        showConfirmButton: true,
+                        confirmButtonText: 'Ya, Saya Sudah Cek',
+                        cancelButtonText: 'Batal',
+                        showCancelButton: true,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            uploadFile();
+                        }
                     });
                 } else {
                     uploadFile();
