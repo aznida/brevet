@@ -275,19 +275,39 @@ class ExamController extends Controller
         //get question
         $question = Question::find($request->question_id);
         
-        //cek apakah jawaban sudah benar
-        if($question->answer == $request->answer) {
-
-            //jawaban benar
+        //get exam category
+        $exam = $question->exam;
+        $category_title = strtolower($exam->category->title);
+        
+        //cek apakah kategori mengandung kata attitude/sikap/akhlak
+        if(str_contains($category_title, 'attitude') || 
+           str_contains($category_title, 'sikap') || 
+           str_contains($category_title, 'akhlak')) {
+            
+            //untuk ujian attitude, nilai jawaban adalah bobot nilai yang dipilih
             $result = 'Y';
+            $weight_field = 'option_' . $request->answer . '_weight';
+            
+            // Tambahkan pengecekan apakah field weight ada dan memiliki nilai
+            if (property_exists($question, $weight_field) && !is_null($question->$weight_field)) {
+                $answer_value = $question->$weight_field;
+            } else {
+                // Jika tidak ada bobot, gunakan nilai default (misalnya 1)
+                $answer_value = 1;
+            }
+            
         } else {
-
-            //jawaban salah
-            $result = 'N';
+            //untuk ujian biasa
+            if($question->answer == $request->answer) {
+                $result = 'Y';
+            } else {
+                $result = 'N';
+            }
+            $answer_value = $request->answer;
         }
 
         //get answer
-        $answer   = Answer::where('exam_id', $request->exam_id)
+        $answer = Answer::where('exam_id', $request->exam_id)
                     ->where('exam_session_id', $request->exam_session_id)
                     ->where('participant_id', auth()->guard('participant')->user()->id)
                     ->where('question_id', $request->question_id)
@@ -295,7 +315,7 @@ class ExamController extends Controller
 
         //update jawaban
         if($answer) {
-            $answer->answer     = $request->answer;
+            $answer->answer = $answer_value;
             $answer->is_correct = $result;
             $answer->update();
         }
@@ -312,32 +332,66 @@ class ExamController extends Controller
     public function endExam(Request $request)
     {
         //get exam group to get showqty
-        $exam_group = ExamGroup::with('exam')->find($request->exam_group_id);
+        $exam_group = ExamGroup::with('exam.category')->find($request->exam_group_id);
         
-        //count jawaban benar
-        $count_correct_answer = Answer::where('exam_id', $request->exam_id)
+        //get category title
+        $category_title = strtolower($exam_group->exam->category->title);
+        
+        //cek apakah kategori mengandung kata attitude/sikap/akhlak
+        if(str_contains($category_title, 'attitude') || 
+           str_contains($category_title, 'sikap') || 
+           str_contains($category_title, 'akhlak')) {
+            
+            //ambil semua jawaban
+            $answers = Answer::where('exam_id', $request->exam_id)
+                        ->where('exam_session_id', $request->exam_session_id)
+                        ->where('participant_id', auth()->guard('participant')->user()->id)
+                        ->get();
+            
+            //hitung total nilai dari bobot jawaban
+            $total_score = $answers->sum('answer');
+            
+            //hitung rata-rata dengan membagi total score dengan jumlah soal
+            $average_score = round($total_score / $exam_group->exam->showqty, 2);
+            
+            //update nilai di table grades
+            $grade = Grade::where('exam_id', $request->exam_id)
+                    ->where('exam_session_id', $request->exam_session_id)
+                    ->where('participant_id', auth()->guard('participant')->user()->id)
+                    ->first();
+            
+            $grade->end_time = Carbon::now();
+            $grade->total_correct = $total_score;
+            $grade->grade = $average_score;
+            $grade->exam_type = 'ujian_attitude';
+            $grade->update();
+            
+        } else {
+            //count jawaban benar
+            $count_correct_answer = Answer::where('exam_id', $request->exam_id)
                             ->where('exam_session_id', $request->exam_session_id)
                             ->where('participant_id', auth()->guard('participant')->user()->id)
                             ->where('is_correct', 'Y')
                             ->count();
 
-        //use showqty instead of total questions
-        $total_questions = $exam_group->exam->showqty;
+            //use showqty instead of total questions
+            $total_questions = $exam_group->exam->showqty;
 
-        //hitung nilai
-        $grade_exam = round($count_correct_answer/$total_questions*100, 2);
+            //hitung nilai
+            $grade_exam = round($count_correct_answer/$total_questions*100, 2);
 
-        //update nilai di table grades
-        $grade = Grade::where('exam_id', $request->exam_id)
-                ->where('exam_session_id', $request->exam_session_id)
-                ->where('participant_id', auth()->guard('participant')->user()->id)
-                ->first();
+            //update nilai di table grades
+            $grade = Grade::where('exam_id', $request->exam_id)
+                    ->where('exam_session_id', $request->exam_session_id)
+                    ->where('participant_id', auth()->guard('participant')->user()->id)
+                    ->first();
         
-        $grade->end_time        = Carbon::now();
-        $grade->total_correct   = $count_correct_answer;
-        $grade->grade          = $grade_exam;
-        $grade->exam_type      = $exam_group->exam->exam_type;
-        $grade->update();
+            $grade->end_time        = Carbon::now();
+            $grade->total_correct   = $count_correct_answer;
+            $grade->grade          = $grade_exam;
+            $grade->exam_type      = $exam_group->exam->exam_type;
+            $grade->update();
+        }
 
         //redirect hasil
         return redirect()->route('participant.exams.resultExam', $request->exam_group_id);
