@@ -105,7 +105,7 @@
                 if (isAttitudeExam) {
                     Swal.fire({
                         title: 'Perhatian!',
-                        text: 'Pastikan total bobot untuk setiap soal sama dengan 100! Silakan periksa file Excel Anda terlebih dahulu.',
+                        text: 'Pastikan total bobot untuk setiap jawaban tidak melebihi 100 atau tidak diisi! Silakan periksa file Excel Anda terlebih dahulu.',
                         icon: 'warning',
                         showConfirmButton: true,
                         confirmButtonText: 'Ya, Saya Sudah Cek',

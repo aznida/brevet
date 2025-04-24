@@ -154,12 +154,6 @@ class ExamController extends Controller
         // Get total questions to show
         $totalQuestions = $exam_group->exam->showqty;
         
-        // Calculate proportions for each level
-        $basicCount = ceil($totalQuestions * 0.30);      // 30% Basic
-        $intermediateCount = ceil($totalQuestions * 0.30); // 30% Intermediate
-        $advancedCount = ceil($totalQuestions * 0.30);    // 30% Advanced
-        $expertCount = $totalQuestions - ($basicCount + $intermediateCount + $advancedCount); // remaining for Expert
-
         // Get questions from answers table
         $questions = Answer::with('question')
             ->where('participant_id', auth()->guard('participant')->user()->id)
@@ -169,29 +163,45 @@ class ExamController extends Controller
                 return $item->question->level;
             });
 
-        // Initialize collection
-        $all_questions = collect();
+        // Hitung total soal yang tersedia
+        $availableQuestions = $questions->flatten()->count();
 
-        // Add Basic questions
-        if(isset($questions['Basic'])) {
-            $all_questions = $all_questions->concat($questions['Basic']->take($basicCount));
-        }
-        if(isset($questions['Intermediate'])) {
-            $all_questions = $all_questions->concat($questions['Intermediate']->take($intermediateCount));
-        }
-        if(isset($questions['Advanced'])) {
-            // If Expert questions don't exist, add extra Advanced questions to make up for it
-            $advancedToTake = isset($questions['Expert']) ? $advancedCount : ($advancedCount + $expertCount);
-            $all_questions = $all_questions->concat($questions['Advanced']->take($advancedToTake));
-        }
-        if(isset($questions['Expert'])) {
-            $all_questions = $all_questions->concat($questions['Expert']->take($expertCount));
-        }
-
-        // Ensure exact number of questions and proper ordering
-        $all_questions = $all_questions->take($totalQuestions)
+        // Jika total soal yang tersedia sama dengan showqty, tampilkan semua
+        if ($availableQuestions <= $totalQuestions) {
+            $all_questions = $questions->flatten()
                                      ->sortBy('question_order')
                                      ->values();
+        } else {
+            // Calculate proportions for each level
+            $basicCount = ceil($totalQuestions * 0.30);      // 30% Basic
+            $intermediateCount = ceil($totalQuestions * 0.30); // 30% Intermediate
+            $advancedCount = ceil($totalQuestions * 0.30);    // 30% Advanced
+            $expertCount = $totalQuestions - ($basicCount + $intermediateCount + $advancedCount); // remaining for Expert
+
+            // Initialize collection
+            $all_questions = collect();
+
+            // Add Basic questions
+            if(isset($questions['Basic'])) {
+                $all_questions = $all_questions->concat($questions['Basic']->take($basicCount));
+            }
+            if(isset($questions['Intermediate'])) {
+                $all_questions = $all_questions->concat($questions['Intermediate']->take($intermediateCount));
+            }
+            if(isset($questions['Advanced'])) {
+                // If Expert questions don't exist, add extra Advanced questions to make up for it
+                $advancedToTake = isset($questions['Expert']) ? $advancedCount : ($advancedCount + $expertCount);
+                $all_questions = $all_questions->concat($questions['Advanced']->take($advancedToTake));
+            }
+            if(isset($questions['Expert'])) {
+                $all_questions = $all_questions->concat($questions['Expert']->take($expertCount));
+            }
+
+            // Ensure exact number of questions and proper ordering
+            $all_questions = $all_questions->take($totalQuestions)
+                                         ->sortBy('question_order')
+                                         ->values();
+        }
 
         // Get question active based on available questions
         $question_active = $all_questions->where('question_order', $page)->first();
@@ -284,17 +294,9 @@ class ExamController extends Controller
            str_contains($category_title, 'sikap') || 
            str_contains($category_title, 'akhlak')) {
             
-            //untuk ujian attitude, nilai jawaban adalah bobot nilai yang dipilih
+            //untuk ujian attitude, nilai jawaban adalah nilai yang dipilih
             $result = 'Y';
-            $weight_field = 'option_' . $request->answer . '_weight';
-            
-            // Tambahkan pengecekan apakah field weight ada dan memiliki nilai
-            if (property_exists($question, $weight_field) && !is_null($question->$weight_field)) {
-                $answer_value = $question->$weight_field;
-            } else {
-                // Jika tidak ada bobot, gunakan nilai default (misalnya 1)
-                $answer_value = 1;
-            }
+            $answer_value = $request->answer; // Simpan jawaban asli yang dipilih
             
         } else {
             //untuk ujian biasa
@@ -303,7 +305,7 @@ class ExamController extends Controller
             } else {
                 $result = 'N';
             }
-            $answer_value = $request->answer;
+            $answer_value = $request->answer; // Simpan jawaban asli yang dipilih
         }
 
         //get answer
@@ -315,7 +317,7 @@ class ExamController extends Controller
 
         //update jawaban
         if($answer) {
-            $answer->answer = $answer_value;
+            $answer->answer = $answer_value; // Gunakan jawaban asli
             $answer->is_correct = $result;
             $answer->update();
         }
@@ -348,10 +350,19 @@ class ExamController extends Controller
                         ->where('participant_id', auth()->guard('participant')->user()->id)
                         ->get();
             
-            //hitung total nilai dari bobot jawaban
-            $total_score = $answers->sum('answer');
+            //hitung total nilai dari bobot jawaban berdasarkan pilihan
+            $total_score = $answers->sum(function($answer) {
+                // Ambil question untuk mendapatkan bobot
+                $question = $answer->question;
+                
+                // Ambil weight sesuai jawaban yang dipilih
+                $weight_field = 'option_' . $answer->answer . '_weight';
+                
+                // Return bobot sesuai pilihan, default 0 jika tidak ada bobot
+                return $question->$weight_field ?? 0;
+            });
             
-            //hitung rata-rata dengan membagi total score dengan jumlah soal
+            //hitung rata-rata dengan membagi total score dengan jumlah soal yang ditampilkan
             $average_score = round($total_score / $exam_group->exam->showqty, 2);
             
             //update nilai di table grades
@@ -361,8 +372,8 @@ class ExamController extends Controller
                     ->first();
             
             $grade->end_time = Carbon::now();
-            $grade->total_correct = $total_score;
-            $grade->grade = $average_score;
+            $grade->total_correct = null; // total dari bobot
+            $grade->grade = $average_score; // rata-rata dari bobot
             $grade->exam_type = 'ujian_attitude';
             $grade->update();
             
