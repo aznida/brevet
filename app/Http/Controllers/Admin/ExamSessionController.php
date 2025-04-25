@@ -8,8 +8,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Participant;
 use App\Models\ExamGroup;
-use App\Models\Question;
-
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 
 class ExamSessionController extends Controller
 {
@@ -249,68 +249,59 @@ class ExamSessionController extends Controller
         return redirect()->route('admin.exam_sessions.show', $exam_session->id);
     }
 
-    public function storeQuestion(Request $request, Exam $exam)
+    /**
+     * Send notifications to participants
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function sendNotifications()
     {
         try {
-            // Base validation rules
-            $rules = [
-                'question' => 'required',
-                'question_type' => 'required|in:multiple_choice,rating_scale',
-            ];
+            // Ambil data peserta unik dari exam_groups
+            $participants = DB::table('exam_groups')
+                ->join('participants', 'exam_groups.participant_id', '=', 'participants.id')
+                ->select('participants.email', 'participants.name', 'participants.nik', 'participants.password')
+                ->distinct()
+                ->get();
 
-            // Add specific validation rules based on question type
-            if ($request->question_type === 'multiple_choice') {
-                $rules = array_merge($rules, [
-                    'option_1' => 'required',
-                    'option_2' => 'required',
-                    'option_3' => 'required',
-                    'option_4' => 'required',
-                    'option_5' => 'required',
-                    'answer' => 'required',
-                ]);
+            foreach($participants as $participant) {
+                try {
+                    Mail::send('emails.participant_notification', [
+                        'name' => $participant->name,
+                        'nik' => $participant->nik,
+                        'password' => $participant->password,
+                        'url' => 'https://exam.tunerra.com/'
+                    ], function($message) use ($participant) {
+                        $message->to($participant->email)
+                                ->subject('🔔 Akses Aplikasi Brevetisasi MO DEFA')
+                                ->priority(1)
+                                ->from(config('mail.from.address'), config('mail.from.name'))
+                                ->replyTo(config('mail.from.address'), config('mail.from.name'));
+                    });
+                    
+                    sleep(rand(3, 7));
+                } catch (\Exception $e) {
+                    \Log::error('Gagal mengirim email ke ' . $participant->email . ': ' . $e->getMessage());
+                    continue; // Lanjutkan ke peserta berikutnya jika ada error
+                }
             }
 
-            // Validate request
-            $request->validate($rules);
+            return back()->with([
+                'type' => 'success',  // Gunakan 'type' bukan 'success'
+                'message' => 'Notifikasi berhasil dikirim ke semua peserta',
+                'details' => [
+                    'total' => $participants->count(),
+                    'timestamp' => now()->format('d M Y H:i:s')
+                ]
+            ]);
 
-            // Prepare question data
-            $questionData = [
-                'exam_id' => $exam->id,
-                'question' => $request->question,
-                'question_type' => $request->question_type,
-            ];
-
-            if ($request->question_type === 'multiple_choice') {
-                $questionData = array_merge($questionData, [
-                    'option_1' => $request->option_1,
-                    'option_2' => $request->option_2,
-                    'option_3' => $request->option_3,
-                    'option_4' => $request->option_4,
-                    'option_5' => $request->option_5,
-                    'answer' => $request->answer,
-                    'rating_scale' => null
-                ]);
-            } else {
-                // For rating scale questions
-                $questionData = array_merge($questionData, [
-                    'option_1' => null,
-                    'option_2' => null,
-                    'option_3' => null,
-                    'option_4' => null,
-                    'option_5' => null,
-                    'answer' => null,
-                    'rating_scale' => '6' // Fixed 6-point scale
-                ]);
-            }
-
-            // Create question
-            Question::create($questionData);
-
-            return redirect()->route('admin.exams.show', $exam->id);
-            
         } catch (\Exception $e) {
-            \Log::error('Error creating question: ' . $e->getMessage());
-            return back()->withErrors(['error' => 'Failed to create question: ' . $e->getMessage()]);
+            \Log::error('Error pada proses pengiriman email: ' . $e->getMessage());
+            return back()->with([
+                'success' => false,
+                'type' => 'error',
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ]);
         }
     }
 }

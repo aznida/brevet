@@ -60,6 +60,9 @@ Route::prefix('admin')->group(function() {
         //route resource exam_sessions    
         Route::resource('/exam_sessions', \App\Http\Controllers\Admin\ExamSessionController::class, ['as' => 'admin']);
         
+        //route untuk notifikasi email peserta (pindahkan ke sini, sebelum createEnrolled)
+        Route::get('/exam-sessions/send-notifications', [\App\Http\Controllers\Admin\ExamSessionController::class, 'sendNotifications'])->name('admin.exam_sessions.send-notifications');
+        
         //custom route for enrolled create
         Route::get('/exam_sessions/{exam_session}/enrolled/create', [\App\Http\Controllers\Admin\ExamSessionController::class, 'createEnrolled'])->name('admin.exam_sessions.createEnrolled');
 
@@ -171,4 +174,8 @@ Route::prefix('participant')->group(function() {
         Route::post('/exam-praktik-end', [ExamPraktikController::class, 'endExam'])
             ->name('participant.exam.praktik.end');
     });
+    
+    //route untuk notifikasi email peserta
+    // Ubah dari POST menjadi GET
+    Route::get('/exam_sessions/send-notifications', [ExamSessionController::class, 'sendNotifications'])->name('admin.exam_sessions.send-notifications');
 });
