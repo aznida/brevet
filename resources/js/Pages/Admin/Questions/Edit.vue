@@ -22,7 +22,7 @@
                                 <table class="table table-bordered table-centered table-nowrap mb-0 rounded">
                                     <tbody>
                                         <tr>
-                                            <td style="width:20%" class="fw-bold">Soal</td>
+                                            <td style="width:20%" class="fw-bold">Pilihan A</td>
                                             <td>
                                                 <QuillEditor theme="snow" v-model:content="form.option_1" contentType="html" />
                                                 <div v-if="exam.title.toLowerCase().includes('attitude') || exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
@@ -32,7 +32,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td style="width:20%" class="fw-bold">Pilihan A</td>
+                                            <td style="width:20%" class="fw-bold">Pilihan B</td>
                                             <td>
                                                 <QuillEditor theme="snow" v-model:content="form.option_2" contentType="html" />
                                                 <div v-if="exam.title.toLowerCase().includes('attitude') || exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
@@ -96,15 +96,6 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                                
-                                <!-- Add weight validation warning -->
-                                <div v-if="exam.title.toLowerCase().includes('attitude') || exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" 
-                                    class="alert" :class="totalWeight === 100 ? 'alert-success' : 'alert-danger'" role="alert">
-                                    Total Bobot: {{ totalWeight }}%
-                                    <div v-if="totalWeight !== 100">
-                                        Total bobot harus sama dengan 100!
-                                    </div>
-                                </div>
                             </div>
 
                             <!-- Rating Scale Form -->
@@ -208,23 +199,9 @@
             });
         
             const submit = () => {
-                // Add weight validation before submit
-                if ((props.exam.title.toLowerCase().includes('attitude') || 
-                     props.exam.title.toLowerCase().includes('sikap') || 
-                     props.exam.title.toLowerCase().includes('akhlak')) && 
-                    totalWeight.value !== 100) {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Total bobot harus sama dengan 100!',
-                        icon: 'error',
-                        confirmButtonText: 'Ok'
-                    });
-                    return;
-                }
-                
                 const formData = {
                     question: form.question,
-                    question_type: props.exam.exam_type, // Use exam type directly
+                    question_type: props.exam.exam_type,
                 };
         
                 if (props.exam.exam_type === 'multiple_choice') {

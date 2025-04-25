@@ -49,8 +49,18 @@
                                         :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]"
                                     />
                                     <div v-if="exam.title.toLowerCase().includes('attitude')|| exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
-                                        <label>Bobot Pilihan A</label>
-                                        <input type="number" class="form-control" v-model="form.option_1_weight" min="0" max="100" />
+                                        <label>Bobot Pilihan A (0~100)</label>
+                                        <input 
+                                            type="number" 
+                                            class="form-control" 
+                                            v-model="form.option_1_weight" 
+                                            min="0" 
+                                            max="100"
+                                            @input="validateInput($event, 'option_1_weight')"
+                                        />
+                                        <div v-if="weightErrors.option_1_weight" class="text-danger mt-1">
+                                            {{ weightErrors.option_1_weight }}
+                                        </div>
                                     </div>
                                     <div v-if="errors.option_1" class="alert alert-danger mt-2">{{ errors.option_1 }}</div>
                                 </div>
@@ -63,8 +73,18 @@
                                         :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]"
                                     />
                                     <div v-if="exam.title.toLowerCase().includes('attitude')|| exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
-                                        <label>Bobot Pilihan B</label>
-                                        <input type="number" class="form-control" v-model="form.option_2_weight" min="0" max="100" />
+                                        <label>Bobot Pilihan B (0~100)</label>
+                                        <input 
+                                            type="number" 
+                                            class="form-control" 
+                                            v-model="form.option_2_weight" 
+                                            min="0" 
+                                            max="100"
+                                            @input="validateInput($event, 'option_2_weight')"
+                                        />
+                                        <div v-if="weightErrors.option_2_weight" class="text-danger mt-1">
+                                            {{ weightErrors.option_2_weight }}
+                                        </div>
                                     </div>
                                     <div v-if="errors.option_2" class="alert alert-danger mt-2">{{ errors.option_2 }}</div>
                                 </div>
@@ -72,8 +92,18 @@
                                     <label>Pilihan C</label>
                                     <QuillEditor v-model:content="form.option_3" contentType="html" theme="snow" :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]" />
                                     <div v-if="exam.title.toLowerCase().includes('attitude')|| exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
-                                        <label>Bobot Pilihan C</label>
-                                        <input type="number" class="form-control" v-model="form.option_3_weight" min="0" max="100" />
+                                        <label>Bobot Pilihan C (0~100)</label>
+                                        <input 
+                                            type="number" 
+                                            class="form-control" 
+                                            v-model="form.option_3_weight" 
+                                            min="0" 
+                                            max="100"
+                                            @input="validateInput($event, 'option_3_weight')"
+                                        />
+                                        <div v-if="weightErrors.option_3_weight" class="text-danger mt-1">
+                                            {{ weightErrors.option_3_weight }}
+                                        </div>
                                     </div>
                                     <div v-if="errors.option_3" class="alert alert-danger mt-2">{{ errors.option_3 }}</div>
                                 </div>
@@ -81,8 +111,18 @@
                                     <label>Pilihan D</label>
                                     <QuillEditor v-model:content="form.option_4" contentType="html" theme="snow" :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]" />
                                     <div v-if="exam.title.toLowerCase().includes('attitude')|| exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
-                                        <label>Bobot Pilihan D</label>
-                                        <input type="number" class="form-control" v-model="form.option_4_weight" min="0" max="100" />
+                                        <label>Bobot Pilihan D (0~100)</label>
+                                        <input 
+                                            type="number" 
+                                            class="form-control" 
+                                            v-model="form.option_4_weight" 
+                                            min="0" 
+                                            max="100"
+                                            @input="validateInput($event, 'option_4_weight')"
+                                        />
+                                        <div v-if="weightErrors.option_4_weight" class="text-danger mt-1">
+                                            {{ weightErrors.option_4_weight }}
+                                        </div>
                                     </div>
                                     <div v-if="errors.option_4" class="alert alert-danger mt-2">{{ errors.option_4 }}</div>
                                 </div>
@@ -90,19 +130,22 @@
                                     <label>Pilihan E</label>
                                     <QuillEditor v-model:content="form.option_5" contentType="html" theme="snow" :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]" />
                                     <div v-if="exam.title.toLowerCase().includes('attitude')|| exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
-                                        <label>Bobot Pilihan E</label>
-                                        <input type="number" class="form-control" v-model="form.option_5_weight" min="0" max="100" />
+                                        <label>Bobot Pilihan E (0~100)</label>
+                                        <input 
+                                            type="number" 
+                                            class="form-control" 
+                                            v-model="form.option_5_weight" 
+                                            min="0" 
+                                            max="100"
+                                            @input="validateInput($event, 'option_5_weight')"
+                                        />
+                                        <div v-if="weightErrors.option_5_weight" class="text-danger mt-1">
+                                            {{ weightErrors.option_5_weight }}
+                                        </div>
                                     </div>
                                     <div v-if="errors.option_5" class="alert alert-danger mt-2">{{ errors.option_5 }}</div>
                                 </div>
-                                <!-- Add weight validation warning -->
-                                <div v-if="exam.title.toLowerCase().includes('attitude') || exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" 
-                                    class="alert" :class="totalWeight === 100 ? 'alert-success' : 'alert-danger'" role="alert">
-                                    Total Bobot: {{ totalWeight }}
-                                    <div v-if="totalWeight !== 100">
-                                        Total bobot harus sama dengan 100!
-                                    </div>
-                                </div>
+                                
                                 <div class="row">
                                     <div class="col-md-6" v-if="!exam.title.toLowerCase().includes('attitude') && !exam.title.toLowerCase().includes('sikap') && !exam.title.toLowerCase().includes('akhlak')">
                                         <div class="mb-4">
@@ -185,6 +228,13 @@ export default {
     // In the setup function, add the weight fields to the form
     setup(props) {
         const examType = props.exam.exam_type;
+        const weightErrors = reactive({
+            option_1_weight: null,
+            option_2_weight: null,
+            option_3_weight: null,
+            option_4_weight: null,
+            option_5_weight: null
+        });
         
         const form = reactive({
             question: '',
@@ -203,35 +253,89 @@ export default {
             level: null,
             rating_scale: examType === 'rating_scale' ? '6' : null
         });
-    
-        // Update submit function to include weights
-        // Add computed property for total weight
-        const totalWeight = computed(() => {
+
+        const validateWeight = (weight) => {
+            // Mengubah validasi untuk mengizinkan nilai 0
+            if (weight === null || weight === '') {
+                return 'Bobot harus diisi';
+            }
+            // Menggunakan Number untuk memastikan perbandingan numerik yang benar
+            const numWeight = Number(weight);
+            if (isNaN(numWeight) || numWeight < 0 || numWeight > 100) {
+                return 'Bobot harus antara 0 sampai 100';
+            }
+            return null;
+        };
+
+        const validateInput = (event, field) => {
+            // Mengubah validasi untuk mengizinkan nilai 0
+            const value = event.target.value;
+            
+            if (value === null || value === '') {
+                weightErrors[field] = 'Bobot harus diisi';
+                form[field] = null;
+                return;
+            }
+
+            const numValue = Number(value);
+            if (numValue > 100) {
+                weightErrors[field] = 'Nilai tidak boleh lebih dari 100';
+                event.target.value = 100;
+                form[field] = 100;
+            } else if (numValue < 0) {
+                weightErrors[field] = 'Nilai tidak boleh kurang dari 0';
+                event.target.value = 0;
+                form[field] = 0;
+            } else {
+                weightErrors[field] = null;
+                form[field] = numValue;
+            }
+        };
+
+        const submit = () => {
             if (props.exam.title.toLowerCase().includes('attitude') || 
                 props.exam.title.toLowerCase().includes('sikap') || 
                 props.exam.title.toLowerCase().includes('akhlak')) {
-                return Number(form.option_1_weight || 0) +
-                       Number(form.option_2_weight || 0) +
-                       Number(form.option_3_weight || 0) +
-                       Number(form.option_4_weight || 0) +
-                       Number(form.option_5_weight || 0);
-            }
-            return 0;
-        });
+                
+                let emptyWeights = [];
+                
+                // Mengubah pengecekan untuk mengizinkan nilai 0
+                if (form.option_1_weight === null || form.option_1_weight === '') emptyWeights.push('A');
+                if (form.option_2_weight === null || form.option_2_weight === '') emptyWeights.push('B');
+                if (form.option_3_weight === null || form.option_3_weight === '') emptyWeights.push('C');
+                if (form.option_4_weight === null || form.option_4_weight === '') emptyWeights.push('D');
+                if (form.option_5_weight === null || form.option_5_weight === '') emptyWeights.push('E');
 
-        const submit = () => {
-            // Add weight validation before submit
-            if ((props.exam.title.toLowerCase().includes('attitude') || 
-                 props.exam.title.toLowerCase().includes('sikap') || 
-                 props.exam.title.toLowerCase().includes('akhlak')) && 
-                totalWeight.value !== 100) {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Total bobot harus sama dengan 100!',
-                    icon: 'error',
-                    confirmButtonText: 'Ok'
-                });
-                return;
+                if (emptyWeights.length > 0) {
+                    Swal.fire({
+                        title: 'Peringatan!',
+                        text: `Bobot untuk pilihan ${emptyWeights.join(', ')} belum diisi!`,
+                        icon: 'warning',
+                        showConfirmButton: true
+                    });
+                    return;
+                }
+
+                // Validasi nilai bobot
+                const weightErrors = {
+                    option_1_weight: validateWeight(form.option_1_weight),
+                    option_2_weight: validateWeight(form.option_2_weight),
+                    option_3_weight: validateWeight(form.option_3_weight),
+                    option_4_weight: validateWeight(form.option_4_weight),
+                    option_5_weight: validateWeight(form.option_5_weight)
+                };
+
+                const hasErrors = Object.values(weightErrors).some(error => error !== null);
+                
+                if (hasErrors) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Mohon periksa kembali bobot nilai yang dimasukkan',
+                        icon: 'error',
+                        showConfirmButton: true
+                    });
+                    return;
+                }
             }
 
             const formData = {
@@ -284,9 +388,10 @@ export default {
         return {
             form,
             submit,
+            validateInput,
+            weightErrors,
             isMultipleChoice: examType === 'multiple_choice',
-            isRatingScale: examType === 'rating_scale',
-            totalWeight
+            isRatingScale: examType === 'rating_scale'
         };
     }
 }

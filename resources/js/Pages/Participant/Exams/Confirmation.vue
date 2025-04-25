@@ -70,7 +70,7 @@
                         </Link>
                         <Link 
                             v-else
-                            :href="`/participant/exams/start/${exam_group.id}`"
+                            :href="`/participant/exam-start/${exam_group.id}`"
                             class="btn btn-md btn-success border-0 shadow w-100 mt-2 text-white">
                             Mulai
                         </Link>

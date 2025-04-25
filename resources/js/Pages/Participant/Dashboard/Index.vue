@@ -11,7 +11,7 @@
     </div>
     <div class="row" v-if="exam_groups.length > 0">
         <div class="col-md-6" v-for="(data, index) in exam_groups" :key="index">
-            <div class="card border-0 shadow">
+            <div class="card border-0 shadow mb-3">
                 <div class="card-body">
                     <h5>{{ data.exam_group.exam.title }}</h5>
                     <hr>

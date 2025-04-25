@@ -49,15 +49,17 @@
                                 </tr>
                             </thead>
                             <tbody v-if="exam_group.exam.show_answer == 'Y'">
-                                    <tr>
-                                        <td class="fw-bold">Jumlah Benar</td>
-                                        <td>{{  grade.total_correct  }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-bold">Nilai</td>
-                                        <td>{{  grade.grade  }}</td>
-                                    </tr>
-                                </tbody>
+                                <tr v-if="!exam_group.exam.category.title.toLowerCase().includes('attitude') && 
+                                        !exam_group.exam.category.title.toLowerCase().includes('sikap') && 
+                                        !exam_group.exam.category.title.toLowerCase().includes('akhlak')">
+                                    <td class="fw-bold">Jumlah Benar</td>
+                                    <td>{{ grade.total_correct }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Nilai</td>
+                                    <td>{{ grade.grade }}</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>    
                 </div>

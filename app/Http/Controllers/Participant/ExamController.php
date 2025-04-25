@@ -154,12 +154,6 @@ class ExamController extends Controller
         // Get total questions to show
         $totalQuestions = $exam_group->exam->showqty;
         
-        // Calculate proportions for each level
-        $basicCount = ceil($totalQuestions * 0.30);      // 30% Basic
-        $intermediateCount = ceil($totalQuestions * 0.30); // 30% Intermediate
-        $advancedCount = ceil($totalQuestions * 0.30);    // 30% Advanced
-        $expertCount = $totalQuestions - ($basicCount + $intermediateCount + $advancedCount); // remaining for Expert
-
         // Get questions from answers table
         $questions = Answer::with('question')
             ->where('participant_id', auth()->guard('participant')->user()->id)
@@ -169,29 +163,45 @@ class ExamController extends Controller
                 return $item->question->level;
             });
 
-        // Initialize collection
-        $all_questions = collect();
+        // Hitung total soal yang tersedia
+        $availableQuestions = $questions->flatten()->count();
 
-        // Add Basic questions
-        if(isset($questions['Basic'])) {
-            $all_questions = $all_questions->concat($questions['Basic']->take($basicCount));
-        }
-        if(isset($questions['Intermediate'])) {
-            $all_questions = $all_questions->concat($questions['Intermediate']->take($intermediateCount));
-        }
-        if(isset($questions['Advanced'])) {
-            // If Expert questions don't exist, add extra Advanced questions to make up for it
-            $advancedToTake = isset($questions['Expert']) ? $advancedCount : ($advancedCount + $expertCount);
-            $all_questions = $all_questions->concat($questions['Advanced']->take($advancedToTake));
-        }
-        if(isset($questions['Expert'])) {
-            $all_questions = $all_questions->concat($questions['Expert']->take($expertCount));
-        }
-
-        // Ensure exact number of questions and proper ordering
-        $all_questions = $all_questions->take($totalQuestions)
+        // Jika total soal yang tersedia sama dengan showqty, tampilkan semua
+        if ($availableQuestions <= $totalQuestions) {
+            $all_questions = $questions->flatten()
                                      ->sortBy('question_order')
                                      ->values();
+        } else {
+            // Calculate proportions for each level
+            $basicCount = ceil($totalQuestions * 0.30);      // 30% Basic
+            $intermediateCount = ceil($totalQuestions * 0.30); // 30% Intermediate
+            $advancedCount = ceil($totalQuestions * 0.30);    // 30% Advanced
+            $expertCount = $totalQuestions - ($basicCount + $intermediateCount + $advancedCount); // remaining for Expert
+
+            // Initialize collection
+            $all_questions = collect();
+
+            // Add Basic questions
+            if(isset($questions['Basic'])) {
+                $all_questions = $all_questions->concat($questions['Basic']->take($basicCount));
+            }
+            if(isset($questions['Intermediate'])) {
+                $all_questions = $all_questions->concat($questions['Intermediate']->take($intermediateCount));
+            }
+            if(isset($questions['Advanced'])) {
+                // If Expert questions don't exist, add extra Advanced questions to make up for it
+                $advancedToTake = isset($questions['Expert']) ? $advancedCount : ($advancedCount + $expertCount);
+                $all_questions = $all_questions->concat($questions['Advanced']->take($advancedToTake));
+            }
+            if(isset($questions['Expert'])) {
+                $all_questions = $all_questions->concat($questions['Expert']->take($expertCount));
+            }
+
+            // Ensure exact number of questions and proper ordering
+            $all_questions = $all_questions->take($totalQuestions)
+                                         ->sortBy('question_order')
+                                         ->values();
+        }
 
         // Get question active based on available questions
         $question_active = $all_questions->where('question_order', $page)->first();
@@ -275,19 +285,31 @@ class ExamController extends Controller
         //get question
         $question = Question::find($request->question_id);
         
-        //cek apakah jawaban sudah benar
-        if($question->answer == $request->answer) {
-
-            //jawaban benar
+        //get exam category
+        $exam = $question->exam;
+        $category_title = strtolower($exam->category->title);
+        
+        //cek apakah kategori mengandung kata attitude/sikap/akhlak
+        if(str_contains($category_title, 'attitude') || 
+           str_contains($category_title, 'sikap') || 
+           str_contains($category_title, 'akhlak')) {
+            
+            //untuk ujian attitude, nilai jawaban adalah nilai yang dipilih
             $result = 'Y';
+            $answer_value = $request->answer; // Simpan jawaban asli yang dipilih
+            
         } else {
-
-            //jawaban salah
-            $result = 'N';
+            //untuk ujian biasa
+            if($question->answer == $request->answer) {
+                $result = 'Y';
+            } else {
+                $result = 'N';
+            }
+            $answer_value = $request->answer; // Simpan jawaban asli yang dipilih
         }
 
         //get answer
-        $answer   = Answer::where('exam_id', $request->exam_id)
+        $answer = Answer::where('exam_id', $request->exam_id)
                     ->where('exam_session_id', $request->exam_session_id)
                     ->where('participant_id', auth()->guard('participant')->user()->id)
                     ->where('question_id', $request->question_id)
@@ -295,7 +317,7 @@ class ExamController extends Controller
 
         //update jawaban
         if($answer) {
-            $answer->answer     = $request->answer;
+            $answer->answer = $answer_value; // Gunakan jawaban asli
             $answer->is_correct = $result;
             $answer->update();
         }
@@ -312,32 +334,75 @@ class ExamController extends Controller
     public function endExam(Request $request)
     {
         //get exam group to get showqty
-        $exam_group = ExamGroup::with('exam')->find($request->exam_group_id);
+        $exam_group = ExamGroup::with('exam.category')->find($request->exam_group_id);
         
-        //count jawaban benar
-        $count_correct_answer = Answer::where('exam_id', $request->exam_id)
+        //get category title
+        $category_title = strtolower($exam_group->exam->category->title);
+        
+        //cek apakah kategori mengandung kata attitude/sikap/akhlak
+        if(str_contains($category_title, 'attitude') || 
+           str_contains($category_title, 'sikap') || 
+           str_contains($category_title, 'akhlak')) {
+            
+            //ambil semua jawaban
+            $answers = Answer::where('exam_id', $request->exam_id)
+                        ->where('exam_session_id', $request->exam_session_id)
+                        ->where('participant_id', auth()->guard('participant')->user()->id)
+                        ->get();
+            
+            //hitung total nilai dari bobot jawaban berdasarkan pilihan
+            $total_score = $answers->sum(function($answer) {
+                // Ambil question untuk mendapatkan bobot
+                $question = $answer->question;
+                
+                // Ambil weight sesuai jawaban yang dipilih
+                $weight_field = 'option_' . $answer->answer . '_weight';
+                
+                // Return bobot sesuai pilihan, default 0 jika tidak ada bobot
+                return $question->$weight_field ?? 0;
+            });
+            
+            //hitung rata-rata dengan membagi total score dengan jumlah soal yang ditampilkan
+            $average_score = round($total_score / $exam_group->exam->showqty, 2);
+            
+            //update nilai di table grades
+            $grade = Grade::where('exam_id', $request->exam_id)
+                    ->where('exam_session_id', $request->exam_session_id)
+                    ->where('participant_id', auth()->guard('participant')->user()->id)
+                    ->first();
+            
+            $grade->end_time = Carbon::now();
+            $grade->total_correct = null; // total dari bobot
+            $grade->grade = $average_score; // rata-rata dari bobot
+            $grade->exam_type = 'ujian_attitude';
+            $grade->update();
+            
+        } else {
+            //count jawaban benar
+            $count_correct_answer = Answer::where('exam_id', $request->exam_id)
                             ->where('exam_session_id', $request->exam_session_id)
                             ->where('participant_id', auth()->guard('participant')->user()->id)
                             ->where('is_correct', 'Y')
                             ->count();
 
-        //use showqty instead of total questions
-        $total_questions = $exam_group->exam->showqty;
+            //use showqty instead of total questions
+            $total_questions = $exam_group->exam->showqty;
 
-        //hitung nilai
-        $grade_exam = round($count_correct_answer/$total_questions*100, 2);
+            //hitung nilai
+            $grade_exam = round($count_correct_answer/$total_questions*100, 2);
 
-        //update nilai di table grades
-        $grade = Grade::where('exam_id', $request->exam_id)
-                ->where('exam_session_id', $request->exam_session_id)
-                ->where('participant_id', auth()->guard('participant')->user()->id)
-                ->first();
+            //update nilai di table grades
+            $grade = Grade::where('exam_id', $request->exam_id)
+                    ->where('exam_session_id', $request->exam_session_id)
+                    ->where('participant_id', auth()->guard('participant')->user()->id)
+                    ->first();
         
-        $grade->end_time        = Carbon::now();
-        $grade->total_correct   = $count_correct_answer;
-        $grade->grade          = $grade_exam;
-        $grade->exam_type      = $exam_group->exam->exam_type;
-        $grade->update();
+            $grade->end_time        = Carbon::now();
+            $grade->total_correct   = $count_correct_answer;
+            $grade->grade          = $grade_exam;
+            $grade->exam_type      = $exam_group->exam->exam_type;
+            $grade->update();
+        }
 
         //redirect hasil
         return redirect()->route('participant.exams.resultExam', $request->exam_group_id);
