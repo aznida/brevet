@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Exam;
 use App\Models\Participant;
 use App\Models\Area;
-use App\Models\ExamSession;
+use App\Models\ExamSession; 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -62,7 +62,7 @@ class DashboardController extends Controller
                     // Define all weights
                     $weights = [
                         'multiple_choice' => 0.35,
-                        'rating_scale' => 0.15,
+                        'ujian_attitude' => 0.15,
                         'ujian_pratik' => 0.50
                     ];
 

@@ -21,8 +21,13 @@
                             </div>
                         </form>
                     </div>
-
                 </div>
+            </div>
+            <div class="col-md-3 col-12 mb-2 text-end">
+                <button @click="sendNotifications" :class="['btn btn-md border-0 shadow w-100 text-white', isLoading ? 'btn-warning' : 'btn-success']" type="button" :disabled="isLoading">
+                    <i :class="['fa', isLoading ? 'fa-spinner fa-spin' : 'fa-bell']"></i> 
+                    {{ isLoading ? 'Sedang Proses Kirim Email...' : 'Notif ke Peserta' }}
+                </button>
             </div>
         </div>
         <div class="row mt-1">
@@ -115,6 +120,8 @@
 
         //inisialisasi composition API
         setup() {
+            //define state loading
+            const isLoading = ref(false);
 
             //define state search
             const search = ref('' || (new URL(document.location)).searchParams.get('q'));
@@ -156,18 +163,136 @@
                 })
             }
 
-            //return
+            //define method send notifications
+            const sendNotifications = () => {
+                Swal.fire({
+                    title: 'Kirim Notifikasi',
+                    text: "Apakah Anda yakin ingin mengirim notifikasi ke semua peserta?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, Kirim!',
+                    cancelButtonText: 'Batal'
+                })
+                .then((result) => {
+                    if (result.isConfirmed) {
+                        isLoading.value = true;
+                        
+                        router.get('/admin/exam-sessions/send-notifications', {}, {
+                            onSuccess: (page) => {
+                                isLoading.value = false;
+                                
+                                // Debug untuk melihat isi response
+                                console.log('Response:', page.props?.flash);
+                                
+                                // Periksa apakah ada flash message
+                                const flash = page.props?.flash;
+                                
+                                if (flash && typeof flash === 'object') {
+                                    if (flash.type === 'success') {  // Ubah pengecekan ke flash.type
+                                        Swal.fire({
+                                            title: '<div class="text-success"><strong>Berhasil!</strong></div>',
+                                            html: `
+                                                <div class="text-center">
+                                                    <div class="mb-4">
+                                                        <i class="fa fa-envelope-open-text text-success fa-4x mb-3"></i>
+                                                        <div class="checkmark-circle">
+                                                            <i class="fa fa-check text-white"></i>
+                                                        </div>
+                                                    </div>
+                                                    <h4 class="mb-3">Email Terkirim!</h4>
+                                                    <p class="mb-2">${flash.message}</p>
+                                                    <small class="text-muted">Total: ${flash.details?.total} peserta | ${flash.details?.timestamp}</small>
+                                                </div>
+                                            `,
+                                            icon: false,
+                                            timer: 3000,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false,
+                                            customClass: {
+                                                popup: 'animated bounceIn'
+                                            }
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            title: 'Gagal!',
+                                            text: flash.message || 'Terjadi kesalahan saat mengirim notifikasi',
+                                            icon: 'error',
+                                            timer: 3000,
+                                            showConfirmButton: false
+                                        });
+                                    }
+                                }
+                            },
+                            onError: (error) => {
+                                isLoading.value = false;
+                                console.error('Error:', error);  // Tambahkan logging
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: error?.message || 'Terjadi kesalahan saat mengirim notifikasi',
+                                    icon: 'error',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+
             return {
                 search,
                 handleSearch,
-                destroy
+                destroy,
+                sendNotifications,
+                isLoading  // tambahkan isLoading ke return statement
             }
-
         }
     }
 
 </script>
 
-<style>
+<style scoped>
 
+.checkmark-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 25px;
+    height: 25px;
+    background-color: #28a745;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -30px;
+    margin-left: 30px;
+}
+
+.animated {
+    animation-duration: 0.5s;
+    animation-fill-mode: both;
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.05); }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.bounceIn {
+    animation-name: bounceIn;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake {
+    animation-name: shake;
+}
 </style>
