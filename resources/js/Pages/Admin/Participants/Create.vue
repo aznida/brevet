@@ -14,36 +14,51 @@
 
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="mb-4">
-                                        <label>NIK</label> 
-                                        <input type="text" class="form-control" placeholder="Masukkan NIK Partisipan" v-model="form.nik">
-                                        <div v-if="errors.nik" class="alert alert-danger mt-2">
-                                            {{ errors.nik }}
-                                        </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">NIK</label>
+                                        <input type="text" class="form-control" v-model="form.nik" placeholder="NIK Participant">
                                     </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Nama</label>
+                                        <input type="text" class="form-control" v-model="form.name" placeholder="Nama Participant">
+                                    </div>
+                                    
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Tanggal Lahir</label>
+                                        <input type="date" class="form-control" v-model="form.tanggal_lahir" @change="calculateAge">
+                                    </div>
+
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="mb-4">
-                                        <label>Nama Lengkap</label> 
-                                        <input type="text" class="form-control" placeholder="Masukkan Nama Partisipan" v-model="form.name">
-                                        <div v-if="errors.name" class="alert alert-danger mt-2">
-                                            {{ errors.name }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-4">
+                                    <div class="mb-3">
                                         <label>Email</label> 
                                         <input type="text" class="form-control" placeholder="Masukkan Email Partisipan" v-model="form.email">
                                         <div v-if="errors.email" class="alert alert-danger mt-2">
                                             {{ errors.email }}
                                         </div>
                                     </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Masa Kerja (Tahun)</label>
+                                        <input 
+                                            type="number" 
+                                            class="form-control" 
+                                            v-model="form.masa_kerja" 
+                                            placeholder="Contoh: 5"
+                                            min="0"
+                                        >
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Usia</label>
+                                        <input type="text" class="form-control" :value="usia + ' Tahun'" readonly>
+                                    </div>
+
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="mb-4">
+                                    <div class="mb-3">
                                         <label>Nomor Handphone</label> 
                                         <input type="text" class="form-control" placeholder="Masukkan No. Hp Partisipan" v-model="form.hp">
                                         <div v-if="errors.hp" class="alert alert-danger mt-2">
@@ -51,11 +66,24 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label>Jenis Kelamin</label>
+                                        <select class="form-select" v-model="form.gender">
+                                            <option value="Laki-laki">Laki-laki</option>
+                                            <option value="Perempuan">Perempuan</option>
+                                        </select>
+                                        <div v-if="errors.gender" class="alert alert-danger mt-2">
+                                            {{ errors.gender }}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
+                            <hr>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="mb-4">
+                                    <div class="mb-3">
                                         <label>TREG - Area Ujian</label> 
                                         <select class="form-select" v-model="form.area_id">
                                             <option v-for="(area, index) in areas" :key="index" :value="area.id">{{ area.title }}</option>
@@ -66,7 +94,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="mb-4">
+                                    <div class="mb-3">
                                         <label>Witel/Kota</label> 
                                         <input type="text" class="form-control" placeholder="Masukkan Witel / Kota" v-model="form.witel">
                                         <div v-if="errors.witel" class="alert alert-danger mt-2">
@@ -75,7 +103,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="mb-4">
+                                    <div class="mb-3">
                                         <label>Job Role</label> 
                                         <select class="form-select" v-model="form.role">
                                             <option value="Teknisi">Teknisi</option>
@@ -87,7 +115,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="mb-4">
+                                    <div class="mb-3">
                                         <label>Status</label> 
                                         <select class="form-select" v-model="form.status">
                                             <option value="Aktif">Aktif</option>
@@ -98,23 +126,11 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="mb-4">
-                                        <label>Jenis Kelamin</label> 
-                                        <select class="form-select" v-model="form.gender">
-                                            <option value="L">Laki - Laki</option>
-                                            <option value="P">Perempuan</option>
-                                        </select>
-                                        <div v-if="errors.gender" class="alert alert-danger mt-2">
-                                            {{ errors.gender }}
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="mb-4">
+                                    <div class="mb-3">
                                         <label>Password</label> 
                                         <input type="password" class="form-control" placeholder="Masukkan Password" v-model="form.password">
                                         <div v-if="errors.password" class="alert alert-danger mt-2">
@@ -123,7 +139,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="mb-4">
+                                    <div class="mb-3">
                                         <label>Konfirmasi Password</label> 
                                         <input type="password" class="form-control" placeholder="Masukkan Konfirmasi Password" v-model="form.password_confirmation">
                                     </div>
@@ -142,46 +158,35 @@
 </template>
 
 <script>
-    //import layout
-    import LayoutAdmin from '../../../Layouts/Admin.vue';
+//import
+import { router } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
+import LayoutAdmin from '../../../Layouts/Admin.vue';
 
-    //import Heade and Link from Inertia
-    import {
+export default {
+    //layout
+    layout: LayoutAdmin,
+
+    //components
+    components: {
         Head,
-        Link,
-        router
-    } from '@inertiajs/vue3';
+        Link
+    },
 
-    //import reactive from vue
-    import { reactive } from 'vue';
+    //props
+    props: {
+        errors: Object,
+        areas: Array,
+    },
 
-    //import sweet alert2
-    import Swal from 'sweetalert2';
-
-    export default {
-
-        //layout
-        layout: LayoutAdmin,
-
-        //register components
-        components: {
-            Head,
-            Link
-        },
-
-        //props
-        props: {
-            errors: Object,
-            areas: Array,
-        },
-
-        //inisialisasi composition API
-        setup() {
-
-            //define form with reactive
-            const form = reactive({
+    //data function
+    data() {
+        return {
+            form: {
                 nik: '',
                 name: '',
+                masa_kerja: '',
+                tanggal_lahir: '',  // Will automatically be in YYYY-MM-DD format from date input
                 email: '',
                 hp: '',
                 witel: '',
@@ -191,50 +196,60 @@
                 status: '',
                 password: '',
                 password_confirmation: ''
-            });
-
-            //method "submit"
-            const submit = () => {
-
-                //send data to server
-                router.post('/admin/participants', {
-                    //data
-                    nik: form.nik,
-                    name: form.name,
-                    email: form.email,
-                    hp: form.hp,
-                    witel: form.witel,
-                    area_id: form.area_id,
-                    gender: form.gender,
-                    role: form.role,
-                    status: form.status,
-                    password: form.password,
-                    password_confirmation: form.password_confirmation
-                }, {
-                    onSuccess: () => {
-                        //show success alert
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Partisipan Berhasil Disimpan.',
-                            icon: 'success',
-                            showConfirmButton: false,
-                            timer: 2000
-                        });
-                    },
-                });
-
-            }
-
-            //return
-            return {
-                form,
-                submit,
-            };
-
+            },
+            usia: ''
         }
+    },
 
+    //methods
+    methods: {
+        calculateAge() {
+            if (this.form.tanggal_lahir) {
+                const birthDate = new Date(this.form.tanggal_lahir); // Date is already in YYYY-MM-DD format
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                
+                this.usia = age;
+            } else {
+                this.usia = '';
+            }
+        },
+
+        submit() {
+            // The date will already be in YYYY-MM-DD format when submitted
+            router.post('/admin/participants', {
+                nik: this.form.nik,
+                name: this.form.name,
+                masa_kerja: this.form.masa_kerja,
+                tanggal_lahir: this.form.tanggal_lahir,
+                email: this.form.email,
+                hp: this.form.hp,
+                witel: this.form.witel,
+                area_id: this.form.area_id,
+                gender: this.form.gender,
+                role: this.form.role,
+                status: this.form.status,
+                password: this.form.password,
+                password_confirmation: this.form.password_confirmation
+            }, {
+                onSuccess: () => {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Partisipan Berhasil Disimpan.',
+                        icon: 'success',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                },
+            });
+        }
     }
-
+}
 </script>
 
 <style>

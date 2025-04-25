@@ -142,6 +142,18 @@
                                 <td class="fw-bold bg-light">Jenis Kelamin</td>
                                 <td>{{ selectedParticipant.gender === 'P' ? 'Perempuan' : 'Laki-Laki' }}</td>
                             </tr>
+                            <tr>
+                                <td class="fw-bold">Masa Kerja</td>
+                                <td>{{ selectedParticipant.masa_kerja }} Tahun</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Tanggal Lahir</td>
+                                <td>{{ selectedParticipant.tanggal_lahir }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Usia</td>
+                                <td>{{ selectedParticipant.usia }} Tahun</td>
+                            </tr>
                         </table>
                     </div>
                 </div>

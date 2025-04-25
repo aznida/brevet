@@ -19,8 +19,10 @@ class ParticipantController extends Controller
     {
         //get participants
         $participants = Participant::when(request()->q, function($participants) {
-            $participants = $participants->where('name', 'like', '%'. request()->q . '%');
-        })->with('area')->latest()->paginate(50);
+            $participants = $participants->where('name', 'like', '%'. request()->q . '%')
+                                      ->orWhere('nik', 'like', '%'. request()->q . '%')
+                                      ->orWhere('witel', 'like', '%'. request()->q . '%');
+        })->with(['area'])->latest()->paginate(50);
 
         //append query string to pagination links
         $participants->appends(['q' => request()->q]);
@@ -54,30 +56,34 @@ class ParticipantController extends Controller
     {
         //validate request
         $request->validate([
-            'name'          => 'required|string|max:255',
-            'nik'           => 'required|unique:participants',
-            'email'         =>'required|unique:participants',
-            'hp'            =>'required|unique:participants',
-            'gender'        => 'required|string',
-            'status'        =>'required|string',
-            'role'          =>'required|string',
-            'password'      => 'required|confirmed',
-            'area_id'       => 'required',
-            'witel'         =>'required',
+            'nik'          => 'required|unique:participants',
+            'name'         => 'required',
+            'masa_kerja'   => 'nullable|integer|min:0',
+            'tanggal_lahir'=> 'nullable|date_format:Y-m-d',
+            'email'        => 'required|unique:participants',
+            'hp'          => 'required',
+            'witel'       => 'required',
+            'area_id'     => 'required',
+            'gender'      => 'required',
+            'role'        => 'required',
+            'status'      => 'required',
+            'password'    => 'required|confirmed'
         ]);
 
         //create participant
         Participant::create([
-            'name'          => $request->name,
-            'email'         => $request->email,
-            'hp'            => $request->hp,
-            'witel'         => $request->witel,
             'nik'           => $request->nik,
-            'gender'        => $request->gender,
-            'role'          => $request->role,
-            'status'        => $request->status,
-            'password'      => $request->password,
-            'area_id'       => $request->area_id
+            'name'          => $request->name,
+            'masa_kerja'    => $request->masa_kerja,
+            'tanggal_lahir' => $request->tanggal_lahir,
+            'email'         => $request->email,
+            'hp'           => $request->hp,
+            'witel'        => $request->witel,
+            'area_id'      => $request->area_id,
+            'gender'       => $request->gender,
+            'role'         => $request->role,
+            'status'       => $request->status,
+            'password'     => bcrypt($request->password)
         ]);
 
         //redirect
@@ -97,18 +103,12 @@ class ParticipantController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(string $id)
+    public function edit(Participant $participant)
     {
-        //get participant
-        $participant = Participant::findOrFail($id);
-
-        //get classrooms
-        $areas = Area::all();
-
-        //render with inertia
+        // No need to format date here since it's already in YYYY-MM-DD format
         return inertia('Admin/Participants/Edit', [
             'participant' => $participant,
-            'areas' => $areas,
+            'areas' => Area::all()
         ]);
     }
 
@@ -123,50 +123,40 @@ class ParticipantController extends Controller
     {
         //validate request
         $request->validate([
-            'name'          => 'required|string|max:255',
-            'email'         =>'required',
-            'hp'            =>'required',
-            'nik'           => 'required|unique:participants,nik,'.$participant->id,
-            'gender'        => 'required|string',
-            'role'          =>'required|string',
-            'status'        =>'required|string',
-            'area_id'       => 'required',
-            'witel'         =>'required',
-            'password'      => 'confirmed'
+            'nik'          => 'required|unique:participants,nik,'.$participant->id,
+            'name'         => 'required',
+            'masa_kerja'   => 'nullable|integer|min:0',
+            'tanggal_lahir'=> 'nullable|date_format:Y-m-d',
+            'email'        => 'required|unique:participants,email,'.$participant->id,
+            'hp'          => 'required',
+            'witel'       => 'required',
+            'area_id'     => 'required',
+            'gender'      => 'required',
+            'role'        => 'required',
+            'status'      => 'required',
+            'password'    => 'nullable|confirmed'
         ]);
 
-        //check passwordy
-        if($request->password == "") {
+        //update participant without password
+        $participant->update([
+            'nik'           => $request->nik,
+            'name'          => $request->name,
+            'masa_kerja'    => $request->masa_kerja,
+            'tanggal_lahir' => $request->tanggal_lahir,
+            'email'         => $request->email,
+            'hp'           => $request->hp,
+            'witel'        => $request->witel,
+            'area_id'      => $request->area_id,
+            'gender'       => $request->gender,
+            'role'         => $request->role,
+            'status'       => $request->status,
+        ]);
 
-            //update participant without password
+        //check if password is not empty
+        if($request->password) {
             $participant->update([
-                'name'          => $request->name,
-                'email'         => $request->email,
-                'hp'            => $request->hp,
-                'witel'         => $request->witel,
-                'nik'           => $request->nik,
-                'gender'        => $request->gender,
-                'role'          => $request->role,
-                'status'        => $request->status,
-                'area_id'       => $request->area_id
+                'password' => bcrypt($request->password)
             ]);
-
-        } else {
-
-            //update participant with password
-            $participant->update([
-                'name'          => $request->name,
-                'email'         => $request->email,
-                'hp'            => $request->hp,
-                'witel'         => $request->witel,
-                'nik'           => $request->nik,
-                'gender'        => $request->gender,
-                'status'        => $request->status,
-                'role'          => $request->role,
-                'password'      => $request->password,
-                'area_id'       => $request->area_id
-            ]);
-
         }
 
         //redirect
