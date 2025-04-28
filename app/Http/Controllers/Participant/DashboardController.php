@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Participant;
 
+use App\Models\Participant;
 use App\Models\Grade;
 use App\Models\ExamGroup;
 use App\Http\Controllers\Controller;
@@ -60,5 +61,37 @@ class DashboardController extends Controller
         return inertia('Participant/Dashboard/Index', [
             'exam_groups' => $data,
         ]);
+    }
+
+    public function acceptPrivacy(Request $request)
+    {
+        try {
+            $participant = $request->user('participant');  // Specify the guard
+            
+            if (!$participant) {
+                \Log::error('Participant tidak ditemukan saat update PDP');
+                return back()->with('error', 'Unauthorized');
+            }
+            
+            $updated = $participant->update([
+                'PDP' => 'true'
+            ]);
+
+            if (!$updated) {
+                \Log::error('Gagal update PDP untuk participant ID: ' . $participant->id);
+                throw new \Exception('Gagal mengupdate status PDP');
+            }
+    
+            \Log::info('PDP berhasil diupdate:', [
+                'id' => $participant->id,
+                'PDP' => 'true'
+            ]);
+    
+            return back()->with('success', 'Persetujuan privasi berhasil disimpan');
+            
+        } catch (\Exception $e) {
+            \Log::error('Error saat update PDP: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat menyimpan persetujuan');
+        }
     }
 }

@@ -208,4 +208,9 @@ class ParticipantController extends Controller
         //redirect
         return redirect()->route('admin.participants.index');
     }
+
+    /**
+     * Update privacy acceptance status
+     */
+    
 }

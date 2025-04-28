@@ -5,12 +5,16 @@
                 <Link class="navbar-brand me-lg-3" href="/participant/dashboard">                
                     <span class="brand-text">BREVETISASI DEFA</span>
                 </Link>
-                <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                    </ul>
-                    <form class="d-flex" v-if="$page.props.auth.participant">
-                        <Link href="/logout" method="POST" class="btn btn-light shadow" as="button">LOGOUT</Link>
-                    </form>
+                <div v-if="$page.props.auth.participant" class="d-flex align-items-center">
+                    <Link 
+                        href="/logout" 
+                        method="POST" 
+                        class="btn btn-danger d-flex align-items-center gap-2" 
+                        as="button"
+                    >
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </Link>
                 </div>
             </div>
         </nav>
@@ -43,12 +47,7 @@
     letter-spacing: 0.5px;
 }
 
-.btn-light {
-    background: white;
-    color: #1a2234;
-    font-weight: 600;
-    padding: 0.5rem 1.5rem;
-}
+/* Menghapus style yang tidak diperlukan */
 </style>
 
 <script>

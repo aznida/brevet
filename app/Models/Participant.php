@@ -26,7 +26,8 @@ class Participant extends Authenticatable
         'email',
         'hp',
         'gender',
-        'status'
+        'status',
+        'PDP'
     ];
 
     /**
@@ -36,7 +37,8 @@ class Participant extends Authenticatable
      */
     protected $casts = [
         'tanggal_lahir' => 'date',
-        'masa_kerja' => 'integer'
+        'masa_kerja' => 'integer',
+        'PDP' => 'string'
     ];
 
     /**

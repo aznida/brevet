@@ -2,10 +2,57 @@
     <Head>
         <title>Dashboard Partisipan - Aplikasi Ujian Online</title>
     </Head>
+
+    <!-- Alert Success dengan auto-hide -->
+    <div v-if="showAlert" class="alert alert-primary alert-dismissible fade show border-0 shadow mb-3" role="alert">
+        Persetujuan Perlindungan Data Pribadi (PDP) berhasil disimpan
+        <button type="button" class="btn-close" @click="closeAlert" aria-label="Close"></button>
+    </div>
+
+    <!-- Modal Persetujuan Data -->
+    <div class="modal fade" id="privacyModal" data-bs-backdrop="static" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold">Persetujuan Penggunaan Data</h5>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-warning">
+                        <p class="mb-2"><b>⚠️ Perhatian!</b></p>
+                        <p>Sesuai dengan penerapan Persetujuan Pengguna berdasarkan UU PDP No. 27 Tahun 2022, semua pengolahan data peserta harus memiliki persetujuan aktif dari peserta yang disampaikan secara elektronik maupun non elektronik.</p>
+                    </div>
+                    <div class="mt-4">
+                        <h6 class="fw-bold">Kebijakan Privasi:</h6>
+                        <ul>
+                            <li>Data Anda seperti <b><i>Nama lengkap, No.HP, Email, Gender, Tgl Lahir dan NIK</i></b> akan digunakan untuk keperluan pelaksanaan ujian</li>
+                            <li>Data akan disimpan secara aman dan tidak akan dibagikan kepada pihak ketiga</li>
+                            <li>Anda memiliki hak untuk mengakses dan memperbarui data Anda</li>
+                        </ul>
+                    </div>
+                    <div class="form-check mt-4">
+                        <input class="form-check-input" type="checkbox" v-model="privacyConsent" id="privacyCheck">
+                        <label class="form-check-label" for="privacyCheck">
+                            Saya <i><b>{{ auth.participant.name }}</b></i> menyetujui penggunaan data pribadi saya sesuai dengan ketentuan di atas
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button 
+                        class="btn btn-primary" 
+                        :disabled="!privacyConsent"
+                        @click="acceptPrivacyPolicy"
+                    >
+                        Setuju dan Lanjutkan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-12">
             <div class="alert alert-success border-0 shadow">
-                Selamat Datang <strong>{{ auth.participant.name }}</strong>
+                Selamat Datang <strong>{{ auth.participant.name }} 👋</strong>
             </div>
         </div>
     </div>
@@ -139,7 +186,8 @@
     //import layout participant
     import LayoutParticipant from '../../../Layouts/Participant.vue';
     import { Link } from '@inertiajs/vue3';
-    import { ref } from 'vue';
+    import { ref, onMounted } from 'vue';
+    import { router } from '@inertiajs/vue3';
 
     export default {
         layout: LayoutParticipant,
@@ -150,8 +198,61 @@
             exam_groups: Array,
             auth: Object
         },
-        setup() {
+        setup(props) {
             const recordingConsent = ref(false);
+            const privacyConsent = ref(false);
+            const showAlert = ref(false);
+
+            const closeAlert = () => {
+                showAlert.value = false;
+            };
+
+            const showAlertWithTimeout = () => {
+                showAlert.value = true;
+                setTimeout(() => {
+                    showAlert.value = false;
+                }, 7000); // 7 detik
+            };
+
+            onMounted(() => {
+                // Cek status persetujuan dari database
+                if (!props.auth?.participant?.PDP || props.auth.participant.PDP === 'false') {
+                    setTimeout(() => {
+                        const modalElement = document.getElementById('privacyModal');
+                        if (modalElement) {
+                            const modal = new bootstrap.Modal(modalElement);
+                            modal.show();
+                        } else {
+                            console.error('Modal element tidak ditemukan');
+                        }
+                    }, 500);
+                }
+            });
+
+            const acceptPrivacyPolicy = () => {
+                router.post('/participant/accept-privacy', {}, {
+                    onSuccess: () => {
+                        const modalElement = document.getElementById('privacyModal');
+                        if (modalElement) {
+                            const modal = bootstrap.Modal.getInstance(modalElement);
+                            if (modal) {
+                                modal.hide();
+                                document.body.classList.remove('modal-open');
+                                const backdrop = document.querySelector('.modal-backdrop');
+                                if (backdrop) {
+                                    backdrop.remove();
+                                }
+                                showAlertWithTimeout(); // Menggunakan fungsi baru
+                                window.location.reload();
+                            }
+                        }
+                    },
+                    onError: (errors) => {
+                        alert('Terjadi kesalahan saat menyimpan persetujuan. Silakan coba lagi.');
+                        console.error('Error saat menyimpan:', errors);
+                    }
+                });
+            };
 
             const openRecordingModal = (examGroupId) => {
                 const modal = new bootstrap.Modal(document.getElementById('recordingModal' + examGroupId));
@@ -171,8 +272,12 @@
 
             return {
                 recordingConsent,
+                privacyConsent,
                 openRecordingModal,
-                closeModal
+                closeModal,
+                acceptPrivacyPolicy,
+                showAlert,
+                closeAlert
             };
         }
     }

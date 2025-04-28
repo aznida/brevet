@@ -178,4 +178,7 @@ Route::prefix('participant')->group(function() {
     //route untuk notifikasi email peserta
     // Ubah dari POST menjadi GET
     Route::get('/exam_sessions/send-notifications', [ExamSessionController::class, 'sendNotifications'])->name('admin.exam_sessions.send-notifications');
+    // Pindahkan route accept-privacy ke dalam middleware
+    Route::post('/accept-privacy', [App\Http\Controllers\Participant\DashboardController::class, 'acceptPrivacy'])
+        ->name('participant.accept-privacy');
 });
