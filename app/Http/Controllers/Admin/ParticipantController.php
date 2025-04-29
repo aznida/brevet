@@ -7,6 +7,7 @@ use App\Models\Area;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Imports\ParticipantsImport;
+use App\Exports\ParticipantsExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ParticipantController extends Controller
@@ -212,6 +213,14 @@ class ParticipantController extends Controller
 
         //redirect
         return redirect()->route('admin.participants.index');
+    }
+
+    /**
+     * Export participants to Excel
+     */
+    public function export() 
+    {
+        return Excel::download(new ParticipantsExport, 'participants.xlsx');
     }
 
     /**

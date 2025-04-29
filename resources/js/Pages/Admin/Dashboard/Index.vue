@@ -430,7 +430,7 @@ import VueApexCharts from 'vue3-apexcharts';
                 },  // Added missing comma here
                 yaxis: {
                     title: {
-                        text: 'Number of Participants'
+                        text: 'Number of Teknisi'
                     },
                     min: 0,
                     max: 10,
@@ -450,7 +450,7 @@ import VueApexCharts from 'vue3-apexcharts';
                     intersect: false,
                     y: {
                         formatter: function (val) {
-                            return val + " participants"
+                            return val + " Teknisi"
                         }
                     }
                 }

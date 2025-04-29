@@ -4,7 +4,7 @@
     </Head>
     <div class="container-fluid mb-5 mt-5">
         <div class="row">
-            <div class="col-md-8"> 
+            <div class="col-md-10"> 
                 <div class="row">
                     <div class="col-md-5 col-12 mb-2">
                         <div class="row">
@@ -21,16 +21,25 @@
                         </div>
                     </div>
                     <div class="col-md-7 col-12 mb-2">
-                        <form>
-                            <div class="input-group">
-                                <input type="text" class="form-control border-0 shadow" placeholder="masukkan kata kunci dan enter...">
-                                <span class="input-group-text border-0 shadow">
-                                    <i class="fa fa-search"></i>
-                                </span>
+                        <div class="row">
+                            <div class="col-md-8 col-12 mb-2">
+                                <form>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control border-0 shadow" placeholder="masukkan kata kunci dan enter...">
+                                        <span class="input-group-text border-0 shadow">
+                                            <i class="fa fa-search"></i>
+                                        </span>
+                                    </div>
+                                </form>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div class="col-2">
+                <Link href="/admin/participants/export" class="btn btn-md btn-info border-0 shadow w-100 text-white"
+                    type="button"><i class="fa fa-file-excel"></i>
+                Export</Link>
             </div>
         </div>
         <div class="row mt-1">
@@ -127,6 +136,22 @@
                                 <td>{{ selectedParticipant.witel }}</td>
                             </tr>
                             <tr>
+                                <td class="fw-bold bg-light">Jenis Kelamin</td>
+                                <td>{{ selectedParticipant.gender === 'P' ? 'Perempuan' : 'Laki-Laki' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold bg-light">Masa Kerja</td>
+                                <td>{{ selectedParticipant.masa_kerja }} Tahun</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold bg-light">Tanggal Lahir</td>
+                                <td>{{ formatTanggalIndonesia(selectedParticipant.tanggal_lahir) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold bg-light">Usia</td>
+                                <td>{{ calculateAge(selectedParticipant.tanggal_lahir) }} Tahun</td>
+                            </tr>
+                            <tr>
                                 <td class="fw-bold bg-light">Job Role</td>
                                 <td>{{ selectedParticipant.role }}</td>
                             </tr>
@@ -137,22 +162,6 @@
                                     <span v-else-if="selectedParticipant.status === 'Block'" class="badge bg-danger">{{ selectedParticipant.status }}</span>
                                     <span v-else>{{ selectedParticipant.status }}</span>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td class="fw-bold bg-light">Jenis Kelamin</td>
-                                <td>{{ selectedParticipant.gender === 'P' ? 'Perempuan' : 'Laki-Laki' }}</td>
-                            </tr>
-                            <tr>
-                                <td class="fw-bold">Masa Kerja</td>
-                                <td>{{ selectedParticipant.masa_kerja }} Tahun</td>
-                            </tr>
-                            <tr>
-                                <td class="fw-bold">Tanggal Lahir</td>
-                                <td>{{ selectedParticipant.tanggal_lahir }}</td>
-                            </tr>
-                            <tr>
-                                <td class="fw-bold">Usia</td>
-                                <td>{{ selectedParticipant.usia }} Tahun</td>
                             </tr>
                         </table>
                     </div>
@@ -224,12 +233,47 @@
                 })
             }
 
+            const calculateAge = (birthDate) => {
+                if (!birthDate) return '-';
+                
+                const today = new Date();
+                const birth = new Date(birthDate);
+                
+                let age = today.getFullYear() - birth.getFullYear();
+                const monthDiff = today.getMonth() - birth.getMonth();
+                
+                // Kurangi 1 tahun jika belum mencapai bulan & tanggal kelahiran
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                    age--;
+                }
+                
+                return age;
+            }
+
+            const formatTanggalIndonesia = (tanggal) => {
+                if (!tanggal) return '-';
+                
+                const bulanIndonesia = [
+                    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                ];
+                
+                const date = new Date(tanggal);
+                const tanggalStr = date.getDate().toString().padStart(2, '0');
+                const bulan = bulanIndonesia[date.getMonth()];
+                const tahun = date.getFullYear();
+                
+                return `${tanggalStr} ${bulan} ${tahun}`;
+            }
+
             return {
                 search,
                 handleSearch,
                 destroy,
                 showModal,
-                selectedParticipant
+                selectedParticipant,
+                calculateAge,
+                formatTanggalIndonesia  // Tambahkan ini
             }
         }
     }
