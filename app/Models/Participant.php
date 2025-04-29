@@ -36,7 +36,7 @@ class Participant extends Authenticatable
      * @var array
      */
     protected $casts = [
-        'tanggal_lahir' => 'date',
+        'tanggal_lahir' => 'date:Y-m-d',
         'masa_kerja' => 'integer',
         'PDP' => 'string'
     ];

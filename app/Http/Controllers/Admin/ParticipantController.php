@@ -105,7 +105,12 @@ class ParticipantController extends Controller
      */
     public function edit(Participant $participant)
     {
-        // No need to format date here since it's already in YYYY-MM-DD format
+        //check if tanggal_lahir exists and is not null
+        if ($participant->tanggal_lahir) {
+            // Convert the datetime to just the date portion
+            $participant->tanggal_lahir = date('Y-m-d', strtotime($participant->tanggal_lahir));
+        }
+        
         return inertia('Admin/Participants/Edit', [
             'participant' => $participant,
             'areas' => Area::all()
