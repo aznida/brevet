@@ -435,4 +435,124 @@ class ExamController extends Controller
         ]);
     }
 
+    /**
+     * results
+     *
+     * @return void
+     */
+    public function results()
+    {
+        //get participant
+        $participant = auth()->guard('participant')->user();
+        
+        //get grades
+        $grades = Grade::with('exam.category')
+            ->where('participant_id', $participant->id)
+            ->orderBy('created_at', 'DESC')
+            ->get();
+            
+        //format data untuk chart
+        $chartData = [
+            'categories' => $grades->pluck('exam.category.title')->unique()->values(),
+            'values' => []
+        ];
+        
+        //hitung rata-rata nilai per kategori
+        foreach ($chartData['categories'] as $category) {
+            $categoryGrades = $grades->filter(function($grade) use ($category) {
+                return $grade->exam->category->title === $category;
+            });
+            
+            $average = $categoryGrades->avg('grade') ?? 0;
+            $chartData['values'][] = round($average, 2);
+        }
+        
+        //format data untuk tabel
+        $results = $grades->map(function($grade) {
+            return [
+                'exam_title' => $grade->exam->title,
+                'category' => $grade->exam->category->title,
+                'grade' => $grade->grade,
+                'level' => $this->determineLevel($grade->grade),
+                'date' => $grade->created_at->format('d/m/Y H:i')
+            ];
+        });
+        
+        return inertia('Participant/Results/Index', [
+            'results' => $results,
+            'chartData' => $chartData
+        ]);
+    }
+
+    /**
+ * history
+ *
+ * @return void
+ */
+public function history()
+{
+    //get participant
+    $participant = auth()->guard('participant')->user();
+    
+    //get completed exams with relationships
+    $completedExams = Grade::with(['exam.category', 'exam_session', 'exam_group.participant.area'])
+        ->where('participant_id', $participant->id)
+        ->where('end_time', '!=', null)
+        ->get()
+        ->map(function($grade) {
+            return [
+                'exam_group' => $grade->exam_group,
+                'grade' => [
+                    'end_time' => $grade->end_time,
+                    'grade' => $grade->grade
+                ]
+            ];
+        });
+
+    //get missed exams
+    $missedExams = ExamGroup::with(['exam.category', 'exam_session', 'participant.area'])
+        ->where('participant_id', $participant->id)
+        ->whereHas('exam_session', function($query) {
+            $query->where('end_time', '<', now());
+        })
+        ->whereDoesntHave('grades', function($query) use ($participant) {
+            $query->where('participant_id', $participant->id);
+        })
+        ->get()
+        ->map(function($examGroup) {
+            return [
+                'exam_group' => $examGroup,
+                'grade' => [
+                    'end_time' => null,
+                    'grade' => null
+                ]
+            ];
+        });
+
+    //gabungkan data completed dan missed exams
+    $examData = $completedExams->concat($missedExams);
+
+    return inertia('Participant/History/Index', [
+        'exam_groups' => $examData,
+        'auth' => [
+            'participant' => $participant
+        ]
+    ]);
+}
+    
+    /**
+     * determineLevel
+     *
+     * @param float $grade
+     * @return string
+     */
+    private function determineLevel($grade)
+    {
+        if ($grade >= 91) return 'Expert';
+        if ($grade >= 71) return 'Advanced';
+        if ($grade >= 61) return 'Intermediate';
+        if ($grade >= 31) return 'Basic';
+        return 'Starter';
+    }
+
 }

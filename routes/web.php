@@ -154,6 +154,12 @@ Route::prefix('participant')->group(function() {
         //route exam result
         Route::get('/exam-result/{exam_group_id}', [App\Http\Controllers\Participant\ExamController::class, 'resultExam'])->name('participant.exams.resultExam');
     
+        //route history
+        Route::get('/history', [App\Http\Controllers\Participant\DashboardController::class, 'history'])->name('participant.history');
+        
+        //route results
+        Route::get('/results', [App\Http\Controllers\Participant\ExamController::class, 'results'])->name('participant.results');
+        
         //route performance assessment list
         Route::get('/performance-assessments', [App\Http\Controllers\Participant\PerformanceAssessmentController::class, 'index'])->name('participant.performance_assessments.index');
     
@@ -164,6 +170,8 @@ Route::prefix('participant')->group(function() {
         //route performance assessment submit
         Route::post('/performance-assessments/{assessment}/submit', [App\Http\Controllers\Participant\PerformanceAssessmentController::class, 'submit'])
             ->name('participant.performance_assessments.submit');
+
+        Route::get('/profile', [App\Http\Controllers\Participant\ParticipantController::class, 'profile'])->name('participant.profile');
 
         // Praktik exam routes
         Route::get('/exam-praktik-start/{exam_group}', [ExamPraktikController::class, 'startExam'])
