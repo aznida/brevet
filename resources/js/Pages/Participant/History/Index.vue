@@ -6,11 +6,11 @@
     <div class="container-fluid mb-5 mt-5">
         <div class="row mb-4">
             <div class="col-md-12">
-                <div class="card border-0 shadow mb-4">
+                <!-- <div class="card border-0 shadow mb-4">
                     <div class="card-body">
                         <h5><i class="fa fa-history"></i> Riwayat Assessment</h5>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Card Layout untuk History -->
                 <div class="row" v-if="filteredExams.length > 0">

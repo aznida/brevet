@@ -445,8 +445,8 @@ class ExamController extends Controller
         //get participant
         $participant = auth()->guard('participant')->user();
         
-        //get grades
-        $grades = Grade::with('exam.category')
+        //get grades with proper relationships
+        $grades = Grade::with(['exam.category'])
             ->where('participant_id', $participant->id)
             ->orderBy('created_at', 'DESC')
             ->get();
@@ -457,14 +457,50 @@ class ExamController extends Controller
             'values' => []
         ];
         
-        //hitung rata-rata nilai per kategori
+        // Define weights for each exam type
+        $weights = [
+            'multiple_choice' => 0.35,
+            'ujian_attitude' => 0.15,
+            'ujian_pratik' => 0.50
+        ];
+        
+        //hitung rata-rata nilai per kategori dan exam_type
         foreach ($chartData['categories'] as $category) {
             $categoryGrades = $grades->filter(function($grade) use ($category) {
                 return $grade->exam->category->title === $category;
             });
+        
+            // Group by exam_type and calculate average
+            $examTypeAverages = [];
+            $groupedGrades = $categoryGrades->groupBy('exam_type');
             
-            $average = $categoryGrades->avg('grade') ?? 0;
-            $chartData['values'][] = round($average, 2);
+            // Calculate averages for available exam types
+            foreach ($groupedGrades as $examType => $typeGrades) {
+                if ($examType === null) continue;
+                
+                $validGrades = $typeGrades->filter(function($grade) {
+                    return $grade->grade > 0;
+                });
+                
+                if ($validGrades->isNotEmpty() && isset($weights[$examType])) {
+                    $examTypeAverages[$examType] = [
+                        'average' => $validGrades->avg('grade'),
+                        'weight' => $weights[$examType]
+                    ];
+                }
+            }
+            
+            // Calculate weighted average for the category
+            $weightedSum = 0;
+            $totalWeight = 0;
+            
+            foreach ($examTypeAverages as $type => $data) {
+                $weightedSum += $data['average'] * $data['weight'];
+                $totalWeight += $data['weight'];
+            }
+            
+            $finalAverage = $totalWeight > 0 ? $weightedSum / $totalWeight : 0;
+            $chartData['values'][] = round($finalAverage, 2);
         }
         
         //format data untuk tabel
@@ -478,9 +514,95 @@ class ExamController extends Controller
             ];
         });
         
+        //get top technicians regional and national
+        $allParticipantGrades = Grade::with(['participant.area'])
+            ->whereNotNull('end_time')
+            ->where('grade', '>', 0)
+            ->get()
+            ->groupBy('participant_id')
+            ->map(function($participantGrades) {
+                // Group grades by exam_type
+                $examTypeAverages = [];
+                $grades = $participantGrades->groupBy('exam_type');
+                
+                // Define weights
+                $weights = [
+                    'multiple_choice' => 0.35,
+                    'ujian_attitude' => 0.15,
+                    'ujian_pratik' => 0.50
+                ];
+                
+                // Calculate averages for each exam type
+                foreach ($grades as $examType => $typeGrades) {
+                    if ($examType === null) continue;
+                    
+                    $validGrades = $typeGrades->filter(function($grade) {
+                        return $grade->grade > 0;
+                    });
+                    
+                    if ($validGrades->isNotEmpty() && isset($weights[$examType])) {
+                        $examTypeAverages[$examType] = [
+                            'average' => $validGrades->avg('grade'),
+                            'weight' => $weights[$examType]
+                        ];
+                    }
+                }
+                
+                // Calculate weighted average
+                $weightedSum = 0;
+                $totalWeight = 0;
+                
+                foreach ($examTypeAverages as $type => $data) {
+                    $weightedSum += $data['average'] * $data['weight'];
+                    $totalWeight += $data['weight'];
+                }
+                
+                $finalAverage = $totalWeight > 0 ? round($weightedSum, 2) : 0;
+                
+                return [
+                    'participant_id' => $participantGrades->first()->participant_id,
+                    'participant' => $participantGrades->first()->participant,
+                    'average_grade' => round($weightedSum, 2)
+                ];
+            })
+            ->values();
+
+        // Top Regional - Ambil 10 tertinggi dari area yang sama
+        $topTechniciansArea = $allParticipantGrades
+            ->filter(function($item) use ($participant) {
+                return $item['participant']->area_id === $participant->area_id;
+            })
+            ->sortByDesc('average_grade')
+            ->values();
+
+        // Top National - Ambil 10 tertinggi dari semua area    
+        $topTechniciansNational = $allParticipantGrades
+            ->sortByDesc('average_grade')
+            ->values();
+        
+        // Get user rankings
+        $userAreaRank = $allParticipantGrades
+            ->filter(function($item) use ($participant) {
+                return $item['participant']->area_id === $participant->area_id;
+            })
+            ->sortByDesc('average_grade')
+            ->search(function($item) use ($participant) {
+                return $item['participant_id'] === $participant->id;
+            }) + 1;
+        
+        $userNationalRank = $allParticipantGrades
+            ->sortByDesc('average_grade')
+            ->search(function($item) use ($participant) {
+                return $item['participant_id'] === $participant->id;
+            }) + 1;
+        
         return inertia('Participant/Results/Index', [
             'results' => $results,
-            'chartData' => $chartData
+            'chartData' => $chartData,
+            'topTechniciansArea' => $topTechniciansArea,
+            'topTechniciansNational' => $topTechniciansNational,
+            'userAreaRank' => $userAreaRank,
+            'userNationalRank' => $userNationalRank
         ]);
     }
 

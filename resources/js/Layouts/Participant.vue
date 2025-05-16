@@ -38,7 +38,7 @@
                              aria-expanded="false">
                             <div class="avatar-wrapper">
                                 <img 
-                                    src="https://atemis.telkom.co.id/new/media/users/profil-user.png" 
+                                    src="/assets/images/profil-user.png" 
                                     alt="Profile" 
                                     class="avatar-image"
                                 />
@@ -49,7 +49,7 @@
                                 <div class="d-flex align-items-center">
                                     <div class="avatar-wrapper-lg">
                                         <img 
-                                            src="https://atemis.telkom.co.id/new/media/users/profil-user.png" 
+                                            src="/assets/images/profil-user.png" 
                                             alt="Profile" 
                                             class="avatar-image"
                                         />
