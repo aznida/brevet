@@ -90,9 +90,17 @@
                                 <div class="mt-2 text-end" v-if="topTechniciansArea && topTechniciansArea.length > 0">
                                     <small class="text-muted">
                                         <i><b>Nilai Anda:</b> </i> 
-                                        <span class="badge bg-warning">{{ getAreaScore }}</span>     
+                                        <span class="badge bg-warning">
+                                            {{ Number(topTechniciansArea.find(t => 
+                                                t.participant_id === $page.props.auth.participant.id
+                                            )?.average_grade || 0).toFixed(2) }}
+                                        </span>     
                                         <i><b>     Posisi:</b> </i> 
-                                        <span class="badge bg-success">#{{ getAreaPosition }}</span>
+                                        <span class="badge bg-success">
+                                            #{{ (topTechniciansArea.findIndex(t => 
+                                                t.participant_id === $page.props.auth.participant.id
+                                            ) + 1) || 0 }}
+                                        </span>
                                     </small>
                                 </div>
                         </div>
@@ -128,9 +136,17 @@
                             <div class="mt-2 text-end" v-if="topTechniciansNational && topTechniciansNational.length > 0">
                                 <small class="text-muted">
                                     <i><b>Nilai Anda:</b> </i> 
-                                    <span class="badge bg-warning">{{ getNationalScore }}</span>     
+                                    <span class="badge bg-warning">
+                                        {{ Number(topTechniciansNational.find(t => 
+                                            t.participant_id === $page.props.auth.participant.id
+                                        )?.average_grade || 0).toFixed(2) }}
+                                    </span>     
                                     <i><b>     Posisi:</b> </i> 
-                                    <span class="badge bg-success">#{{ getNationalPosition }}</span>
+                                    <span class="badge bg-success">
+                                        #{{ (topTechniciansNational.findIndex(t => 
+                                            t.participant_id === $page.props.auth.participant.id
+                                        ) + 1) || 0 }}
+                                    </span>
                                 </small>
                             </div>
                         </div>
