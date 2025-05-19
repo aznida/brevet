@@ -3,19 +3,22 @@
         <title>Result - Aplikasi Ujian Online</title>
     </Head>
     <div class="alert alert-warning mb-4" role="alert">
-                <p class="mb-0">
-                    Hai, <b>{{ $page.props.auth.participant.name }}</b>! Saat ini Anda berada di level: 
-                    <span class="badge" :class="{
-                        'bg-secondary': getUserLevel.level === 'starter',
-                        'bg-bronze': getUserLevel.level === 'basic',
-                        'bg-silver': getUserLevel.level === 'intermediate',
-                        'bg-gold': getUserLevel.level === 'advanced',
-                        'bg-diamond': getUserLevel.level === 'expert'
-                    }">
-                        {{ getUserLevel.emoji }} {{ getUserLevel.level.toUpperCase() }}
-                    </span>
-                </p>
-            </div>
+        <p class="mb-0">
+            <i class="fa fa-info-circle me-2"></i>Hai, <b>{{ $page.props.auth.participant.name }}</b>! Saat ini Anda berada di level: 
+            <span class="badge" :class="{
+                'bg-secondary': getUserLevel.level === 'starter',
+                'bg-bronze': getUserLevel.level === 'basic',
+                'bg-silver': getUserLevel.level === 'intermediate',
+                'bg-gold': getUserLevel.level === 'advanced',
+                'bg-diamond': getUserLevel.level === 'expert'
+            }">
+                {{ getUserLevel.emoji }} {{ getUserLevel.level.toUpperCase() }}
+            </span>
+            <!-- <span class="ms-2 badge bg-info">
+                Nilai: {{ Number(this.topTechniciansNational?.find(tech => tech.participant_id === $page.props.auth.participant.id)?.average_grade || 0).toFixed(2) }}
+            </span> -->
+        </p>
+    </div>
     <div class="container-fluid mb-5 mt-5 px-4"> <!-- Menambahkan padding horizontal -->
         <div class="row mb-4">
             <div class="col-12 col-md-5">
@@ -190,19 +193,26 @@ export default {
     computed: {
         getUserLevel() {
             // Calculate user level based on average grade
-            const averageGrade = this.results?.reduce((acc, result) => acc + parseFloat(result.grade), 0) / (this.results?.length || 1);
+            const averageGrade = Number(this.topTechniciansNational?.find(tech => 
+                tech.participant_id === this.$page.props.auth.participant.id)?.average_grade || 0);
             
-            if (averageGrade >= 90) {
-                return { level: 'expert', emoji: '💎' };
-            } else if (averageGrade >= 70) {
-                return { level: 'advanced', emoji: '🥇' };
-            } else if (averageGrade >= 60) {
-                return { level: 'intermediate', emoji: '🥈' };
-            } else if (averageGrade >= 30) {
-                return { level: 'basic', emoji: '🥉' };
-            } else {
-                return { level: 'starter', emoji: '🌱' };
+            let level = {
+                level: 'starter',
+                emoji: '🌱',
+                averageGrade: averageGrade
+            };
+            
+            if (averageGrade > 90) {
+                level = { level: 'expert', emoji: '💎', averageGrade: averageGrade };
+            } else if (averageGrade > 70 && averageGrade <= 90) {
+                level = { level: 'advanced', emoji: '🥇', averageGrade: averageGrade };
+            } else if (averageGrade > 60 && averageGrade <= 70) {
+                level = { level: 'intermediate', emoji: '🥈', averageGrade: averageGrade };
+            } else if (averageGrade > 30 && averageGrade <= 60) {
+                level = { level: 'basic', emoji: '🥉', averageGrade: averageGrade };
             }
+            
+            return level;
         },
         assessmentChartOptions() {
             return {

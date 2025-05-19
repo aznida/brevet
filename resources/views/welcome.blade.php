@@ -3,8 +3,13 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <title>Laravel</title>
+        <!-- Tambahan Meta Tags untuk SEO -->
+        <meta name="description" content="Brempi - Aplikasi Ujian Online Brevetisasi DEFA - Platform ujian online yang memungkinkan peserta untuk mengikuti ujian brevetisasi secara digital">
+        <meta name="keywords" content="brevetisasi, ujian online, DEFA, sertifikasi, teknisi, ujian digital, pembelajaran online, Brempi">
+        <meta name="author" content="Eko Wahyudi - DEFA">
+        <meta name="robots" content="index, follow">
+        
+        <title>Brempi - Brevetisasi Meraih Mimpi</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
