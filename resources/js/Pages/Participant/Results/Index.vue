@@ -87,16 +87,12 @@
                                     </tr>
                                 </tbody>
                                 </table>
-                                <div class="mt-2 text-end">
+                                <div class="mt-2 text-end" v-if="topTechniciansArea && topTechniciansArea.length > 0">
                                     <small class="text-muted">
                                         <i><b>Nilai Anda:</b> </i> 
-                                        <span class="badge bg-warning">
-                                            {{ getAreaScore }}
-                                        </span>     
+                                        <span class="badge bg-warning">{{ getAreaScore }}</span>     
                                         <i><b>     Posisi:</b> </i> 
-                                        <span class="badge bg-success">
-                                            #{{ getAreaPosition }}
-                                        </span>
+                                        <span class="badge bg-success">#{{ getAreaPosition }}</span>
                                     </small>
                                 </div>
                         </div>
@@ -129,16 +125,12 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <div class="mt-2 text-end">
+                            <div class="mt-2 text-end" v-if="topTechniciansNational && topTechniciansNational.length > 0">
                                 <small class="text-muted">
                                     <i><b>Nilai Anda:</b> </i> 
-                                    <span class="badge bg-warning">
-                                        {{ getNationalScore }}
-                                    </span>     
+                                    <span class="badge bg-warning">{{ getNationalScore }}</span>     
                                     <i><b>     Posisi:</b> </i> 
-                                    <span class="badge bg-success">
-                                        #{{ getNationalPosition }}
-                                    </span>
+                                    <span class="badge bg-success">#{{ getNationalPosition }}</span>
                                 </small>
                             </div>
                         </div>
@@ -205,28 +197,40 @@ export default {
     },
     computed: {
         getAreaScore() {
-            const tech = this.topTechniciansArea?.find(t => 
-                t?.participant_id === this.$page.props.auth.participant?.id
+            if (!this.topTechniciansArea || !this.$page.props.auth.participant) {
+                return '0.00';
+            }
+            const tech = this.topTechniciansArea.find(t => 
+                t.participant_id === this.$page.props.auth.participant.id
             );
-            return Number(tech?.average_grade || 0).toFixed(2);
+            return tech ? Number(tech.average_grade).toFixed(2) : '0.00';
         },
         getAreaPosition() {
-            const index = this.topTechniciansArea?.findIndex(t => 
-                t?.participant_id === this.$page.props.auth.participant?.id
+            if (!this.topTechniciansArea || !this.$page.props.auth.participant) {
+                return 0;
+            }
+            const index = this.topTechniciansArea.findIndex(t => 
+                t.participant_id === this.$page.props.auth.participant.id
             );
-            return (index === -1 ? -1 : index) + 1;
+            return index === -1 ? 0 : index + 1;
         },
         getNationalScore() {
-            const tech = this.topTechniciansNational?.find(t => 
-                t?.participant_id === this.$page.props.auth.participant?.id
+            if (!this.topTechniciansNational || !this.$page.props.auth.participant) {
+                return '0.00';
+            }
+            const tech = this.topTechniciansNational.find(t => 
+                t.participant_id === this.$page.props.auth.participant.id
             );
-            return Number(tech?.average_grade || 0).toFixed(2);
+            return tech ? Number(tech.average_grade).toFixed(2) : '0.00';
         },
         getNationalPosition() {
-            const index = this.topTechniciansNational?.findIndex(t => 
-                t?.participant_id === this.$page.props.auth.participant?.id
+            if (!this.topTechniciansNational || !this.$page.props.auth.participant) {
+                return 0;
+            }
+            const index = this.topTechniciansNational.findIndex(t => 
+                t.participant_id === this.$page.props.auth.participant.id
             );
-            return (index === -1 ? -1 : index) + 1;
+            return index === -1 ? 0 : index + 1;
         },
         getUserLevel() {
             // Calculate user level based on average grade
