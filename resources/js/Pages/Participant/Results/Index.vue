@@ -91,15 +91,11 @@
                                     <small class="text-muted">
                                         <i><b>Nilai Anda:</b> </i> 
                                         <span class="badge bg-warning">
-                                            {{ Number(topTechniciansArea?.find(tech => 
-                                               tech?.participant_id === $page.props.auth.participant?.id)?.average_grade || 0).toFixed(2) 
-                                            }}
+                                            {{ getAreaScore }}
                                         </span>     
                                         <i><b>     Posisi:</b> </i> 
                                         <span class="badge bg-success">
-                                            #{{ (topTechniciansArea?.findIndex(tech => 
-                                                tech?.participant_id === $page.props.auth.participant?.id) || -1) + 1 
-                                            }}
+                                            #{{ getAreaPosition }}
                                         </span>
                                     </small>
                                 </div>
@@ -137,15 +133,11 @@
                                 <small class="text-muted">
                                     <i><b>Nilai Anda:</b> </i> 
                                     <span class="badge bg-warning">
-                                        {{ Number(topTechniciansNational?.find(tech => 
-                                           tech?.participant_id === $page.props.auth.participant?.id)?.average_grade || 0).toFixed(2) 
-                                        }}
+                                        {{ getNationalScore }}
                                     </span>     
                                     <i><b>     Posisi:</b> </i> 
                                     <span class="badge bg-success">
-                                        #{{ (topTechniciansNational?.findIndex(tech => 
-                                            tech?.participant_id === $page.props.auth.participant?.id) || -1) + 1 
-                                        }}
+                                        #{{ getNationalPosition }}
                                     </span>
                                 </small>
                             </div>
@@ -195,6 +187,7 @@
 import LayoutParticipant from '../../../Layouts/Participant.vue';
 import { Head } from '@inertiajs/vue3';
 import VueApexCharts from 'vue3-apexcharts';
+import { computed } from 'vue';
 
 export default {
     layout: LayoutParticipant,
@@ -211,6 +204,30 @@ export default {
         userNationalRank: Number
     },
     computed: {
+        getAreaScore() {
+            const tech = this.topTechniciansArea?.find(t => 
+                t?.participant_id === this.$page.props.auth.participant?.id
+            );
+            return Number(tech?.average_grade || 0).toFixed(2);
+        },
+        getAreaPosition() {
+            const index = this.topTechniciansArea?.findIndex(t => 
+                t?.participant_id === this.$page.props.auth.participant?.id
+            );
+            return (index === -1 ? -1 : index) + 1;
+        },
+        getNationalScore() {
+            const tech = this.topTechniciansNational?.find(t => 
+                t?.participant_id === this.$page.props.auth.participant?.id
+            );
+            return Number(tech?.average_grade || 0).toFixed(2);
+        },
+        getNationalPosition() {
+            const index = this.topTechniciansNational?.findIndex(t => 
+                t?.participant_id === this.$page.props.auth.participant?.id
+            );
+            return (index === -1 ? -1 : index) + 1;
+        },
         getUserLevel() {
             // Calculate user level based on average grade
             const averageGrade = Number(this.topTechniciansNational?.find(tech => 
