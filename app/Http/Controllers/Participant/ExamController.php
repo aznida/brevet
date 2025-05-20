@@ -444,7 +444,6 @@ class ExamController extends Controller
     {
         //get participant
         $participant = auth()->guard('participant')->user();
-        \Log::info('Participant Data:', ['participant_id' => $participant->id]);
         
         //get grades with proper relationships
         $grades = Grade::with(['exam.category'])
@@ -452,18 +451,12 @@ class ExamController extends Controller
             ->orderBy('created_at', 'DESC')
             ->get();
             
+        // Enhanced debug data
         $debugData = [
             'participant_id' => $participant->id,
             'grades_count' => $grades->count(),
-            'grades' => $grades->toArray()
-        ];
-        
-        \Log::info('Grades Data:', $debugData);
-
-        // Add debug data to be passed to frontend
-        $debug = [
-            'participant' => $participant,
-            'grades_data' => $debugData
+            'weighted_averages' => [],
+            'exam_types' => []
         ];
 
         //format data untuk chart
@@ -611,6 +604,13 @@ class ExamController extends Controller
                 return $item['participant_id'] === $participant->id;
             }) + 1;
         
+        // Add more debug info before return
+        $debugData['weighted_averages'] = $allParticipantGrades
+            ->where('participant_id', $participant->id)
+            ->first();
+        
+        $debugData['exam_types'] = $grades->pluck('exam_type')->unique()->values();
+
         return inertia('Participant/Results/Index', [
             'results' => $results,
             'chartData' => $chartData,
@@ -618,7 +618,7 @@ class ExamController extends Controller
             'topTechniciansNational' => $topTechniciansNational,
             'userAreaRank' => $userAreaRank,
             'userNationalRank' => $userNationalRank,
-            'debug' => $debug  // Add debug data to the response
+            'debugInfo' => $debugData  // Changed from 'debug' to 'debugInfo'
         ]);
     }
 

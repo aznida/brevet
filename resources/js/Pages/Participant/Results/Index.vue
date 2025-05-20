@@ -188,7 +188,33 @@ export default {
         topTechniciansArea: Array,
         topTechniciansNational: Array,
         userAreaRank: Number,
-        userNationalRank: Number
+        userNationalRank: Number,
+        debugInfo: Object
+    },
+    mounted() {
+        console.log('Debug Information:', {
+            participant: this.$page.props.auth.participant,
+            debugInfo: this.debugInfo,
+            technicians: {
+                national: this.topTechniciansNational,
+                area: this.topTechniciansArea
+            }
+        });
+    },
+    mounted() {
+        // Debug logging
+        console.log('Debug Data:', {
+            results: this.results,
+            chartData: this.chartData,
+            topTechnicians: {
+                area: this.topTechniciansArea,
+                national: this.topTechniciansNational
+            },
+            ranks: {
+                area: this.userAreaRank,
+                national: this.userNationalRank
+            }
+        });
     },
     computed: {
         getUserLevel() {
