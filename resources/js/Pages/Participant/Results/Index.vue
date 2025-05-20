@@ -249,39 +249,18 @@ export default {
             return index === -1 ? 0 : index + 1;
         },
         getUserLevel() {
-<<<<<<< HEAD
             const averageGrade = this.results?.reduce((acc, result) => acc + parseFloat(result.grade), 0) / (this.results?.length || 1);
             
             if (averageGrade >= 0 && averageGrade <= 30) {
                 return { level: 'starter', emoji: '🌱' };
             } else if (averageGrade > 30 && averageGrade <= 60) {  // 31-60
                 return { level: 'basic', emoji: '🥉' };
-            } else if (averageGrade > 60 && averageGrade <= 70) {  // 61-70 (69.5 masuk sini)
+            } else if (averageGrade > 60 && averageGrade <= 70) {  // 61-70
                 return { level: 'intermediate', emoji: '🥈' };
             } else if (averageGrade > 70 && averageGrade <= 90) {
                 return { level: 'advanced', emoji: '🥇' };
             } else {
                 return { level: 'expert', emoji: '💎' };
-=======
-            // Calculate user level based on average grade
-            const averageGrade = Number(this.topTechniciansNational?.find(tech => 
-                tech.participant_id === this.$page.props.auth.participant.id)?.average_grade || 0);
-            
-            let level = {
-                level: 'starter',
-                emoji: '🌱',
-                averageGrade: averageGrade
-            };
-            
-            if (averageGrade > 90) {
-                level = { level: 'expert', emoji: '💎', averageGrade: averageGrade };
-            } else if (averageGrade > 70 && averageGrade <= 90) {
-                level = { level: 'advanced', emoji: '🥇', averageGrade: averageGrade };
-            } else if (averageGrade > 60 && averageGrade <= 70) {
-                level = { level: 'intermediate', emoji: '🥈', averageGrade: averageGrade };
-            } else if (averageGrade > 30 && averageGrade <= 60) {
-                level = { level: 'basic', emoji: '🥉', averageGrade: averageGrade };
->>>>>>> b5e585f0566ef5151e758337c4ef52087859bcc7
             }
             
             return level;

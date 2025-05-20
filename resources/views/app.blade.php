@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<link rel="icon" type="image/png" href="{{ asset('assets/images/favicon.png') }}">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <!-- Meta Tags untuk SEO dan Social Media Sharing -->
         <meta name="description" content="Brempi - Aplikasi Ujian Online Brevetisasi DEFA - Platform ujian online yang memungkinkan peserta untuk mengikuti ujian brevetisasi secara digital">
