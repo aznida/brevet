@@ -416,6 +416,9 @@ export default {
                 name: 'Nilai',
                 data: averageGrades
             }];
+        },
+        mounted() {
+            console.log('Debug Data:', this.$page.props.debug);
         }
     }
 };

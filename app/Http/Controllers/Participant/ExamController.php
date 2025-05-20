@@ -444,12 +444,25 @@ class ExamController extends Controller
     {
         //get participant
         $participant = auth()->guard('participant')->user();
+        \Log::info('Participant Data:', ['participant_id' => $participant->id]);
         
         //get grades with proper relationships
         $grades = Grade::with(['exam.category'])
             ->where('participant_id', $participant->id)
             ->orderBy('created_at', 'DESC')
             ->get();
+        
+        $debugData = [
+            'participant_id' => $participant->id,
+            'grades_count' => $grades->count(),
+            'grades' => $grades->toArray()
+        ];
+            
+        \Log::info('Grades Data:', [
+            'participant_id' => $participant->id,
+            'grades_count' => $grades->count(),
+            'grades' => $grades->toArray()
+        ]);
             
         //format data untuk chart
         $chartData = [
