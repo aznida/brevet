@@ -451,19 +451,21 @@ class ExamController extends Controller
             ->where('participant_id', $participant->id)
             ->orderBy('created_at', 'DESC')
             ->get();
-        
+            
         $debugData = [
             'participant_id' => $participant->id,
             'grades_count' => $grades->count(),
             'grades' => $grades->toArray()
         ];
-            
-        \Log::info('Grades Data:', [
-            'participant_id' => $participant->id,
-            'grades_count' => $grades->count(),
-            'grades' => $grades->toArray()
-        ]);
-            
+        
+        \Log::info('Grades Data:', $debugData);
+
+        // Add debug data to be passed to frontend
+        $debug = [
+            'participant' => $participant,
+            'grades_data' => $debugData
+        ];
+
         //format data untuk chart
         $chartData = [
             'categories' => $grades->pluck('exam.category.title')->unique()->values(),
@@ -615,7 +617,8 @@ class ExamController extends Controller
             'topTechniciansArea' => $topTechniciansArea,
             'topTechniciansNational' => $topTechniciansNational,
             'userAreaRank' => $userAreaRank,
-            'userNationalRank' => $userNationalRank
+            'userNationalRank' => $userNationalRank,
+            'debug' => $debug  // Add debug data to the response
         ]);
     }
 

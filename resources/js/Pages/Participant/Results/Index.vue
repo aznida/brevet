@@ -418,7 +418,12 @@ export default {
             }];
         },
         mounted() {
-            console.log('Debug Data:', this.$page.props.debug);
+            console.log('Debug Data:', {
+                auth: this.$page.props.auth,
+                topTechnicians: this.topTechniciansNational,
+                averageGrade: Number(this.topTechniciansNational?.find(tech => 
+                    tech.participant_id === this.$page.props.auth.participant.id)?.average_grade || 0).toFixed(2)
+            });
         }
     }
 };
