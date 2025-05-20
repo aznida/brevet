@@ -87,10 +87,19 @@
                                     </tr>
                                 </tbody>
                                 </table>
+                                <!-- For Regional ranking -->
                                 <div class="mt-2 text-end">
                                     <small class="text-muted">
-                                        <i><b>Nilai Anda:</b> </i> <span class="badge bg-warning">{{ Number(topTechniciansArea.find(tech => tech.participant_id === $page.props.auth.participant.id)?.average_grade || 0).toFixed(2) }}</span>     
-                                        <i><b>     Posisi:</b> </i> <span class="badge bg-success">#{{ topTechniciansArea.findIndex(tech => tech.participant_id === $page.props.auth.participant.id) + 1 }}</span>
+                                        <i><b>Nilai Anda:</b> </i> 
+                                        <span class="badge bg-warning">
+                                            {{ Number(topTechniciansArea?.find(tech => 
+                                                String(tech.participant_id) === String($page.props.auth.participant.id))?.average_grade || 0).toFixed(2) 
+                                            }}</span>     
+                                        <i><b>     Posisi:</b> </i> 
+                                        <span class="badge bg-success">#{{ 
+                                            topTechniciansArea.findIndex(tech => 
+                                                String(tech.participant_id) === String($page.props.auth.participant.id)) + 1 
+                                        }}</span>
                                     </small>
                                 </div>
                         </div>
@@ -123,10 +132,19 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            <!-- For National ranking -->
                             <div class="mt-2 text-end">
                                 <small class="text-muted">
-                                    <i><b>Nilai Anda:</b> </i> <span class="badge bg-warning">{{ Number(topTechniciansNational.find(tech => tech.participant_id === $page.props.auth.participant.id)?.average_grade || 0).toFixed(2) }}   </span>     
-                                    <i><b>     Posisi:</b> </i> <span class="badge bg-success">#{{ topTechniciansNational.findIndex(tech => tech.participant_id === $page.props.auth.participant.id) + 1 }}</span>
+                                    <i><b>Nilai Anda:</b> </i> 
+                                    <span class="badge bg-warning">
+                                        {{ Number(topTechniciansNational?.find(tech => 
+                                            String(tech.participant_id) === String($page.props.auth.participant.id))?.average_grade || 0).toFixed(2) 
+                                        }}</span>     
+                                    <i><b>     Posisi:</b> </i> 
+                                    <span class="badge bg-success">#{{ 
+                                        topTechniciansNational.findIndex(tech => 
+                                            String(tech.participant_id) === String($page.props.auth.participant.id)) + 1 
+                                    }}</span>
                                 </small>
                             </div>
                         </div>
