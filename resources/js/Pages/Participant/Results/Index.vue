@@ -192,9 +192,13 @@ export default {
     },
     computed: {
         getUserLevel() {
-            // Calculate user level based on average grade
+            console.log('Auth Participant ID:', this.$page.props.auth.participant.id);
+            console.log('Top Technicians National:', this.topTechniciansNational);
+            
             const averageGrade = Number(this.topTechniciansNational?.find(tech => 
                 tech.participant_id === this.$page.props.auth.participant.id)?.average_grade || 0);
+            
+            console.log('Average Grade:', averageGrade);
             
             let level = {
                 level: 'starter',
