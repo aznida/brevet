@@ -3,9 +3,12 @@
     <Head>
         <title>Login Administrator - Aplikasi Ujian Online</title>
     </Head>
+    
     <div class="bg-white shadow border-0 rounded border-light p-4 p-lg-5 w-100 fmxw-500">
-        <div class="text-center text-md-center mb-4 mt-md-0">
-            <h3>ADMINISTRATOR</h3>
+        <div class="text-center text-md-center mb-5 mt-md-0">
+            <img src="/assets/images/favicon.png" alt="Brevetisasi DEFA Logo" class="brand-logo mb-2" style="height: 60px;">
+            <h4 class="mt-2" style="margin:0px">Hello, Welcome Back!</h4>
+            <span class="text-muted">Let’s make your Empower Skills</span>
         </div>
         <form @submit.prevent="submit" class="mt-4">
             <div class="form-group mb-4">

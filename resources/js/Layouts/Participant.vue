@@ -2,8 +2,8 @@
     <div class="participant-layout">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
             <div class="container position-relative">
-                <Link class="navbar-brand me-lg-3" href="/participant/dashboard">                
-                    <span class="brand-text">BREVETISASI DEFA</span>
+                <Link class="navbar-brand me-lg-3" href="/participant/dashboard">
+                    <img src="/assets/images/logo.png" alt="Brevetisasi DEFA Logo" class="brand-logo">
                 </Link>
                 <div v-if="$page.props.auth.participant" class="d-flex align-items-center gap-3 d-none d-lg-flex">
                     <Link 

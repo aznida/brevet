@@ -189,19 +189,18 @@ export default {
     },
     computed: {
         getUserLevel() {
-            // Calculate user level based on average grade
             const averageGrade = this.results?.reduce((acc, result) => acc + parseFloat(result.grade), 0) / (this.results?.length || 1);
             
-            if (averageGrade >= 90) {
-                return { level: 'expert', emoji: '💎' };
-            } else if (averageGrade >= 70) {
-                return { level: 'advanced', emoji: '🥇' };
-            } else if (averageGrade >= 60) {
-                return { level: 'intermediate', emoji: '🥈' };
-            } else if (averageGrade >= 30) {
-                return { level: 'basic', emoji: '🥉' };
-            } else {
+            if (averageGrade >= 0 && averageGrade <= 30) {
                 return { level: 'starter', emoji: '🌱' };
+            } else if (averageGrade > 30 && averageGrade <= 60) {  // 31-60
+                return { level: 'basic', emoji: '🥉' };
+            } else if (averageGrade > 60 && averageGrade <= 70) {  // 61-70 (69.5 masuk sini)
+                return { level: 'intermediate', emoji: '🥈' };
+            } else if (averageGrade > 70 && averageGrade <= 90) {
+                return { level: 'advanced', emoji: '🥇' };
+            } else {
+                return { level: 'expert', emoji: '💎' };
             }
         },
         assessmentChartOptions() {
@@ -278,45 +277,6 @@ export default {
                 name: 'Nilai',
                 data: this.chartData?.values || []
             }]
-        },
-        levelStreamChartOptions() {
-            return {
-                chart: {
-                    type: 'pie',
-                },
-                labels: ['Expert', 'Advanced', 'Intermediate', 'Basic', 'Starter'],
-                responsive: [{
-                    breakpoint: 480,
-                    options: {
-                        chart: {
-                            width: 200
-                        },
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }]
-            }
-        },
-        levelStreamSeries() {
-            const levelCounts = {
-                Expert: 0,
-                Advanced: 0,
-                Intermediate: 0,
-                Basic: 0,
-                Starter: 0
-            };
-
-            this.results?.forEach(result => {
-                const grade = parseFloat(result.grade);
-                if (grade >= 91) levelCounts.Expert++;
-                else if (grade >= 71) levelCounts.Advanced++;
-                else if (grade >= 61) levelCounts.Intermediate++;
-                else if (grade >= 31) levelCounts.Basic++;
-                else levelCounts.Starter++;
-            });
-
-            return Object.values(levelCounts);
         },
         radarChartOptions() {
             return {

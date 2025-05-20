@@ -14,6 +14,27 @@
 	<link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @inertiaHead
+    <style>
+        body {
+            position: relative;
+            background-color: #f5f8fb;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('/assets/images/presence-doodle.png');
+            background-repeat: repeat;
+            background-size: 500px;
+            opacity: 0.5;
+            z-index: -1;
+            pointer-events: none;
+        }
+    </style>
 </head>
 
 <body>
