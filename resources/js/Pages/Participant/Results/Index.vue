@@ -3,19 +3,22 @@
         <title>Result - Aplikasi Ujian Online</title>
     </Head>
     <div class="alert alert-warning mb-4" role="alert">
-                <p class="mb-0">
-                    Hai, <b>{{ $page.props.auth.participant.name }}</b>! Saat ini Anda berada di level: 
-                    <span class="badge" :class="{
-                        'bg-secondary': getUserLevel.level === 'starter',
-                        'bg-bronze': getUserLevel.level === 'basic',
-                        'bg-silver': getUserLevel.level === 'intermediate',
-                        'bg-gold': getUserLevel.level === 'advanced',
-                        'bg-diamond': getUserLevel.level === 'expert'
-                    }">
-                        {{ getUserLevel.emoji }} {{ getUserLevel.level.toUpperCase() }}
-                    </span>
-                </p>
-            </div>
+        <p class="mb-0">
+            <i class="fa fa-info-circle me-2"></i>Hai, <b>{{ $page.props.auth.participant.name }}</b>! Saat ini Anda berada di level: 
+            <span class="badge" :class="{
+                'bg-secondary': getUserLevel.level === 'starter',
+                'bg-bronze': getUserLevel.level === 'basic',
+                'bg-silver': getUserLevel.level === 'intermediate',
+                'bg-gold': getUserLevel.level === 'advanced',
+                'bg-diamond': getUserLevel.level === 'expert'
+            }">
+                {{ getUserLevel.emoji }} {{ getUserLevel.level.toUpperCase() }}
+            </span>
+            <!-- <span class="ms-2 badge bg-info">
+                Nilai: {{ Number(this.topTechniciansNational?.find(tech => tech.participant_id === $page.props.auth.participant.id)?.average_grade || 0).toFixed(2) }}
+            </span> -->
+        </p>
+    </div>
     <div class="container-fluid mb-5 mt-5 px-4"> <!-- Menambahkan padding horizontal -->
         <div class="row mb-4">
             <div class="col-12 col-md-5">
@@ -84,10 +87,20 @@
                                     </tr>
                                 </tbody>
                                 </table>
-                                <div class="mt-2 text-end">
+                                <div class="mt-2 text-end" v-if="topTechniciansArea && topTechniciansArea.length > 0">
                                     <small class="text-muted">
-                                        <i><b>Nilai Anda:</b> </i> <span class="badge bg-warning">{{ Number(topTechniciansArea.find(tech => tech.participant_id === $page.props.auth.participant.id)?.average_grade || 0).toFixed(2) }}</span>     
-                                        <i><b>     Posisi:</b> </i> <span class="badge bg-success">#{{ topTechniciansArea.findIndex(tech => tech.participant_id === $page.props.auth.participant.id) + 1 }}</span>
+                                        <i><b>Nilai Anda:</b> </i> 
+                                        <span class="badge bg-warning">
+                                            {{ Number(topTechniciansArea.find(t => 
+                                                t.participant_id === $page.props.auth.participant.id
+                                            )?.average_grade || 0).toFixed(2) }}
+                                        </span>     
+                                        <i><b>     Posisi:</b> </i> 
+                                        <span class="badge bg-success">
+                                            #{{ (topTechniciansArea.findIndex(t => 
+                                                t.participant_id === $page.props.auth.participant.id
+                                            ) + 1) || 0 }}
+                                        </span>
                                     </small>
                                 </div>
                         </div>
@@ -120,10 +133,20 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <div class="mt-2 text-end">
+                            <div class="mt-2 text-end" v-if="topTechniciansNational && topTechniciansNational.length > 0">
                                 <small class="text-muted">
-                                    <i><b>Nilai Anda:</b> </i> <span class="badge bg-warning">{{ Number(topTechniciansNational.find(tech => tech.participant_id === $page.props.auth.participant.id)?.average_grade || 0).toFixed(2) }}   </span>     
-                                    <i><b>     Posisi:</b> </i> <span class="badge bg-success">#{{ topTechniciansNational.findIndex(tech => tech.participant_id === $page.props.auth.participant.id) + 1 }}</span>
+                                    <i><b>Nilai Anda:</b> </i> 
+                                    <span class="badge bg-warning">
+                                        {{ Number(topTechniciansNational.find(t => 
+                                            t.participant_id === $page.props.auth.participant.id
+                                        )?.average_grade || 0).toFixed(2) }}
+                                    </span>     
+                                    <i><b>     Posisi:</b> </i> 
+                                    <span class="badge bg-success">
+                                        #{{ (topTechniciansNational.findIndex(t => 
+                                            t.participant_id === $page.props.auth.participant.id
+                                        ) + 1) || 0 }}
+                                    </span>
                                 </small>
                             </div>
                         </div>
@@ -172,6 +195,7 @@
 import LayoutParticipant from '../../../Layouts/Participant.vue';
 import { Head } from '@inertiajs/vue3';
 import VueApexCharts from 'vue3-apexcharts';
+import { computed } from 'vue';
 
 export default {
     layout: LayoutParticipant,
@@ -188,7 +212,44 @@ export default {
         userNationalRank: Number
     },
     computed: {
+        getAreaScore() {
+            if (!this.topTechniciansArea || !this.$page.props.auth.participant) {
+                return '0.00';
+            }
+            const tech = this.topTechniciansArea.find(t => 
+                t.participant_id === this.$page.props.auth.participant.id
+            );
+            return tech ? Number(tech.average_grade).toFixed(2) : '0.00';
+        },
+        getAreaPosition() {
+            if (!this.topTechniciansArea || !this.$page.props.auth.participant) {
+                return 0;
+            }
+            const index = this.topTechniciansArea.findIndex(t => 
+                t.participant_id === this.$page.props.auth.participant.id
+            );
+            return index === -1 ? 0 : index + 1;
+        },
+        getNationalScore() {
+            if (!this.topTechniciansNational || !this.$page.props.auth.participant) {
+                return '0.00';
+            }
+            const tech = this.topTechniciansNational.find(t => 
+                t.participant_id === this.$page.props.auth.participant.id
+            );
+            return tech ? Number(tech.average_grade).toFixed(2) : '0.00';
+        },
+        getNationalPosition() {
+            if (!this.topTechniciansNational || !this.$page.props.auth.participant) {
+                return 0;
+            }
+            const index = this.topTechniciansNational.findIndex(t => 
+                t.participant_id === this.$page.props.auth.participant.id
+            );
+            return index === -1 ? 0 : index + 1;
+        },
         getUserLevel() {
+<<<<<<< HEAD
             const averageGrade = this.results?.reduce((acc, result) => acc + parseFloat(result.grade), 0) / (this.results?.length || 1);
             
             if (averageGrade >= 0 && averageGrade <= 30) {
@@ -201,7 +262,29 @@ export default {
                 return { level: 'advanced', emoji: '🥇' };
             } else {
                 return { level: 'expert', emoji: '💎' };
+=======
+            // Calculate user level based on average grade
+            const averageGrade = Number(this.topTechniciansNational?.find(tech => 
+                tech.participant_id === this.$page.props.auth.participant.id)?.average_grade || 0);
+            
+            let level = {
+                level: 'starter',
+                emoji: '🌱',
+                averageGrade: averageGrade
+            };
+            
+            if (averageGrade > 90) {
+                level = { level: 'expert', emoji: '💎', averageGrade: averageGrade };
+            } else if (averageGrade > 70 && averageGrade <= 90) {
+                level = { level: 'advanced', emoji: '🥇', averageGrade: averageGrade };
+            } else if (averageGrade > 60 && averageGrade <= 70) {
+                level = { level: 'intermediate', emoji: '🥈', averageGrade: averageGrade };
+            } else if (averageGrade > 30 && averageGrade <= 60) {
+                level = { level: 'basic', emoji: '🥉', averageGrade: averageGrade };
+>>>>>>> b5e585f0566ef5151e758337c4ef52087859bcc7
             }
+            
+            return level;
         },
         assessmentChartOptions() {
             return {

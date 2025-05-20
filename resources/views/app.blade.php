@@ -1,6 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Meta Tags untuk SEO dan Social Media Sharing -->
+        <meta name="description" content="Brempi - Aplikasi Ujian Online Brevetisasi DEFA - Platform ujian online yang memungkinkan peserta untuk mengikuti ujian brevetisasi secara digital">
+        <meta name="keywords" content="brevetisasi, ujian online, DEFA, sertifikasi, teknisi, ujian digital, pembelajaran online, Brempi">
+        <meta name="author" content="Eko Wahyudi - DEFA">
+        <meta name="robots" content="index, follow">
+        
+        <!-- Meta Tags untuk WhatsApp dan Social Media -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://brempi.com/">
+        <meta property="og:title" content="Brempi - Brevetisasi Meraih Mimpi">
+        <meta property="og:description" content="Platform ujian online brevetisasi yang memungkinkan peserta untuk mengikuti ujian sertifikasi teknisi secara digital. Tingkatkan kompetensimu bersama DEFA!">
+        <meta property="og:image" content="https://diariumsrv.telkom.co.id/getfoto/970266">
+        
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:url" content="https://brempi.com/">
+        <meta property="twitter:title" content="Brempi - Brevetisasi Meraih Mimpi">
+        <meta property="twitter:description" content="Platform ujian online brevetisasi yang memungkinkan peserta untuk mengikuti ujian sertifikasi teknisi secara digital. Tingkatkan kompetensimu bersama DEFA!">
+        <meta property="twitter:image" content="https://diariumsrv.telkom.co.id/getfoto/970266">
+        
+        <!-- WhatsApp -->
+        <meta property="og:site_name" content="Brempi">
+        <meta property="og:locale" content="id_ID">
+        
+        <title>Brempi - Brevetisasi Meraih Mimpi</title>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">

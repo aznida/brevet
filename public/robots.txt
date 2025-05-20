@@ -1,2 +1,6 @@
 User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://brempi.com/sitemap.xml
 Disallow:
