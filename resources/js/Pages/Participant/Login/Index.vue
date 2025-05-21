@@ -8,7 +8,7 @@
                 <div class="text-center text-md-center mt-md-0">
                 <img src="/assets/images/favicon.png" alt="Brevetisasi DEFA Logo" class="brand-logo mb-2" style="height: 60px;">
                 <h4 class="mt-2" style="margin:0px">Hello, Welcome Back!</h4>
-                <span class="text-muted">Let’s make your Empower Skills</span>
+                <span class="text-muted">Let’s Empower Your Skills</span>
             </div>
                 <div v-if="errors.message" class="alert alert-danger mt-2">
                     {{ errors.message }}
@@ -73,7 +73,7 @@
                         <div class="text-center">
                             <p class="text-muted mb-3">Download Aplikasi Mobile:</p>
                             <div class="d-flex gap-2 justify-content-center">
-                                <a href="#" class="text-decoration-none">
+                                <a href="/assets/app/brempi.1.0.apk" class="text-decoration-none">
                                     <img src="/assets/images/android.png" alt="Get it on Google Play" height="40">
                                 </a>
                             </div>
