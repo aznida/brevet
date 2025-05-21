@@ -63,7 +63,7 @@
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <Link class="dropdown-item" href="/participant/profile">
+                                <Link class="dropdown-item" href="#">
                                     <i class="uil uil-user me-2"></i> Update Profil
                                 </Link>
                             </li>
