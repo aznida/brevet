@@ -56,8 +56,8 @@
             </div>
         </div>
     </div>
-    <div class="row" v-if="filteredExams.length > 0">
-        <div class="col-md-6" v-for="(data, index) in filteredExams" :key="index">
+    <div class="row" v-if="exam_groups.length > 0">
+        <div class="col-md-6" v-for="(data, index) in exam_groups" :key="index">
             <div class="card border-0 shadow mb-3">
                 <div class="card-body">
                     <h5>{{ data.exam_group.exam.title }}</h5>
@@ -89,35 +89,48 @@
                         </table>
                     </div>
                     
-                    <!-- Tampilkan tombol berdasarkan status -->
+                    <!-- cek waktu selesai -->
                     <div v-if="data.grade.end_time == null">
-                        <!-- Lanjut Kerjakan -->
-                        <div v-if="examTimeRangeChecker(data.exam_group.exam_session.start_time, data.exam_group.exam_session.end_time) && data.grade.start_time">
-                            <Link 
-                                :href="data.exam_group.exam.exam_type === 'ujian_pratik' 
-                                    ? `/participant/exam-praktik-start/${data.exam_group.id}/`
-                                    : `/participant/exam/${data.exam_group.id}/1`" 
-                                class="btn btn-md btn-info border-0 shadow w-100 mt-2">
-                                Lanjut Kerjakan
-                            </Link>
+
+                        <!-- cek apakah ujian sudah dimulai, tapi waktu masih ada -->
+                        <div v-if="examTimeRangeChecker(data.exam_group.exam_session.start_time, data.exam_group.exam_session.end_time)">
+
+                            <div v-if="data.grade.start_time == null">
+                                <button @click="openRecordingModal(data.exam_group.id)" class="btn btn-md btn-success border-0 shadow w-100 mt-2 text-white">Kerjakan</button>
+                            </div>
+
+                            <div v-else>
+                                <Link 
+                                    :href="data.exam_group.exam.exam_type === 'ujian_pratik' 
+                                        ? `/participant/exam-praktik-start/${data.exam_group.id}/`
+                                        : `/participant/exam/${data.exam_group.id}/1`" 
+                                    class="btn btn-md btn-info border-0 shadow w-100 mt-2">
+                                    Lanjut Kerjakan
+                                </Link>
+                            </div>
+
                         </div>
 
-                        <!-- Mulai Ujian -->
-                        <div v-if="examTimeRangeChecker(data.exam_group.exam_session.start_time, data.exam_group.exam_session.end_time) && !data.grade.start_time">
-                            <Link 
-                                :href="data.exam_group.exam.exam_type === 'ujian_pratik' 
-                                    ? `/participant/exam-praktik-start/${data.exam_group.id}/`
-                                    : `/participant/exam/${data.exam_group.id}/1`" 
-                                class="btn btn-md btn-primary border-0 shadow w-100 mt-2">
-                                Mulai Ujian
-                            </Link>
+                        <div v-else>
+
+                            <!-- ujian belum mulai-->
+                            <div v-if="examTimeStartChecker(data.exam_group.exam_session.start_time)">
+                                <button class="btn btn-md btn-gray-700 border-0 shadow w-100 mt-2" disabled>Belum Mulai</button>
+                            </div>
+
+                            <!-- ujian terlewat -->
+                            <div v-if="false">
+                                <button class="btn btn-md btn-danger border-0 shadow w-100 mt-2" disabled>Waktu Terlewat</button>
+                            </div>
+
                         </div>
 
-                        <!-- Belum Mulai -->
-                        <div v-if="examTimeStartChecker(data.exam_group.exam_session.start_time)">
-                            <button class="btn btn-md btn-gray-700 border-0 shadow w-100 mt-2" disabled>Belum Mulai</button>
-                        </div>
                     </div>
+
+                    <div v-else>
+                        <button class="btn btn-md btn-danger border-0 shadow w-100 mt-2" disabled>Sudah Dikerjakan</button>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -129,28 +142,95 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Peringatan Ujian -->
+    <template v-for="(data, index) in exam_groups" :key="'modal-'+index">
+        <div class="modal fade" :id="'recordingModal'+data.exam_group.id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title fw-bold">⚠️ PERINGATAN UJIAN!</h5>
+                    </div>
+                    <div class="modal-body p-4">
+                        <div class="alert alert-warning">
+                            <p class="mb-2"><b>⚠️ Perhatian!</b></p>
+                            <ul class="mb-0">
+                                <li>Dilarang keras bekerja sama dalam bentuk apapun selama ujian berlangsung</li>
+                                <li>Dilarang membuka tab baru atau mencari jawaban di Google</li>
+                                <li>Konsekuensi pelanggaran: <b>DIBERHENTIKAN KONTRAK!</b></li>
+                                <li>Sistem akan merekam <b>Layar, Camera Device</b> dan <b>Suara</b> melalui mikrofon selama ujian berlangsung</li>
+                                <li>Jawaban perserta akan <b>otomatis disimpan</b>, jika ada kendala dengan device / jaringan dapat dilanjutkan kembali sesuai waktu yang telah ditentukan.</li>
+                            </ul>
+                        </div>
+                        <div class="form-check mt-3">
+                            <input class="form-check-input" 
+                                type="checkbox" 
+                                v-model="recordingConsents[data.exam_group.id]" 
+                                :id="'consent'+data.exam_group.id">
+                            <label class="form-check-label" :for="'consent'+data.exam_group.id">
+                                Saya memahami dan menyetujui semua ketentuan di atas
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <Link 
+                            v-if="recordingConsents[data.exam_group.id]"
+                            :href="`/participant/exam-confirmation/${data.exam_group.id}`" 
+                            class="btn btn-primary"
+                        >OK</Link>
+                        <button 
+                            type="button" 
+                            class="btn btn-secondary" 
+                            @click="closeModal(data.exam_group.id)"
+                        >Batal</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
 </template>
 
 <script>
     //import layout participant
     import LayoutParticipant from '../../../Layouts/Participant.vue';
-    import { Link } from '@inertiajs/vue3';
-    import { ref, computed, onMounted } from 'vue';
+    import { Link, Head } from '@inertiajs/vue3';  // Add Head import here
+    import { ref, onMounted } from 'vue';
     import { router } from '@inertiajs/vue3';
 
     export default {
         layout: LayoutParticipant,
         components: {
             Link,
+            Head,  // Register Head component
         },
         props: {
             exam_groups: Array,
             auth: Object
         },
         setup(props) {
-            const recordingConsent = ref(false);
+            const recordingConsents = ref({});
             const privacyConsent = ref(false);
             const showAlert = ref(false);
+
+            const openRecordingModal = (examGroupId) => {
+                recordingConsents.value[examGroupId] = false;
+                const modal = new bootstrap.Modal(document.getElementById('recordingModal' + examGroupId));
+                modal.show();
+            };
+
+            const closeModal = (examGroupId) => {
+                const modalElement = document.getElementById('recordingModal' + examGroupId);
+                if (modalElement) {
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) {
+                        modal.hide();
+                        recordingConsents.value[examGroupId] = false;
+                        document.body.classList.remove('modal-open');
+                        const backdrop = document.querySelector('.modal-backdrop');
+                        if (backdrop) backdrop.remove();
+                    }
+                }
+            };
 
             const closeAlert = () => {
                 showAlert.value = false;
@@ -203,63 +283,16 @@
                 });
             };
 
-            const openRecordingModal = (examGroupId) => {
-                const modal = new bootstrap.Modal(document.getElementById('recordingModal' + examGroupId));
-                modal.show();
-            };
-
-            const closeModal = (examGroupId) => {
-                const modalElement = document.getElementById('recordingModal' + examGroupId);
-                const modal = bootstrap.Modal.getInstance(modalElement);
-                modal.hide();
-                document.body.classList.remove('modal-open');
-                const backdrop = document.querySelector('.modal-backdrop');
-                if (backdrop) {
-                    backdrop.remove();
-                }
-            };
-
-            const filteredExams = computed(() => {
-                if (!props.exam_groups) return [];
-                
-                return props.exam_groups.filter(data => {
-                    if (!data.exam_group || !data.exam_group.exam_session) return false;
-                    
-                    const now = new Date();
-                    const endDate = new Date(data.exam_group.exam_session.end_time);
-                    
-                    // Filter ujian yang:
-                    // 1. Belum selesai (end_time masih null)
-                    // 2. Waktu ujian belum terlewat
-                    // 3. Belum dikerjakan (start_time masih null) atau sedang dikerjakan
-                    return !data.grade.end_time && // belum selesai
-                           now <= endDate && // belum terlewat
-                           (!data.grade.start_time || examTimeRangeChecker(data.exam_group.exam_session.start_time, data.exam_group.exam_session.end_time));
-                });
-            });
-
-            const examTimeStartChecker = (start_time) => {
-                return new Date(start_time) > new Date();
-            };
-
-            const examTimeRangeChecker = (start_time, end_time) => {
-                const now = new Date();
-                const startDate = new Date(start_time);
-                const endDate = new Date(end_time);
-                return now >= startDate && now <= endDate;
-            };
-
+            // Remove duplicate openRecordingModal declaration
+            
             return {
-                recordingConsent,
+                recordingConsents,
                 privacyConsent,
                 openRecordingModal,
                 closeModal,
                 acceptPrivacyPolicy,
                 showAlert,
-                closeAlert,
-                filteredExams,           // Add this line
-                examTimeStartChecker,    // Add this line
-                examTimeRangeChecker     // Add this line
+                closeAlert
             };
         }
     }
@@ -273,5 +306,20 @@
 
 .modal-content {
     margin: 0 auto;
+}
+
+.modal {
+    z-index: 1050 !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+}
+
+.modal-backdrop {
+    display: none !important;
+}
+
+.modal-dialog-centered {
+    display: flex;
+    align-items: center;
+    min-height: calc(100% - 1rem);
 }
 </style>
