@@ -14,9 +14,11 @@
             }">
                 {{ getUserLevel.emoji }} {{ getUserLevel.level.toUpperCase() }}
             </span>
-            <!-- <span class="ms-2 badge bg-info">
-                Nilai: {{ Number(this.topTechniciansNational?.find(tech => tech.participant_id === $page.props.auth.participant.id)?.average_grade || 0).toFixed(2) }}
-            </span> -->
+            <span class="ms-2 badge bg-info">
+                Nilai: {{ Number(topTechniciansArea?.find(tech => 
+                                                String(tech.participant_id) === String($page.props.auth.participant.id))?.average_grade || 0).toFixed(2) 
+                                            }}
+            </span>
         </p>
     </div>
     <div class="container-fluid mb-5 mt-5 px-4"> <!-- Menambahkan padding horizontal -->
