@@ -97,7 +97,9 @@
 
     //import reactive
     import {
-        reactive
+        reactive,
+        ref,
+        onMounted
     } from 'vue';
 
     export default {
@@ -124,6 +126,15 @@
                 password: '',
             });
 
+            // State to check if the device is Android
+            const isAndroid = ref(false);
+
+            // Check user agent on mounted
+            onMounted(() => {
+                const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+                isAndroid.value = /android/i.test(userAgent);
+            });
+
             //submit method
             const submit = () => {
 
@@ -140,7 +151,8 @@
             return {
                 form,
                 submit,
-                router
+                router,
+                isAndroid
             }
         }
 
