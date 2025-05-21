@@ -127,6 +127,12 @@ Route::post('/participants/login', \App\Http\Controllers\Participant\LoginContro
 
 //prefix "participant"
 Route::prefix('participant')->group(function() {
+    // for rorgot password
+    Route::get('/forgot-password', [\App\Http\Controllers\Participant\ForgotPasswordController::class, 'index'])
+        ->name('participant.password.request');
+    Route::post('/forgot-password', [\App\Http\Controllers\Participant\ForgotPasswordController::class, 'sendResetLink'])
+        ->name('participant.password.email');
+
     //middleware "participant"
     Route::group(['middleware' => 'participant'], function () {
         
@@ -192,4 +198,6 @@ Route::prefix('participant')->group(function() {
     // Pindahkan route accept-privacy ke dalam middleware
     Route::post('/accept-privacy', [App\Http\Controllers\Participant\DashboardController::class, 'acceptPrivacy'])
         ->name('participant.accept-privacy');
+
+    
 });

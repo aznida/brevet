@@ -53,6 +53,15 @@
                                     Remember me
                                 </label>
                             </div>
+                            <div class="ms-auto">
+                                <a 
+                                    href="#"
+                                    class="small text-right"
+                                    @click.prevent="router.get('/participant/forgot-password')"
+                                    >
+                                    Forgot Password?
+                                </a>
+                            </div>
                         </div>
 
                     </div>
@@ -83,7 +92,7 @@
     //import Head from Inertia
     import {
         Head,
-        router
+        router,
     } from '@inertiajs/vue3';
 
     //import reactive
@@ -130,7 +139,8 @@
             //return
             return {
                 form,
-                submit
+                submit,
+                router
             }
         }
 
