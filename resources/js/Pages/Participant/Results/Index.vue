@@ -79,7 +79,7 @@
                                 <!-- Top Teknisi Area -->
                                 <tbody>
                                     <tr v-for="(tech, index) in topTechniciansArea.slice(0, 10)" :key="index" 
-                                        :class="{ 'table-posisi': tech.participant_id === $page.props.auth.participant.id }">
+                                        :class="{ 'table-posisi': String(tech.participant_id) === String($page.props.auth.participant.id) }">
                                         <td class="text-center">{{ index + 1 }}</td>
                                         <td>{{ tech.participant?.name }}</td>
                                         <td>{{ tech.participant?.area?.title }}</td>
@@ -124,7 +124,7 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="(tech, index) in topTechniciansNational.slice(0, 10)" :key="index"
-                                        :class="{ 'table-posisi': tech.participant_id === $page.props.auth.participant.id }">
+                                        :class="{ 'table-posisi': String(tech.participant_id) === String($page.props.auth.participant.id) }">
                                         <td class="text-center">{{ index + 1 }}</td>
                                         <td>{{ tech.participant?.name }}</td>
                                         <td>{{ tech.participant?.area?.title }}</td>
@@ -208,16 +208,6 @@ export default {
         userAreaRank: Number,
         userNationalRank: Number,
         debugInfo: Object
-    },
-    mounted() {
-        console.log('Debug Information:', {
-            participant: this.$page.props.auth.participant,
-            debugInfo: this.debugInfo,
-            technicians: {
-                national: this.topTechniciansNational,
-                area: this.topTechniciansArea
-            }
-        });
     },
     mounted() {
         // Debug logging
