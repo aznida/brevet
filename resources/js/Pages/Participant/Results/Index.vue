@@ -231,8 +231,8 @@ export default {
             console.log('Auth Participant ID:', this.$page.props.auth.participant.id);
             console.log('Top Technicians National:', this.topTechniciansNational);
             
-            const averageGrade = Number(this.topTechniciansNational?.find(tech => 
-                tech.participant_id === this.$page.props.auth.participant.id)?.average_grade || 0);
+            const averageGrade = Number(this.topTechniciansArea?.find(tech =>  
+                String(tech.participant_id) === String(this.$page.props.auth.participant.id))?.average_grade || 0);
             
             console.log('Average Grade:', averageGrade);
             
