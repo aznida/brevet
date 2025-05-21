@@ -46,6 +46,9 @@ class ForgotPasswordController extends Controller
         // Generate reset link
         $resetLink = url('/participant/reset-password/'.$token);
 
+        // Generate public URL for the logo
+        $logoUrl = asset('/assets/images/Logo-color.png');
+
         // Read the HTML template file
         $htmlTemplatePath = resource_path('views/emails/participant/forgot-password.html');
         $htmlContent = File::get($htmlTemplatePath);
@@ -53,16 +56,13 @@ class ForgotPasswordController extends Controller
         // Replace placeholders in the HTML content
         $htmlContent = str_replace('{name}', $participant->name, $htmlContent);
         $htmlContent = str_replace('{reset_link}', $resetLink, $htmlContent);
+        $htmlContent = str_replace('{logo_url}', $logoUrl, $htmlContent); // Replace logo placeholder
 
         // Send email using Mail::html()
         Mail::html($htmlContent, function($message) use ($participant) {
             $message->to($participant->email);
             $message->subject('Reset Password Notification');
         });
-
-        // After sending email, add this:
-        \Log::info('Email sent to: ' . $participant->email);
-        \Log::info('Reset link: ' . $resetLink);
 
         return Inertia::render('Participant/Login/ForgotPassword', [
             'status' => 'We have emailed your password reset link!'
