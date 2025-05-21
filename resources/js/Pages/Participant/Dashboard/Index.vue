@@ -102,6 +102,17 @@
                             </Link>
                         </div>
 
+                        <!-- Mulai Ujian -->
+                        <div v-if="examTimeRangeChecker(data.exam_group.exam_session.start_time, data.exam_group.exam_session.end_time) && !data.grade.start_time">
+                            <Link 
+                                :href="data.exam_group.exam.exam_type === 'ujian_pratik' 
+                                    ? `/participant/exam-praktik-start/${data.exam_group.id}/`
+                                    : `/participant/exam/${data.exam_group.id}/1`" 
+                                class="btn btn-md btn-primary border-0 shadow w-100 mt-2">
+                                Mulai Ujian
+                            </Link>
+                        </div>
+
                         <!-- Belum Mulai -->
                         <div v-if="examTimeStartChecker(data.exam_group.exam_session.start_time)">
                             <button class="btn btn-md btn-gray-700 border-0 shadow w-100 mt-2" disabled>Belum Mulai</button>
@@ -214,14 +225,16 @@
                 return props.exam_groups.filter(data => {
                     if (!data.exam_group || !data.exam_group.exam_session) return false;
                     
-                    const isNotCompleted = !data.grade.end_time;
-                    const isBelumMulai = examTimeStartChecker(data.exam_group.exam_session.start_time);
-                    const isLanjutKerjakan = examTimeRangeChecker(
-                        data.exam_group.exam_session.start_time, 
-                        data.exam_group.exam_session.end_time
-                    ) && data.grade.start_time;
+                    const now = new Date();
+                    const endDate = new Date(data.exam_group.exam_session.end_time);
                     
-                    return isNotCompleted && (isBelumMulai || isLanjutKerjakan);
+                    // Filter ujian yang:
+                    // 1. Belum selesai (end_time masih null)
+                    // 2. Waktu ujian belum terlewat
+                    // 3. Belum dikerjakan (start_time masih null) atau sedang dikerjakan
+                    return !data.grade.end_time && // belum selesai
+                           now <= endDate && // belum terlewat
+                           (!data.grade.start_time || examTimeRangeChecker(data.exam_group.exam_session.start_time, data.exam_group.exam_session.end_time));
                 });
             });
 
