@@ -62,8 +62,8 @@
 
 <script>
 import LayoutParticipant from '../../../Layouts/Participant.vue';
-import { Head, router } from '@inertiajs/vue3';
-import { reactive } from 'vue';
+import { reactive, computed } from 'vue';
+import { router, Head, usePage } from '@inertiajs/vue3';
 
 export default {
     layout: LayoutParticipant,
@@ -72,9 +72,12 @@ export default {
     },
     props: {
         errors: Object,
-        status: String
+        status: String,
     },
-    setup() {
+    setup(props) {
+        const page = usePage();
+        const flashMessage = computed(() => page.props.flash?.message || page.props.status);
+
         const form = reactive({
             identifier: '',
             processing: false
@@ -85,6 +88,11 @@ export default {
             router.post('/participant/forgot-password', {
                 identifier: form.identifier
             }, {
+                preserveScroll: true,
+                onSuccess: (page) => {
+                    console.log('Response:', page);
+                    form.identifier = '';
+                },
                 onFinish: () => form.processing = false
             });
         };
@@ -92,7 +100,8 @@ export default {
         return {
             form,
             submit,
-            router // Add this line to expose router
+            router,
+            status: flashMessage
         };
     }
 };
