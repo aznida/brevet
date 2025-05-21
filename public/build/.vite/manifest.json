@@ -5,7 +5,15 @@
     "isEntry": true
   },
   "resources/js/app.js": {
+<<<<<<< HEAD
     "file": "assets/app-Cv5ZUuSM.js",
+=======
+<<<<<<< HEAD
+    "file": "assets/app-DP0UC7wr.js",
+=======
+    "file": "assets/app-Di-GXfKT.js",
+>>>>>>> 6360823be6be4216bf42498cac4c2f421245e3f7
+>>>>>>> a8202266ea1d8c1630467c24659899ceff440b88
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,

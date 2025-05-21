@@ -125,14 +125,19 @@ Route::get('/', function () {
 //login participants
 Route::post('/participants/login', \App\Http\Controllers\Participant\LoginController::class)->name('participant.login');
 
+// forgot password routes
+Route::get('/participant/forgot-password', [\App\Http\Controllers\Participant\ForgotPasswordController::class, 'index'])
+    ->name('participant.password.request');
+Route::post('/participant/forgot-password', [\App\Http\Controllers\Participant\ForgotPasswordController::class, 'sendResetLink'])
+    ->name('participant.password.email');
+Route::get('/participant/reset-password/{token}', [\App\Http\Controllers\Participant\ForgotPasswordController::class, 'showResetForm'])
+    ->name('participant.password.reset');
+Route::post('/participant/reset-password', [\App\Http\Controllers\Participant\ForgotPasswordController::class, 'resetPassword'])
+    ->name('participant.password.update');
+
 //prefix "participant"
 Route::prefix('participant')->group(function() {
-    // for rorgot password
-    Route::get('/forgot-password', [\App\Http\Controllers\Participant\ForgotPasswordController::class, 'index'])
-        ->name('participant.password.request');
-    Route::post('/forgot-password', [\App\Http\Controllers\Participant\ForgotPasswordController::class, 'sendResetLink'])
-        ->name('participant.password.email');
-
+    
     //middleware "participant"
     Route::group(['middleware' => 'participant'], function () {
         
