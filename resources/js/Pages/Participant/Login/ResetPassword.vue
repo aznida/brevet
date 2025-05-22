@@ -5,9 +5,9 @@
     <div class="row justify-content-center mt-5">
         <div class="col-md-5">
             <div class="bg-white shadow border-0 rounded border-light p-4 p-lg-5 w-100 fmxw-500">
-                <!-- Add flash message display -->
-                <div v-if="flash.status" class="alert alert-success mt-2">
-                    {{ flash.status }}
+                <!-- Update flash message check -->
+                <div v-if="$page.props.flash?.status" class="alert alert-success mt-2">
+                    {{ $page.props.flash.status }}
                 </div>
 
                 <div class="text-center text-md-center mb-4 mt-md-0">
@@ -83,7 +83,7 @@
 <script>
 import LayoutParticipant from '../../../Layouts/Participant.vue';
 import { reactive } from 'vue';
-import { router, Head } from '@inertiajs/vue3';
+import { router, Head, usePage } from '@inertiajs/vue3'; // Add usePage
 
 export default {
     layout: LayoutParticipant,
@@ -93,9 +93,9 @@ export default {
     props: {
         errors: Object,
         token: String,
-        flash: Object  // Add this prop to receive flash messages
     },
     setup(props) {
+        const page = usePage();
         const form = reactive({
             email: '',
             password: '',
@@ -109,7 +109,6 @@ export default {
             router.post('/participant/reset-password', form, {
                 preserveScroll: true,
                 onSuccess: () => {
-                    // Redirect to login page after a short delay to show the message
                     setTimeout(() => {
                         router.visit('/');
                     }, 2000);
@@ -124,7 +123,8 @@ export default {
         return {
             form,
             submit,
-            router
+            router,
+            page
         };
     }
 };
