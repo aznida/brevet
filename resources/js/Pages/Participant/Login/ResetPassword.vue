@@ -5,9 +5,18 @@
     <div class="row justify-content-center mt-5">
         <div class="col-md-5">
             <div class="bg-white shadow border-0 rounded border-light p-4 p-lg-5 w-100 fmxw-500">
-                <!-- Update flash message check -->
+                <!-- Flash Messages -->
                 <div v-if="$page.props.flash?.status" class="alert alert-success mt-2">
                     {{ $page.props.flash.status }}
+                </div>
+
+                <!-- Error Messages -->
+                <div v-if="Object.keys($page.props.errors).length > 0" class="alert alert-danger mt-2">
+                    <ul class="mb-0">
+                        <li v-for="(error, key) in $page.props.errors" :key="key">
+                            {{ error }}
+                        </li>
+                    </ul>
                 </div>
 
                 <div class="text-center text-md-center mb-4 mt-md-0">
@@ -83,7 +92,7 @@
 <script>
 import LayoutParticipant from '../../../Layouts/Participant.vue';
 import { reactive, watch } from 'vue';
-import { router, Head, usePage } from '@inertiajs/vue3'; // Add usePage
+import { router, Head, usePage } from '@inertiajs/vue3';
 
 export default {
     layout: LayoutParticipant,
@@ -97,11 +106,6 @@ export default {
     setup(props) {
         const page = usePage();
         
-        // Add watcher for page props
-        watch(() => page.props, (newProps) => {
-            console.log('Page Props Updated:', newProps);
-            console.log('Flash Status:', newProps.flash?.status);
-        }, { deep: true });
         const form = reactive({
             email: '',
             password: '',
@@ -114,20 +118,14 @@ export default {
             form.processing = true;
             router.post('/participant/reset-password', form, {
                 preserveScroll: true,
-                onSuccess: (response) => {
-                    console.log('Success Response:', response);
-                    console.log('Page Props:', page.props);
-                    console.log('Flash Message:', page.props.flash);
-                    setTimeout(() => {
-                        router.visit('/');
-                    }, 2000);
+                onSuccess: () => {
+                    // Only redirect on success
+                    router.visit('/');
                 },
-                onError: (errors) => {
-                    console.log('Errors:', errors);
+                onError: () => {
                     form.processing = false;
                 },
                 onFinish: () => {
-                    console.log('Request finished');
                     form.processing = false;
                 }
             });
