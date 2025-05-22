@@ -271,6 +271,16 @@
 
             //method clickQuestion
             const clickQuestion = ((index) => {
+            // Log question status
+            console.log('Question Click Status:', {
+                questionNumber: index + 1,
+                currentAnswer: props.all_questions[index].answer,
+                isAnswered: props.all_questions[index].answer !== 0 && 
+                           props.all_questions[index].answer !== null && 
+                           props.all_questions[index].answer !== undefined,
+                totalAnswered: props.question_answered
+            });
+
             // Update duration
             axios.put(`/participant/exam-duration/update/${props.duration.id}`, {
                 duration: duration.value
