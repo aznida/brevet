@@ -96,7 +96,7 @@
                                 <!-- Unanswered question (white/outline) -->
                                 <button 
                                     @click.prevent="clickQuestion(index)" 
-                                    v-else-if="question.answer === 0 || question.answer === null" 
+                                    v-else-if="question.answer === 0 || question.answer === null || question.answer === undefined" 
                                     class="btn btn-outline-info btn-sm w-100"
                                 >
                                     {{ index + 1 }}
