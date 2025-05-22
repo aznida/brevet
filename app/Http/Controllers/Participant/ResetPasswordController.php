@@ -27,36 +27,57 @@ class ResetPasswordController extends Controller
             'password' => 'required|min:8|confirmed',
         ]);
 
+        // Debug logs
+        Log::info('Reset Password Request:', [
+            'token' => $request->token,
+            'email' => $request->email,
+            'password' => $request->password // Temporary for debugging
+        ]);
+
         $passwordReset = DB::table('password_resets')
             ->where('token', $request->token)
             ->first();
+
+        Log::info('Password Reset Record:', [
+            'found' => $passwordReset ? 'yes' : 'no',
+            'reset_data' => $passwordReset
+        ]);
 
         if (!$passwordReset) {
             return back()->withErrors(['email' => 'Invalid token!']);
         }
 
-        // Fix the email comparison logic
         if ($passwordReset->email !== $request->email) {
+            Log::info('Email Mismatch:', [
+                'reset_email' => $passwordReset->email,
+                'request_email' => $request->email
+            ]);
             return back()->withErrors(['email' => 'Email address does not match!']);
         }
 
         $participant = Participant::where('email', $request->email)->first();
 
+        Log::info('Participant Found:', [
+            'found' => $participant ? 'yes' : 'no',
+            'participant_data' => $participant
+        ]);
+
         if (!$participant) {
             return back()->withErrors(['email' => 'We cannot find a participant with that email address.']);
         }
 
-        $participant->password = Hash::make($request->password);
+        // Temporarily store password without encryption
+        $participant->password = $request->password;
         $participant->save();
 
         DB::table('password_resets')->where('email', $request->email)->delete();
 
-        Log::info('Password reset successful', [
+        Log::info('Password reset completed', [
             'participant_email' => $participant->email,
+            'new_password' => $request->password, // Temporary for debugging
             'reset_time' => now()->format('Y-m-d H:i:s')
         ]);
 
-        // Update the redirect to use the root URL
         return redirect('/')->with('status', 'Your password has been reset!');
     }
 }
