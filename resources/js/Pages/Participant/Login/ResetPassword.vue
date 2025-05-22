@@ -82,7 +82,7 @@
 
 <script>
 import LayoutParticipant from '../../../Layouts/Participant.vue';
-import { reactive } from 'vue';
+import { reactive, watch } from 'vue';
 import { router, Head, usePage } from '@inertiajs/vue3'; // Add usePage
 
 export default {
@@ -96,6 +96,12 @@ export default {
     },
     setup(props) {
         const page = usePage();
+        
+        // Add watcher for page props
+        watch(() => page.props, (newProps) => {
+            console.log('Page Props Updated:', newProps);
+            console.log('Flash Status:', newProps.flash?.status);
+        }, { deep: true });
         const form = reactive({
             email: '',
             password: '',
@@ -108,15 +114,22 @@ export default {
             form.processing = true;
             router.post('/participant/reset-password', form, {
                 preserveScroll: true,
-                onSuccess: () => {
+                onSuccess: (response) => {
+                    console.log('Success Response:', response);
+                    console.log('Page Props:', page.props);
+                    console.log('Flash Message:', page.props.flash);
                     setTimeout(() => {
                         router.visit('/');
                     }, 2000);
                 },
-                onError: () => {
+                onError: (errors) => {
+                    console.log('Errors:', errors);
                     form.processing = false;
                 },
-                onFinish: () => form.processing = false
+                onFinish: () => {
+                    console.log('Request finished');
+                    form.processing = false;
+                }
             });
         };
 
