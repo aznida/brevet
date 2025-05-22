@@ -35,7 +35,8 @@ class ResetPasswordController extends Controller
             return back()->withErrors(['email' => 'Invalid token!']);
         }
 
-        if (!$passwordReset->email === $request->email) {
+        // Fix the email comparison logic
+        if ($passwordReset->email !== $request->email) {
             return back()->withErrors(['email' => 'Email address does not match!']);
         }
 
