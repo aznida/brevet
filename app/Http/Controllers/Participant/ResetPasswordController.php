@@ -8,6 +8,7 @@ use App\Models\Participant;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Log; // Add this at the top with other imports
 
 class ResetPasswordController extends Controller
 {
@@ -48,6 +49,12 @@ class ResetPasswordController extends Controller
         $participant->save();
 
         DB::table('password_resets')->where('email', $request->email)->delete();
+
+        // Add logging
+        Log::info('Password reset successful', [
+            'participant_email' => $participant->email,
+            'reset_time' => now()->format('Y-m-d H:i:s')
+        ]);
 
         return redirect()->route('participant.login')->with('status', 'Your password has been reset!');
     }

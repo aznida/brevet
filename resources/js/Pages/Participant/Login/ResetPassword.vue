@@ -5,6 +5,11 @@
     <div class="row justify-content-center mt-5">
         <div class="col-md-5">
             <div class="bg-white shadow border-0 rounded border-light p-4 p-lg-5 w-100 fmxw-500">
+                <!-- Add flash message display -->
+                <div v-if="flash.status" class="alert alert-success mt-2">
+                    {{ flash.status }}
+                </div>
+
                 <div class="text-center text-md-center mb-4 mt-md-0">
                     <img src="/assets/images/favicon.png" alt="Brevetisasi DEFA Logo" class="brand-logo mb-2" style="height: 60px;">
                     <h4 class="mt-2" style="margin:0px">Reset Password</h4>
@@ -87,7 +92,8 @@ export default {
     },
     props: {
         errors: Object,
-        token: String
+        token: String,
+        flash: Object  // Add this prop to receive flash messages
     },
     setup(props) {
         const form = reactive({
@@ -102,6 +108,15 @@ export default {
             form.processing = true;
             router.post('/participant/reset-password', form, {
                 preserveScroll: true,
+                onSuccess: () => {
+                    // Redirect to login page after a short delay to show the message
+                    setTimeout(() => {
+                        router.visit('/');
+                    }, 2000);
+                },
+                onError: () => {
+                    form.processing = false;
+                },
                 onFinish: () => form.processing = false
             });
         };
