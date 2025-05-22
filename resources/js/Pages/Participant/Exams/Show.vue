@@ -271,6 +271,12 @@
 
             //method clickQuestion
             const clickQuestion = ((index) => {
+            // Tambahkan log untuk status soal
+            console.log(`Status Soal ${index + 1}:`, {
+                'Nomor': index + 1,
+                'Status': props.all_questions[index].answer === 0 ? 'Belum dikerjakan (putih)' : 'Sudah dikerjakan (biru)',
+                'Jawaban': props.all_questions[index].answer
+            });
 
                 //update duration
                 axios.put(`/participant/exam-duration/update/${props.duration.id}`, {
