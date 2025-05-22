@@ -271,20 +271,16 @@
 
             //method clickQuestion
             const clickQuestion = ((index) => {
-            // Tambahkan log untuk status soal
-            console.log(`Status Soal ${index + 1}:`, {
-                'Nomor': index + 1,
-                'Status': props.all_questions[index].answer === 0 ? 'Belum dikerjakan (putih)' : 'Sudah dikerjakan (biru)',
-                'Jawaban': props.all_questions[index].answer
+            // Update duration
+            axios.put(`/participant/exam-duration/update/${props.duration.id}`, {
+                duration: duration.value
             });
 
-                //update duration
-                axios.put(`/participant/exam-duration/update/${props.duration.id}`, {
-                    duration: duration.value
-                });
-
-                //redirect to questin
-                router.get(`/participant/exam/${props.id}/${index + 1}`);
+            // Pastikan soal yang belum dijawab tetap memiliki status yang benar
+            let currentQuestion = props.all_questions[index];
+            
+            // Redirect ke halaman soal yang dipilih
+            router.get(`/participant/exam/${props.id}/${index + 1}`);
             });
 
             //method submit answer
