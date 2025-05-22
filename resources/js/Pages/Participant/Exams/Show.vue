@@ -96,7 +96,7 @@
                                 <!-- Unanswered question (white/outline) -->
                                 <button 
                                     @click.prevent="clickQuestion(index)" 
-                                    v-else-if="question.answer === 0 || question.answer === null || question.answer === undefined" 
+                                    v-else-if="!Boolean(question.answer)" 
                                     class="btn btn-outline-info btn-sm w-100"
                                 >
                                     {{ index + 1 }}
@@ -275,9 +275,7 @@
             console.log('Question Click Status:', {
                 questionNumber: index + 1,
                 currentAnswer: props.all_questions[index].answer,
-                isAnswered: props.all_questions[index].answer !== 0 && 
-                           props.all_questions[index].answer !== null && 
-                           props.all_questions[index].answer !== undefined,
+                isAnswered: Boolean(props.all_questions[index].answer),
                 totalAnswered: props.question_answered
             });
 
