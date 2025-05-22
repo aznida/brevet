@@ -119,8 +119,10 @@ export default {
             router.post('/participant/reset-password', form, {
                 preserveScroll: true,
                 onSuccess: () => {
-                    // Only redirect on success
-                    router.visit('/');
+                    // Change the redirect path to the root URL
+                    router.visit('/', {
+                        replace: true
+                    });
                 },
                 onError: () => {
                     form.processing = false;

@@ -50,12 +50,12 @@ class ResetPasswordController extends Controller
 
         DB::table('password_resets')->where('email', $request->email)->delete();
 
-        // Add logging
         Log::info('Password reset successful', [
             'participant_email' => $participant->email,
             'reset_time' => now()->format('Y-m-d H:i:s')
         ]);
 
-        return redirect()->route('participant.login')->with('status', 'Your password has been reset!');
+        // Update the redirect to use the root URL
+        return redirect('/')->with('status', 'Your password has been reset!');
     }
 }
