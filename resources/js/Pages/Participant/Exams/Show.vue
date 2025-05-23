@@ -96,7 +96,7 @@
                                 <!-- Unanswered question (white/outline) -->
                                 <button 
                                     @click.prevent="clickQuestion(index)" 
-                                    v-else-if="question.answer === 0 || question.answer === null" 
+                                    v-else-if="question.answer === '0' || question.answer === 0 || question.answer === null || question.answer === undefined || question.answer === ''" 
                                     class="btn btn-outline-info btn-sm w-100"
                                 >
                                     {{ index + 1 }}
@@ -271,16 +271,27 @@
 
             //method clickQuestion
             const clickQuestion = ((index) => {
-            // Update duration
-            axios.put(`/participant/exam-duration/update/${props.duration.id}`, {
-                duration: duration.value
-            });
-
-            // Pastikan soal yang belum dijawab tetap memiliki status yang benar
-            let currentQuestion = props.all_questions[index];
+                // Cek status jawaban dari soal yang aktif
+                const isAnswered = props.question_active && 
+                              props.question_active.answer && 
+                              props.question_active.answer !== '0' && 
+                              props.question_active.answer !== 0;
+                
+                // Log status soal untuk debugging
+                console.log('Status Soal:', {
+                    nomorSoal: index + 1,
+                    jawabanSekarang: props.question_active?.answer,
+                    statusJawaban: isAnswered ? 'Sudah dijawab' : 'Belum dijawab',
+                    totalSoalDijawab: props.question_answered
+                });
             
-            // Redirect ke halaman soal yang dipilih
-            router.get(`/participant/exam/${props.id}/${index + 1}`);
+                // Update duration
+                axios.put(`/participant/exam-duration/update/${props.duration.id}`, {
+                    duration: duration.value
+                });
+            
+                // Redirect ke halaman soal yang dipilih
+                router.get(`/participant/exam/${props.id}/${index + 1}`);
             });
 
             //method submit answer
