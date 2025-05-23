@@ -14,7 +14,16 @@
                             <!-- Question input always shown -->
                             <div class="mb-4">
                                 <label>Soal</label>
-                                <QuillEditor theme="snow" v-model:content="form.question" contentType="html" />
+                                <QuillEditor
+                                    v-model:content="form.question"
+                                    contentType="html"
+                                    theme="snow"
+                                    :toolbar="[
+                                        ['bold', 'italic', 'underline'],
+                                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                        ['link', 'image'],
+                                    ]"
+                                />
                             </div>
 
                             <!-- Multiple Choice Form -->
@@ -24,7 +33,16 @@
                                         <tr>
                                             <td style="width:20%" class="fw-bold">Pilihan A</td>
                                             <td>
-                                                <QuillEditor theme="snow" v-model:content="form.option_1" contentType="html" />
+                                                <QuillEditor
+                                                    v-model:content="form.option_1"
+                                                    contentType="html"
+                                                    theme="snow"
+                                                    :toolbar="[
+                                                        ['bold', 'italic', 'underline'],
+                                                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                                        ['link', 'image'],
+                                                    ]"
+                                                />
                                                 <div v-if="exam.title.toLowerCase().includes('attitude') || exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
                                                     <label>Bobot Pilihan A</label>
                                                     <input type="number" class="form-control" v-model="form.option_1_weight" min="0" max="100" />
@@ -34,7 +52,16 @@
                                         <tr>
                                             <td style="width:20%" class="fw-bold">Pilihan B</td>
                                             <td>
-                                                <QuillEditor theme="snow" v-model:content="form.option_2" contentType="html" />
+                                                <QuillEditor
+                                                    v-model:content="form.option_2"
+                                                    contentType="html"
+                                                    theme="snow"
+                                                    :toolbar="[
+                                                        ['bold', 'italic', 'underline'],
+                                                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                                        ['link', 'image'],
+                                                    ]"
+                                                />
                                                 <div v-if="exam.title.toLowerCase().includes('attitude') || exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
                                                     <label>Bobot Pilihan B</label>
                                                     <input type="number" class="form-control" v-model="form.option_2_weight" min="0" max="100" />
@@ -44,7 +71,16 @@
                                         <tr>
                                             <td style="width:20%" class="fw-bold">Pilihan C</td>
                                             <td>
-                                                <QuillEditor theme="snow" v-model:content="form.option_3" contentType="html" />
+                                                <QuillEditor
+                                                    v-model:content="form.option_3"
+                                                    contentType="html"
+                                                    theme="snow"
+                                                    :toolbar="[
+                                                        ['bold', 'italic', 'underline'],
+                                                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                                        ['link', 'image'],
+                                                    ]"
+                                                />
                                                 <div v-if="exam.title.toLowerCase().includes('attitude') || exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
                                                     <label>Bobot Pilihan C</label>
                                                     <input type="number" class="form-control" v-model="form.option_3_weight" min="0" max="100" />
@@ -54,7 +90,16 @@
                                         <tr>
                                             <td style="width:20%" class="fw-bold">Pilihan D</td>
                                             <td>
-                                                <QuillEditor theme="snow" v-model:content="form.option_4" contentType="html" />
+                                                <QuillEditor
+                                                    v-model:content="form.option_4"
+                                                    contentType="html"
+                                                    theme="snow"
+                                                    :toolbar="[
+                                                        ['bold', 'italic', 'underline'],
+                                                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                                        ['link', 'image'],
+                                                    ]"
+                                                />
                                                 <div v-if="exam.title.toLowerCase().includes('attitude') || exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
                                                     <label>Bobot Pilihan D</label>
                                                     <input type="number" class="form-control" v-model="form.option_4_weight" min="0" max="100" />
@@ -64,7 +109,16 @@
                                         <tr>
                                             <td style="width:20%" class="fw-bold">Pilihan E</td>
                                             <td>
-                                                <QuillEditor theme="snow" v-model:content="form.option_5" contentType="html" />
+                                                <QuillEditor
+                                                    v-model:content="form.option_5"
+                                                    contentType="html"
+                                                    theme="snow"
+                                                    :toolbar="[
+                                                        ['bold', 'italic', 'underline'],
+                                                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                                        ['link', 'image'],
+                                                    ]"
+                                                />
                                                 <div v-if="exam.title.toLowerCase().includes('attitude') || exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
                                                     <label>Bobot Pilihan E</label>
                                                     <input type="number" class="form-control" v-model="form.option_5_weight" min="0" max="100" />
