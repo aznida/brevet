@@ -271,24 +271,27 @@
 
             //method clickQuestion
             const clickQuestion = ((index) => {
-            // Log question status
-            console.log('Question Click Status:', {
-                questionNumber: index + 1,
-                currentAnswer: props.all_questions[index].answer,
-                isAnswered: Boolean(props.all_questions[index].answer),
-                totalAnswered: props.question_answered
-            });
-
-            // Update duration
-            axios.put(`/participant/exam-duration/update/${props.duration.id}`, {
-                duration: duration.value
-            });
-
-            // Pastikan soal yang belum dijawab tetap memiliki status yang benar
-            let currentQuestion = props.all_questions[index];
+                // Cek status jawaban dari soal yang aktif
+                const isAnswered = props.question_active && 
+                              props.question_active.answer && 
+                              props.question_active.answer !== '0' && 
+                              props.question_active.answer !== 0;
+                
+                // Log status soal untuk debugging
+                console.log('Status Soal:', {
+                    nomorSoal: index + 1,
+                    jawabanSekarang: props.question_active?.answer,
+                    statusJawaban: isAnswered ? 'Sudah dijawab' : 'Belum dijawab',
+                    totalSoalDijawab: props.question_answered
+                });
             
-            // Redirect ke halaman soal yang dipilih
-            router.get(`/participant/exam/${props.id}/${index + 1}`);
+                // Update duration
+                axios.put(`/participant/exam-duration/update/${props.duration.id}`, {
+                    duration: duration.value
+                });
+            
+                // Redirect ke halaman soal yang dipilih
+                router.get(`/participant/exam/${props.id}/${index + 1}`);
             });
 
             //method submit answer
