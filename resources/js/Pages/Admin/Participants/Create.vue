@@ -70,8 +70,8 @@
                                     <div class="mb-3">
                                         <label>Jenis Kelamin</label>
                                         <select class="form-select" v-model="form.gender">
-                                            <option value="Laki-laki">Laki-laki</option>
-                                            <option value="Perempuan">Perempuan</option>
+                                            <option value="L">Laki-laki</option>
+                                            <option value="P">Perempuan</option>
                                         </select>
                                         <div v-if="errors.gender" class="alert alert-danger mt-2">
                                             {{ errors.gender }}

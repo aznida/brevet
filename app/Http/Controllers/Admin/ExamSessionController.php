@@ -23,7 +23,7 @@ class ExamSessionController extends Controller
         //get exam_sessions
         $exam_sessions = ExamSession::when(request()->q, function($exam_sessions) {
             $exam_sessions = $exam_sessions->where('title', 'like', '%'. request()->q . '%');
-        })->with('exam.area', 'exam.category', 'exam_groups')->latest()->paginate(5);
+        })->with('exam.area', 'exam.category', 'exam_groups.participant.area')->latest()->paginate(5);
 
         //append query string to pagination links
         $exam_sessions->appends(['q' => request()->q]);
@@ -254,23 +254,29 @@ class ExamSessionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function sendNotifications()
+    public function sendNotifications(Request $request)
     {
         try {
-            // Ambil data peserta unik dari exam_groups
-            $participants = DB::table('exam_groups')
-                ->join('participants', 'exam_groups.participant_id', '=', 'participants.id')
-                ->select('participants.email', 'participants.name', 'participants.nik', 'participants.password')
-                ->distinct()
+            // Validasi input
+            $request->validate([
+                'participant_ids' => 'required|array',
+                'participant_ids.*' => 'exists:participants,id'
+            ]);
+    
+            // Ambil data peserta yang dipilih saja
+            $participants = DB::table('participants')
+                ->whereIn('id', $request->participant_ids)
+                ->select('email', 'name', 'nik', 'password')
                 ->get();
-
+    
             foreach($participants as $participant) {
                 try {
                     Mail::send('emails.participant_notification', [
                         'name' => $participant->name,
                         'nik' => $participant->nik,
                         'password' => $participant->password,
-                        'url' => 'https://exam.tunerra.com/'
+                        'url' => 'https://brempi.com/',
+                        // 'app_url' => '/assets/app/brempi.1.0.apk'
                     ], function($message) use ($participant) {
                         $message->to($participant->email)
                                 ->subject('🔔 Akses Aplikasi Brevetisasi MO DEFA')
@@ -282,19 +288,19 @@ class ExamSessionController extends Controller
                     sleep(rand(3, 7));
                 } catch (\Exception $e) {
                     \Log::error('Gagal mengirim email ke ' . $participant->email . ': ' . $e->getMessage());
-                    continue; // Lanjutkan ke peserta berikutnya jika ada error
+                    continue;
                 }
             }
-
+    
             return back()->with([
-                'type' => 'success',  // Gunakan 'type' bukan 'success'
-                'message' => 'Notifikasi berhasil dikirim ke semua peserta',
+                'type' => 'success',
+                'message' => 'Notifikasi berhasil dikirim ke peserta terpilih',
                 'details' => [
                     'total' => $participants->count(),
                     'timestamp' => now()->format('d M Y H:i:s')
                 ]
             ]);
-
+    
         } catch (\Exception $e) {
             \Log::error('Error pada proses pengiriman email: ' . $e->getMessage());
             return back()->with([
@@ -302,6 +308,7 @@ class ExamSessionController extends Controller
                 'type' => 'error',
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ]);
+            Log::info('Received participant IDs:', ['ids' => $request->participant_ids]);
         }
     }
 }
