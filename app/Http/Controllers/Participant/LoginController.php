@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Participant;
 use App\Models\Participant;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -22,13 +23,11 @@ class LoginController extends Controller
             'password'  => 'required',
         ]);
 
-        //cek nisn dan password
-        $participant = Participant::where([
-            'nik'      => $request->nik,
-            'password'  => $request->password
-        ])->first();
+        //cari participant berdasarkan NIK
+        $participant = Participant::where('nik', $request->nik)->first();
 
-        if(!$participant) {
+        //cek apakah participant ditemukan dan password sesuai
+        if(!$participant || !Hash::check($request->password, $participant->password)) {
             return redirect()->back()->with('error', 'NIK atau Password salah');
         }
         

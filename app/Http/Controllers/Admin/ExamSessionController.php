@@ -274,9 +274,8 @@ class ExamSessionController extends Controller
                     Mail::send('emails.participant_notification', [
                         'name' => $participant->name,
                         'nik' => $participant->nik,
-                        'password' => $participant->password,
+                        'password' => DB::raw('CAST(AES_DECRYPT(password, "' . config('app.key') . '") AS CHAR) as password'),
                         'url' => 'https://brempi.com/',
-                        // 'app_url' => '/assets/app/brempi.1.0.apk'
                     ], function($message) use ($participant) {
                         $message->to($participant->email)
                                 ->subject('🔔 Akses Aplikasi Brevetisasi MO DEFA')

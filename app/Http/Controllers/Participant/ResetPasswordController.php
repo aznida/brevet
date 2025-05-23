@@ -67,7 +67,7 @@ class ResetPasswordController extends Controller
         }
 
         // Encrypt the password with MD5
-        $participant->password = md5($request->password);
+        $participant->password = bcrypt($request->password);
         $participant->save();
 
         DB::table('password_resets')->where('email', $request->email)->delete();

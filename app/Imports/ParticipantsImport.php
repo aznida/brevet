@@ -52,7 +52,7 @@ class ParticipantsImport implements ToModel, WithHeadingRow, WithValidation
             'email'         => $row['email'] ?? '',
             'hp'            => (int) ($row['hp'] ?? 0),
             'witel'         => $row['witel'] ?? '',
-            'password'      => $password,
+            'password'      => bcrypt($password),
             'role'          => $row['role'] ?? 'Teknisi',
             'gender'        => $row['gender'] ?? 'L',
             'status'        => 'Aktif',
