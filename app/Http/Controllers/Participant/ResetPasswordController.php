@@ -66,8 +66,8 @@ class ResetPasswordController extends Controller
             return back()->withErrors(['email' => 'We cannot find a participant with that email address.']);
         }
 
-        // Temporarily store password without encryption
-        $participant->password = $request->password;
+        // Encrypt the password with MD5
+        $participant->password = md5($request->password);
         $participant->save();
 
         DB::table('password_resets')->where('email', $request->email)->delete();
