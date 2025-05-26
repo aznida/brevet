@@ -6,6 +6,7 @@ use App\Models\Participant;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Crypt;
 
 class LoginController extends Controller
 {
@@ -27,7 +28,7 @@ class LoginController extends Controller
         $participant = Participant::where('nik', $request->nik)->first();
 
         //cek apakah participant ditemukan dan password sesuai
-        if(!$participant || !Hash::check($request->password, $participant->password)) {
+        if (!$participant || $request->password !== Crypt::decryptString($participant->password)) {
             return redirect()->back()->with('error', 'NIK atau Password salah');
         }
         
