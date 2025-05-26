@@ -10,12 +10,6 @@ use Illuminate\Support\Facades\Crypt;
 
 class LoginController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function __invoke(Request $request)
     {
         //validate the form data
@@ -27,8 +21,19 @@ class LoginController extends Controller
         //cari participant berdasarkan NIK
         $participant = Participant::where('nik', $request->nik)->first();
 
-        //cek apakah participant ditemukan dan password sesuai
-        if (!$participant || $request->password !== Crypt::decryptString($participant->password)) {
+        //cek apakah participant ditemukan
+        if (!$participant) {
+            return redirect()->back()->with('error', 'NIK atau Password salah');
+        }
+
+        try {
+            //decrypt password dan cek kecocokan
+            $decryptedPassword = Crypt::decryptString($participant->password);
+            if ($request->password !== $decryptedPassword) {
+                return redirect()->back()->with('error', 'NIK atau Password salah');
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error decrypting password: ' . $e->getMessage());
             return redirect()->back()->with('error', 'NIK atau Password salah');
         }
         
