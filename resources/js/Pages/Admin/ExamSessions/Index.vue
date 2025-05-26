@@ -320,11 +320,15 @@ export default {
                                                 </div>
                                                 <h4 class="mb-3">Email Terkirim!</h4>
                                                 <p class="mb-2">${flash.message}</p>
-                                                <small class="text-muted">Total: ${selectedIds.length} peserta terpilih</small>
+                                                <div class="mt-3">
+                                                    <small class="text-muted">Waktu: ${flash.details.timestamp}</small><br>
+                                                    <small class="text-success">Berhasil: ${flash.details.success} email</small>
+                                                    ${flash.details.failed > 0 ? `<br><small class="text-danger">Gagal: ${flash.details.failed} email</small>` : ''}
+                                                </div>
                                             </div>
                                         `,
                                         icon: false,
-                                        timer: 3000,
+                                        timer: 5000,
                                         timerProgressBar: true,
                                         showConfirmButton: false,
                                         customClass: {

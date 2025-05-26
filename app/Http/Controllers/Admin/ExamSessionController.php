@@ -10,6 +10,7 @@ use App\Models\Participant;
 use App\Models\ExamGroup;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Crypt;
 
 class ExamSessionController extends Controller
 {
@@ -263,6 +264,10 @@ class ExamSessionController extends Controller
                 'participant_ids.*' => 'exists:participants,id'
             ]);
     
+            $successCount = 0;
+            $failedCount = 0;
+            $failedEmails = [];
+    
             // Ambil data peserta yang dipilih saja
             $participants = DB::table('participants')
                 ->whereIn('id', $request->participant_ids)
@@ -271,10 +276,21 @@ class ExamSessionController extends Controller
     
             foreach($participants as $participant) {
                 try {
+                    // Debug log untuk pengecekan NIK dan password
+                    \Log::info('Debug Info Participant:', [
+                        'nik' => $participant->nik,
+                        'password_hashed' => $participant->password,
+                        'name' => $participant->name,
+                        'email' => $participant->email
+                    ]);
+
+                    // Decrypt password menggunakan Laravel encryption
+                    $decryptedPassword = Crypt::decryptString($participant->password);
+
                     Mail::send('emails.participant_notification', [
                         'name' => $participant->name,
                         'nik' => $participant->nik,
-                        'password' => DB::raw('CAST(AES_DECRYPT(password, "' . config('app.key') . '") AS CHAR) as password'),
+                        'password' => $decryptedPassword,
                         'url' => 'https://brempi.com/',
                     ], function($message) use ($participant) {
                         $message->to($participant->email)
@@ -284,18 +300,31 @@ class ExamSessionController extends Controller
                                 ->replyTo(config('mail.from.address'), config('mail.from.name'));
                     });
                     
+                    // Debug log untuk password yang sudah di-decrypt
+                    \Log::info('Email berhasil dikirim ke: ' . $participant->email);
+                    $successCount++;
+                    
                     sleep(rand(3, 7));
                 } catch (\Exception $e) {
                     \Log::error('Gagal mengirim email ke ' . $participant->email . ': ' . $e->getMessage());
+                    $failedCount++;
+                    $failedEmails[] = $participant->email;
                     continue;
                 }
             }
     
+            $message = "Notifikasi berhasil dikirim ke {$successCount} peserta";
+            if ($failedCount > 0) {
+                $message .= ", gagal mengirim ke {$failedCount} peserta";
+            }
+    
             return back()->with([
                 'type' => 'success',
-                'message' => 'Notifikasi berhasil dikirim ke peserta terpilih',
+                'message' => $message,
                 'details' => [
-                    'total' => $participants->count(),
+                    'success' => $successCount,
+                    'failed' => $failedCount,
+                    'failed_emails' => $failedEmails,
                     'timestamp' => now()->format('d M Y H:i:s')
                 ]
             ]);
@@ -303,11 +332,9 @@ class ExamSessionController extends Controller
         } catch (\Exception $e) {
             \Log::error('Error pada proses pengiriman email: ' . $e->getMessage());
             return back()->with([
-                'success' => false,
                 'type' => 'error',
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ]);
-            Log::info('Received participant IDs:', ['ids' => $request->participant_ids]);
         }
     }
 }

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log; // Add this at the top with other imports
+use Illuminate\Support\Facades\Crypt;
 
 class ResetPasswordController extends Controller
 {
@@ -67,7 +68,7 @@ class ResetPasswordController extends Controller
         }
 
         // Encrypt the password with MD5
-        $participant->password = bcrypt($request->password);
+        $participant->password = Crypt::encryptString($request->password);
         $participant->save();
 
         DB::table('password_resets')->where('email', $request->email)->delete();

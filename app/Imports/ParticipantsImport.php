@@ -7,6 +7,7 @@ use App\Models\Participant;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Illuminate\Support\Facades\Crypt;
 
 class ParticipantsImport implements ToModel, WithHeadingRow, WithValidation
 {
@@ -52,7 +53,7 @@ class ParticipantsImport implements ToModel, WithHeadingRow, WithValidation
             'email'         => $row['email'] ?? '',
             'hp'            => (int) ($row['hp'] ?? 0),
             'witel'         => $row['witel'] ?? '',
-            'password'      => bcrypt($password),
+            'password'      => Crypt::encryptString($password),
             'role'          => $row['role'] ?? 'Teknisi',
             'gender'        => $row['gender'] ?? 'L',
             'status'        => 'Aktif',

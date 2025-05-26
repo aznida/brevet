@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Imports\ParticipantsImport;
 use App\Exports\ParticipantsExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Crypt;
 
 class ParticipantController extends Controller
 {
@@ -84,7 +85,7 @@ class ParticipantController extends Controller
             'gender'       => $request->gender,
             'role'         => $request->role,
             'status'       => $request->status,
-            'password'     => bcrypt($request->password)
+            'password'     => Crypt::encryptString($request->password)
         ]);
 
         //redirect
@@ -161,7 +162,7 @@ class ParticipantController extends Controller
         //check if password is not empty
         if($request->password) {
             $participant->update([
-                'password' => bcrypt($request->password)
+                'password' => Crypt::encryptString($request->password)
             ]);
         }
 
