@@ -68,20 +68,21 @@
                                 </Link>
                             </li>
                             <li>
-                                <Link class="dropdown-item text-danger" href="/logout" method="post" as="button">
-                                    <i class="fas fa-sign-out-alt me-2"></i> Sign out
-                                </Link>
+                                <button @click="confirmLogout" class="dropdown-item text-danger d-flex align-items-center">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Log out
+                                </button>
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
         </nav>
+
         <div class="container content-wrapper">
             <slot />
         </div>
 
-        <!-- Bottom Navigation untuk Mobile dengan Design Minimalis -->
+        <!-- Mobile Navigation -->
         <div v-if="$page.props.auth.participant" class="mobile-nav d-lg-none">
             <Link 
                 href="/participant/dashboard" 
@@ -107,17 +108,54 @@
                 <i class="uil uil-history"></i>
                 <span>History</span>
             </Link>
-            <Link 
-                href="/logout"
-                method="post"
+            <button 
+                @click="confirmLogout"
                 class="mobile-nav-item"
             >
                 <i class="uil uil-signout"></i>
                 <span>Logout</span>
-            </Link>
+            </button>
+        </div>
+
+        <!-- Custom Logout Modal -->
+        <div v-if="showLogoutModal" class="custom-modal-overlay" @click="closeModal">
+            <div class="custom-modal" @click.stop>
+                <div class="custom-modal-header">
+                    <h5>Confirm Logout</h5>
+                    <button class="close-button" @click="closeModal">&times;</button>
+                </div>
+                <div class="custom-modal-body">
+                    Apakah kamu yakin akan keluar?
+                </div>
+                <div class="custom-modal-footer">
+                    <button class="btn-secondary" @click="closeModal">Cancel</button>
+                    <Link 
+                        href="/logout" 
+                        method="post" 
+                        as="button" 
+                        class="btn-danger"
+                        @click="closeModal"
+                    >Logout</Link>
+                </div>
+            </div>
         </div>
     </div>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+import { Link } from '@inertiajs/vue3'
+
+const showLogoutModal = ref(false)
+
+const confirmLogout = () => {
+    showLogoutModal.value = true
+}
+
+const closeModal = () => {
+    showLogoutModal.value = false
+}
+</script>
 
 <style scoped>
 .participant-layout {
@@ -323,24 +361,81 @@
     background-color: #e9ecef;
     border-color: #dee2e6;
 }
+
+.custom-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.custom-modal {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.custom-modal-header {
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.custom-modal-body {
+    padding: 1rem;
+}
+
+.custom-modal-footer {
+    padding: 1rem;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    color: #666;
+}
+
+.btn-secondary {
+    padding: 0.5rem 1rem;
+    background-color: #6b7280;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-danger {
+    padding: 0.5rem 1rem;
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background-color: #4b5563;
+}
+
+.btn-danger:hover {
+    background-color: #b91c1c;
+}
 </style>
 
-<script>
-
-    //import Link
-    import { Link } from '@inertiajs/vue3';
-
-    export default {
-
-        //register components
-        components: {
-            Link
-        },
-
-    }
-
-</script>
-
-<style>
-
-</style>

@@ -132,8 +132,6 @@ Route::get('/participant/forgot-password', [\App\Http\Controllers\Participant\Fo
     ->name('participant.password.request');
 Route::post('/participant/forgot-password', [\App\Http\Controllers\Participant\ForgotPasswordController::class, 'sendResetLink'])
     ->name('participant.password.email');
-Route::get('/participant/reset-password/{token}', [App\Http\Controllers\Participant\ResetPasswordController::class, 'showResetForm'])
-    ->name('participant.password.reset');
 Route::post('/participant/reset-password', [App\Http\Controllers\Participant\ResetPasswordController::class, 'reset'])
     ->name('participant.password.update');
 Route::get('/participant/reset-password/{token}', [App\Http\Controllers\Participant\ResetPasswordController::class, 'showResetForm'])->name('participant.password.reset');
