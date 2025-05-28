@@ -160,6 +160,9 @@ class ExamSessionController extends Controller
         //get exam_session
         $exam_session = ExamSession::findOrFail($id);
         
+        //delete associated feedback records first
+        DB::table('participant_feedback')->where('exam_session_id', $id)->delete();
+        
         //delete exam_session
         $exam_session->delete();
         

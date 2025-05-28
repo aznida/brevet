@@ -136,7 +136,7 @@ Route::post('/participant/reset-password', [App\Http\Controllers\Participant\Res
     ->name('participant.password.update');
 Route::get('/participant/reset-password/{token}', [App\Http\Controllers\Participant\ResetPasswordController::class, 'showResetForm'])->name('participant.password.reset');
 Route::post('/participant/reset-password', [App\Http\Controllers\Participant\ResetPasswordController::class, 'reset'])->name('participant.password.update');
-    
+Route::post('/participant/feedback', [\App\Http\Controllers\Participant\FeedbackController::class, 'store']);    
 
 //prefix "participant"
 Route::prefix('participant')->group(function() {
