@@ -29,9 +29,9 @@
                             <li>Anda memiliki hak untuk mengakses dan memperbarui data Anda</li>
                         </ul>
                     </div>
-                    <div class="form-check mt-4">
+                    <div class="mt-4">
                         <input class="form-check-input" type="checkbox" v-model="privacyConsent" id="privacyCheck">
-                        <label class="form-check-label" for="privacyCheck">
+                        <label class="form-check-label" style="margin-left: 8px;" for="privacyCheck">
                             Saya <i><b>{{ auth.participant.name }}</b></i> menyetujui penggunaan data pribadi saya sesuai dengan ketentuan di atas
                         </label>
                     </div>

@@ -39,9 +39,9 @@
                 </div>
 
                 <div class="d-flex justify-content-between align-items-top mb-4">
-                    <div class="form-check">
+                    <div>
                         <input class="form-check-input" type="checkbox" value="" id="remember">
-                        <label class="form-check-label mb-0" for="remember">
+                        <label class="form-check-label mb-0" style="margin-left: 8px;" for="remember">
                             Remember me
                         </label>
                     </div>

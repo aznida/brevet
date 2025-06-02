@@ -47,9 +47,9 @@
                         </div>
 
                         <div class="d-flex justify-content-between align-items-top mb-4">
-                            <div class="form-check">
+                            <div>
                                 <input class="form-check-input" type="checkbox" value="" id="remember">
-                                <label class="form-check-label mb-0" for="remember">
+                                <label class="form-check-label mb-0" style="margin-left: 8px;" for="remember">
                                     Remember me
                                 </label>
                             </div>
@@ -69,7 +69,7 @@
                     <div class="d-grid">
                         <button type="submit" class="btn btn-gray-800">LOGIN</button>
                     </div>
-                    <div class="d-flex justify-content-center mt-4">
+                    <div v-if="!isBrempiApp" class="d-flex justify-content-center mt-4">
                         <div class="text-center">
                             <p class="text-muted mb-3">Download Aplikasi Mobile:</p>
                             <div class="d-flex gap-2 justify-content-center">
@@ -128,11 +128,15 @@
 
             // State to check if the device is Android
             const isAndroid = ref(false);
+            const isWebView = ref(false);
+            const isBrempiApp = ref(false);
 
             // Check user agent on mounted
             onMounted(() => {
                 const userAgent = navigator.userAgent || navigator.vendor || window.opera;
                 isAndroid.value = /android/i.test(userAgent);
+                isWebView.value = /wv|WebView/i.test(userAgent);
+                isBrempiApp.value = isWebView.value || /brempi/i.test(userAgent);
             });
 
             //submit method
@@ -152,7 +156,9 @@
                 form,
                 submit,
                 router,
-                isAndroid
+                isAndroid,
+                isWebView,
+                isBrempiApp
             }
         }
 
