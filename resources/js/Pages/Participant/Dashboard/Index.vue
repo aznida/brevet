@@ -167,7 +167,7 @@
                                 type="checkbox" 
                                 v-model="recordingConsents[data.exam_group.id]" 
                                 :id="'consent'+data.exam_group.id">
-                            <label class="form-check-label " :for="'consent'+data.exam_group.id">
+                            <label class="form-check-label" style="margin-left: 8px" :for="'consent'+data.exam_group.id">
                                 Saya memahami dan menyetujui semua ketentuan di atas
                             </label>
                         </div>

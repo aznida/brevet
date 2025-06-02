@@ -66,27 +66,43 @@
             </div>
             <div class="text-center mt-3">
                 <Link 
+                    v-if="!isAttitudeAssessment"
                     href="/participant/dashboard" 
                     class="btn btn-md btn-primary shadow-sm"
                 >
                     <i class="fa fa-arrow-left me-2"></i> Kembali ke Dashboard
                 </Link>
+                <button 
+                    v-if="isAttitudeAssessment" 
+                    type="button" 
+                    class="btn btn-primary mt-3" 
+                    @click="showFeedbackModal"
+                >
+                <!--begin::Svg Icon | path: /var/www/preview.keenthemes.com/keenthemes/metronic/docs/core/html/src/media/icons/duotune/communication/com007.svg-->
+                    <span class="svg-icon svg-icon-muted svg-icon-2hx"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path opacity="0.3" d="M8 8C8 7.4 8.4 7 9 7H16V3C16 2.4 15.6 2 15 2H3C2.4 2 2 2.4 2 3V13C2 13.6 2.4 14 3 14H5V16.1C5 16.8 5.79999 17.1 6.29999 16.6L8 14.9V8Z" fill="currentColor"/>
+                    <path d="M22 8V18C22 18.6 21.6 19 21 19H19V21.1C19 21.8 18.2 22.1 17.7 21.6L15 18.9H9C8.4 18.9 8 18.5 8 17.9V7.90002C8 7.30002 8.4 6.90002 9 6.90002H21C21.6 7.00002 22 7.4 22 8ZM19 11C19 10.4 18.6 10 18 10H12C11.4 10 11 10.4 11 11C11 11.6 11.4 12 12 12H18C18.6 12 19 11.6 19 11ZM17 15C17 14.4 16.6 14 16 14H12C11.4 14 11 14.4 11 15C11 15.6 11.4 16 12 16H16C16.6 16 17 15.6 17 15Z" fill="currentColor"/>
+                    </svg>
+                    </span>
+                    <!--end::Svg Icon-->
+                     Berikan Feedback
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Modal Feedback Kuesioner -->
     <div class="modal fade" id="feedbackModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-lg  modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="feedbackModalLabel">Feedback Aplikasi</h5>
+                    <h5 class="modal-title" id="feedbackModalLabel">Feedback Aplikasi Brempi</h5>
                 </div>
                 <div class="modal-body p-4">
-                    <p class="mb-4">Terima kasih telah menyelesaikan penilaian sikap. Mohon berikan feedback Anda:</p>
+                    <p class="mb-4">Yeay, <b>{{ exam_group.participant.name }}</b>! Kamu sudah menyelesaikan semua ujian 🎉. Yuk, kasih feedback kamu di bawah ini 🤗:</p>
                     
                     <div class="mb-4">
-                        <label class="form-label fw-bold">1. Seberapa puas Anda menggunakan aplikasi?</label>
+                        <label class="form-label fw-bold">1. Seberapa puas kamu menggunakan aplikasi <i>Brempi</i>?</label>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Tidak Puas</span>
                             <span>Sangat Puas</span>
@@ -107,7 +123,7 @@
                     </div>
                     
                     <div class="mb-4">
-                        <label class="form-label fw-bold">2. Seberapa sesuai soal yang Anda kerjakan dengan pekerjaan saat ini?</label>
+                        <label class="form-label fw-bold">2. Seberapa sesuai soal yang kamu kerjakan dengan pekerjaan saat ini?</label>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Tidak Sesuai</span>
                             <span>Sangat Sesuai</span>
@@ -128,13 +144,13 @@
                     </div>
                     
                     <div class="mb-4">
-                        <label for="comments" class="form-label fw-bold">3. Berikan feedback Anda terhadap aplikasi ini:</label>
+                        <label for="comments" class="form-label fw-bold">3. Yuk bantu kami jika kamu punya saran, ide untuk aplikasi Brempi 😎:</label>
                         <textarea 
                             class="form-control" 
                             id="comments" 
                             v-model="feedback.comments" 
                             rows="3"
-                            placeholder="Tulis feedback Anda di sini..."
+                            placeholder="Tulis saran dan idemu di sini..."
                         ></textarea>
                     </div>
                 </div>
@@ -233,6 +249,9 @@
                                 text: 'Terima kasih atas feedback Anda!',
                                 showConfirmButton: false,
                                 timer: 2000
+                            }).then(() => {
+                                // Redirect ke dashboard setelah pesan sukses ditutup
+                                window.location.href = '/participant/dashboard';
                             });
                         },
                         onError: (errors) => {
@@ -264,15 +283,23 @@
                     setTimeout(() => {
                         const modal = new bootstrap.Modal(document.getElementById('feedbackModal'));
                         modal.show();
-                    }, 4200); // 4.5 detik
+                    }, 1200); // 4.5 detik
                 }
             });
             
+            // Di dalam setup function, tambahkan method ini
+            const showFeedbackModal = () => {
+                const modal = new bootstrap.Modal(document.getElementById('feedbackModal'));
+                modal.show();
+            };
+            
+            // Tambahkan showFeedbackModal ke return statement
             return {
                 feedback,
                 isFormValid,
                 submitFeedback,
-                isAttitudeAssessment
+                isAttitudeAssessment,
+                showFeedbackModal // Tambahkan ini
             };
         }
     }

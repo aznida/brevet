@@ -28,6 +28,8 @@ class FeedbackController extends Controller
         // Create feedback
         ParticipantFeedback::create($validated);
         
+        // return redirect()->route('participant.dashboard')
+        //     ->with('success', 'Feedback berhasil disimpan!');
         return redirect()->back()->with('success', 'Feedback berhasil disimpan');
     }
 }
