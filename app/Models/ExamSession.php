@@ -40,4 +40,14 @@ class ExamSession extends Model
     {
         return $this->belongsTo(Exam::class);
     }
+
+    /**
+     * feedback
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function feedback()
+    {
+        return $this->hasMany(ParticipantFeedback::class);
+    }
 }

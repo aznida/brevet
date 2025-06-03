@@ -60,6 +60,10 @@ Route::prefix('admin')->group(function() {
         //route resource exam_sessions    
         Route::resource('/exam_sessions', \App\Http\Controllers\Admin\ExamSessionController::class, ['as' => 'admin']);
         
+        // Admin feedback routes
+        Route::get('/feedback', [\App\Http\Controllers\Admin\FeedbackController::class, 'index'])->name('admin.feedback.index');
+        Route::get('/exam_sessions/{exam_session}/feedback', [\App\Http\Controllers\Admin\FeedbackController::class, 'examSessionFeedback'])->name('admin.exam_sessions.feedback');
+        
         //route untuk notifikasi email peserta
         Route::post('/exam-sessions/send-notifications', [\App\Http\Controllers\Admin\ExamSessionController::class, 'sendNotifications'])
             ->name('admin.exam_sessions.send-notifications');
