@@ -26,7 +26,7 @@
                                     <tr>
                                         <td class="fw-bold">Area</td>
                                         <td>{{ exam.area.title }}</td>
-                                    </tr>
+                                    </tr> 
                                     <tr>
                                         <td class="fw-bold">Tipe Ujian</td>
                                         <td>{{ 
@@ -82,7 +82,7 @@
                                                 <hr>
                                                 <ol type="A">
                                                     <li>
-                                                        <span v-html="question.option_1" :class="{ 'text-success fw-bold fst-italic': isHighestWeight(question, question.option_1_weight) }"></span>
+                                                        <span v-html="question.option_1" :class="{ 'text-success fw-bold fst-italic': isCorrectAnswer(question, 'A') || isHighestWeight(question, question.option_1_weight) }"></span>
                                                         <span v-if="isAttitudeExam(exam.title)" 
                                                             :class="{ 'text-success fw-bold fst-italic': isHighestWeight(question, question.option_1_weight) }" 
                                                             class="ms-2">
@@ -90,7 +90,7 @@
                                                         </span>
                                                     </li>
                                                     <li>
-                                                        <span v-html="question.option_2" :class="{ 'text-success fw-bold fst-italic': isHighestWeight(question, question.option_2_weight) }"></span>
+                                                        <span v-html="question.option_2" :class="{ 'text-success fw-bold fst-italic': isCorrectAnswer(question, 'B') || isHighestWeight(question, question.option_2_weight) }"></span>
                                                         <span v-if="isAttitudeExam(exam.title)" 
                                                             :class="{ 'text-success fw-bold fst-italic': isHighestWeight(question, question.option_2_weight) }" 
                                                             class="ms-2">
@@ -98,7 +98,7 @@
                                                         </span>
                                                     </li>
                                                     <li>
-                                                        <span v-html="question.option_3" :class="{ 'text-success fw-bold fst-italic': isHighestWeight(question, question.option_3_weight) }"></span>
+                                                        <span v-html="question.option_3" :class="{ 'text-success fw-bold fst-italic': isCorrectAnswer(question, 'C') || isHighestWeight(question, question.option_3_weight) }"></span>
                                                         <span v-if="isAttitudeExam(exam.title)" 
                                                             :class="{ 'text-success fw-bold fst-italic': isHighestWeight(question, question.option_3_weight) }" 
                                                             class="ms-2">
@@ -106,7 +106,7 @@
                                                         </span>
                                                     </li>
                                                     <li>
-                                                        <span v-html="question.option_4" :class="{ 'text-success fw-bold fst-italic': isHighestWeight(question, question.option_4_weight) }"></span>
+                                                        <span v-html="question.option_4" :class="{ 'text-success fw-bold fst-italic': isCorrectAnswer(question, 'D') || isHighestWeight(question, question.option_4_weight) }"></span>
                                                         <span v-if="isAttitudeExam(exam.title)" 
                                                             :class="{ 'text-success fw-bold fst-italic': isHighestWeight(question, question.option_4_weight) }" 
                                                             class="ms-2">
@@ -114,7 +114,7 @@
                                                         </span>
                                                     </li>
                                                     <li>
-                                                        <span v-html="question.option_5" :class="{ 'text-success fw-bold fst-italic': isHighestWeight(question, question.option_5_weight) }"></span>
+                                                        <span v-html="question.option_5" :class="{ 'text-success fw-bold fst-italic': isCorrectAnswer(question, 'E') || isHighestWeight(question, question.option_5_weight) }"></span>
                                                         <span v-if="isAttitudeExam(exam.title)" 
                                                             :class="{ 'text-success fw-bold fst-italic': isHighestWeight(question, question.option_5_weight) }" 
                                                             class="ms-2">
@@ -131,6 +131,9 @@
                                                         <span v-else style="color:danger; font-size:14px"><b>Belum ada Level</b></span>
                                                     </i>
                                                 </div>
+                                                <div class="mt-2">
+    <small>Debug - Answer: {{ question.answer }}</small>
+</div>
                                             </template>
                                             <!-- Rating Scale Info -->
                                             <template v-else>
@@ -233,11 +236,29 @@
                 return Number(weight) === Math.max(...weights);
             };
 
+            const isCorrectAnswer = (question, optionLetter) => {
+                if (!question.answer) return false;
+                
+                // Konversi huruf A-E menjadi angka 1-5
+                const letterToNumber = {
+                    'A': 1,  // Ubah menjadi number, bukan string
+                    'B': 2,
+                    'C': 3,
+                    'D': 4,
+                    'E': 5
+                };
+                
+                // Bandingkan dengan jawaban yang tersimpan di database
+                // Konversi question.answer ke number untuk memastikan perbandingan yang benar
+                return Number(question.answer) === letterToNumber[optionLetter];
+            };
+        
             return {
                 destroy,
                 isAttitudeExam,
                 getTotalWeight,
-                isHighestWeight
+                isHighestWeight,
+                isCorrectAnswer
             };
         }
     };
