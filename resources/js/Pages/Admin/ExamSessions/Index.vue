@@ -127,23 +127,21 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <template v-for="(exam_session, index) in exam_sessions.data" :key="index">
-                                        <template v-for="group in filteredParticipants(exam_session.exam_groups)" :key="group.id">
-                                            <tr v-if="group.participant">
-                                                <td class="text-center">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" 
-                                                            v-model="selectedParticipants" 
-                                                            :value="group.participant.id"
-                                                            @change="checkSelection"> 
-                                                    </div>
-                                                </td>
-                                                <td>{{ group.participant.name }}</td>
-                                                <td>{{ group.participant.nik }}</td>
-                                                <td>{{ group.participant.email }}</td>
-                                                <td>{{ group.participant.area?.title || '-' }}</td>
-                                            </tr>
-                                        </template>
+                                    <template v-for="(group, index) in allUniqueParticipants" :key="index">
+                                        <tr>
+                                            <td class="text-center">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" 
+                                                        v-model="selectedParticipants" 
+                                                        :value="group.participant.id"
+                                                        @change="checkSelection"> 
+                                                </div>
+                                            </td>
+                                            <td>{{ group.participant.name }}</td>
+                                            <td>{{ group.participant.nik }}</td>
+                                            <td>{{ group.participant.email }}</td>
+                                            <td>{{ group.participant.area?.title || '-' }}</td>
+                                        </tr>
                                     </template>
                                     <tr v-if="!hasParticipants">
                                         <td colspan="5" class="text-center">Tidak ada peserta yang tersedia</td>
@@ -373,11 +371,12 @@ export default {
             return false;
         }
 
-        // Fungsi untuk memfilter peserta
+        // Fungsi untuk memfilter peserta dan menghilangkan duplikasi
         const filteredParticipants = (groups) => {
-            if (!participantSearch.value) return groups;
+            if (!groups || groups.length === 0) return [];
             
-            return groups.filter(group => {
+            // Filter berdasarkan kata kunci pencarian
+            const filtered = !participantSearch.value ? groups : groups.filter(group => {
                 if (!group.participant) return false;
                 
                 const searchLower = participantSearch.value.toLowerCase();
@@ -388,13 +387,33 @@ export default {
                     String(group.participant.area?.title || '').toLowerCase().includes(searchLower)
                 );
             });
+            
+            return filtered.filter(group => group.participant);
         };
+
+        // Computed property untuk mendapatkan semua peserta unik dari semua grup
+        const allUniqueParticipants = computed(() => {
+            // Kumpulkan semua peserta dari semua sesi ujian
+            const allParticipants = props.exam_sessions.data.flatMap(session => 
+                filteredParticipants(session.exam_groups)
+            );
+            
+            // Gunakan Map untuk menghilangkan duplikasi berdasarkan ID peserta
+            const uniqueParticipantsMap = new Map();
+            
+            allParticipants.forEach(group => {
+                if (group.participant && !uniqueParticipantsMap.has(group.participant.id)) {
+                    uniqueParticipantsMap.set(group.participant.id, group);
+                }
+            });
+            
+            // Kembalikan array dari nilai Map (grup unik)
+            return Array.from(uniqueParticipantsMap.values());
+        });
 
         // Computed property untuk mengecek ketersediaan peserta
         const hasParticipants = computed(() => {
-            return props.exam_sessions.data.some(session => 
-                session.exam_groups.some(group => group.participant)
-            );
+            return allUniqueParticipants.value.length > 0;
         });
 
         // Computed property untuk mengecek ketersediaan peserta setelah filter
@@ -418,7 +437,8 @@ export default {
             hasFilteredParticipants,  // Tambahkan ini
             filteredParticipants,     // Tambahkan ini
             participantSearch,        // Tambahkan ini
-            handleParticipantSearch   // Tambahkan ini
+            handleParticipantSearch,  // Tambahkan ini
+            allUniqueParticipants     // Tambahkan ini untuk menampilkan peserta unik
         }
     }
 }
