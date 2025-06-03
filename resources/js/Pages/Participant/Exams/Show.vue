@@ -114,8 +114,12 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
+                <div class="alert alert-warning p-2 mb-2 small text-muted" style="margin-left:18px;margin-right:18px">
+                        <i class="fa fa-check-circle"></i> 
+                        <strong> Noted:</strong> Pastikan semua soal sudah dijawab, abaikan tombol diatas jika ada kendala.
+                    </div>
+                
                 <div class="card-footer">
                     <button @click="showModalEndExam = true" class="btn btn-danger btn-md border-0 shadow w-100">Akhiri Ujian</button>
                 </div>

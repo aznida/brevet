@@ -60,6 +60,7 @@ class DashboardController extends Controller
         //return with inertia
         return inertia('Participant/Dashboard/Index', [
             'exam_groups' => $data,
+            'timestamp' => now()->timestamp, // Tambahkan timestamp untuk memastikan data selalu fresh
         ]);
     }
 

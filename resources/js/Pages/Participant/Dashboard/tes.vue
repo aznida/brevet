@@ -162,22 +162,22 @@
                                 <li>Jawaban perserta akan <b>otomatis disimpan</b>, jika ada kendala dengan device / jaringan dapat dilanjutkan kembali sesuai waktu yang telah ditentukan.</li>
                             </ul>
                         </div>
-                        <div class=" mt-3">
+                        <div class="mt-3" style="margin-right: 8px;">
                             <input class="form-check-input" 
                                 type="checkbox" 
                                 v-model="recordingConsents[data.exam_group.id]" 
                                 :id="'consent'+data.exam_group.id">
-                            <label class="form-check-label" style="margin-left: 8px;" :for="'consent'+data.exam_group.id">
+                            <label class="form-check-label" style="margin-left: 8px" :for="'consent'+data.exam_group.id">
                                 Saya memahami dan menyetujui semua ketentuan di atas
                             </label>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button 
+                        <Link 
                             v-if="recordingConsents[data.exam_group.id]"
-                            @click="handleExamConfirmation(data.exam_group.id)"
+                            :href="`/participant/exam-confirmation/${data.exam_group.id}`" 
                             class="btn btn-primary"
-                        >OK</button>
+                        >OK</Link>
                         <button 
                             type="button" 
                             class="btn btn-secondary" 
@@ -194,7 +194,7 @@
     //import layout participant
     import LayoutParticipant from '../../../Layouts/Participant.vue';
     import { Link, Head } from '@inertiajs/vue3';  // Add Head import here
-    import { ref, onMounted, computed } from 'vue'; // Tambahkan computed
+    import { ref, onMounted, computed } from 'vue';
     import { router } from '@inertiajs/vue3';
 
     export default {
@@ -211,104 +211,39 @@
             const recordingConsents = ref({});
             const privacyConsent = ref(false);
             const showAlert = ref(false);
-
+            
             const openRecordingModal = (examGroupId) => {
                 recordingConsents.value[examGroupId] = false;
                 const modal = new bootstrap.Modal(document.getElementById('recordingModal' + examGroupId));
                 modal.show();
             };
-
+            
             const closeModal = (examGroupId) => {
                 const modalElement = document.getElementById('recordingModal' + examGroupId);
                 if (modalElement) {
                     const modal = bootstrap.Modal.getInstance(modalElement);
                     if (modal) {
-                        // Simpan referensi ke document.body
-                        const body = document.body;
-                        
-                        // Hapus event listener yang mungkin ditambahkan oleh Bootstrap
-                        modalElement.removeEventListener('hidden.bs.modal', null);
-                        
-                        // Tambahkan event listener kustom untuk menangani pembersihan
-                        modalElement.addEventListener('hidden.bs.modal', function() {
-                            // Hapus class dan reset style
-                            body.classList.remove('modal-open');
-                            body.style.overflow = 'auto';
-                            body.style.paddingRight = '';
-                            
-                            // Hapus semua backdrop
-                            const backdrops = document.querySelectorAll('.modal-backdrop');
-                            backdrops.forEach(backdrop => backdrop.remove());
-                        }, { once: true }); // Event hanya dipanggil sekali
-                        
-                        // Tutup modal
                         modal.hide();
                         recordingConsents.value[examGroupId] = false;
+                        document.body.classList.remove('modal-open');
+                        const backdrop = document.querySelector('.modal-backdrop');
+                        if (backdrop) backdrop.remove();
                     }
                 }
             };
-            const handleExamConfirmation = (examGroupId) => {
-                // Simpan URL yang akan dikunjungi
-                const url = `/participant/exam-confirmation/${examGroupId}`;
-                
-                // Tutup modal dan bersihkan
-                closeModal(examGroupId);
-                
-                // Navigasi ke halaman konfirmasi ujian dengan refresh
-                window.location.href = url;
-            };
-
-            const acceptPrivacyPolicy = () => {
-                router.post('/participant/accept-privacy', {}, {
-                    onSuccess: () => {
-                        const modalElement = document.getElementById('privacyModal');
-                        if (modalElement) {
-                            const modal = bootstrap.Modal.getInstance(modalElement);
-                            if (modal) {
-                                modal.hide();
-                                showAlertWithTimeout(); // Menggunakan fungsi baru
-                                
-                                // Langsung refresh halaman tanpa menunggu pembersihan modal
-                                window.location.reload();
-                                
-                                // Pembersihan modal tetap dilakukan untuk jaga-jaga
-                                setTimeout(() => {
-                                    document.body.classList.remove('modal-open');
-                                    document.body.style.overflow = '';
-                                    document.body.style.paddingRight = '';
-                                    const backdrop = document.querySelector('.modal-backdrop');
-                                    if (backdrop) backdrop.remove();
-                                    document.body.style.overflow = 'auto';
-                                }, 100);
-                            }
-                        }
-                    },
-                    onError: (errors) => {
-                        alert('Terjadi kesalahan saat menyimpan persetujuan. Silakan coba lagi.');
-                        console.error('Error saat menyimpan:', errors);
-                    }
-                });
-            };
-
+            
             const closeAlert = () => {
                 showAlert.value = false;
             };
-
+            
             const showAlertWithTimeout = () => {
                 showAlert.value = true;
                 setTimeout(() => {
                     showAlert.value = false;
                 }, 7000); // 7 detik
             };
-
+            
             onMounted(() => {
-                // Pastikan scrolling berfungsi saat halaman dimuat
-                document.body.classList.remove('modal-open');
-                document.body.style.overflow = 'auto';
-                document.body.style.paddingRight = '';
-                const backdrops = document.querySelectorAll('.modal-backdrop');
-                backdrops.forEach(backdrop => backdrop.remove());
-                
                 // Cek status persetujuan dari database
                 if (!props.auth?.participant?.PDP || props.auth.participant.PDP === 'false') {
                     setTimeout(() => {
@@ -321,10 +256,11 @@
                         }
                     }, 500);
                 }
+                
+                // Refresh data exam groups setelah komponen dimuat
+                router.reload({ only: ['exam_groups'] });
             });
-
-            // Hapus seluruh deklarasi kedua dari acceptPrivacyPolicy
-            /* 
+            
             const acceptPrivacyPolicy = () => {
                 router.post('/participant/accept-privacy', {}, {
                     onSuccess: () => {
@@ -333,16 +269,16 @@
                             const modal = bootstrap.Modal.getInstance(modalElement);
                             if (modal) {
                                 modal.hide();
-                                // Pastikan class modal-open dihapus dan backdrop dihapus
                                 document.body.classList.remove('modal-open');
-                                document.body.style.overflow = '';
-                                document.body.style.paddingRight = '';
                                 const backdrop = document.querySelector('.modal-backdrop');
                                 if (backdrop) {
                                     backdrop.remove();
                                 }
                                 showAlertWithTimeout(); // Menggunakan fungsi baru
-                                window.location.reload();
+                                
+                                // Ganti window.location.reload() dengan router.reload
+                                // untuk refresh data tanpa hard refresh
+                                router.reload({ only: ['exam_groups'] });
                             }
                         }
                     },
@@ -352,11 +288,10 @@
                     }
                 });
             };
-            */
-
+            
             // Remove duplicate openRecordingModal declaration
             
-            // Fungsi untuk memeriksa waktu ujian
+            // Computed property untuk memfilter ujian
             const examTimeRangeChecker = (start_time, end_time) => {
                 return new Date() >= new Date(start_time) && new Date() <= new Date(end_time)
             };
@@ -369,7 +304,6 @@
                 return new Date() > new Date(end_time)
             };
             
-            // Filter ujian yang akan ditampilkan
             const filteredExamGroups = computed(() => {
                 return props.exam_groups.filter(data => {
                     // Jika ujian sudah dikerjakan oleh peserta ini (memiliki end_time), tidak ditampilkan
@@ -395,11 +329,10 @@
                 acceptPrivacyPolicy,
                 showAlert,
                 closeAlert,
+                filteredExamGroups,
                 examTimeRangeChecker,
                 examTimeStartChecker,
-                examTimeEndChecker,
-                filteredExamGroups,
-                handleExamConfirmation // Tambahkan ini
+                examTimeEndChecker
             };
         }
     }
