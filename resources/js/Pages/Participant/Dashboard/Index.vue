@@ -29,9 +29,9 @@
                             <li>Anda memiliki hak untuk mengakses dan memperbarui data Anda</li>
                         </ul>
                     </div>
-                    <div class="form-check mt-4">
+                    <div class="mt-4">
                         <input class="form-check-input" type="checkbox" v-model="privacyConsent" id="privacyCheck">
-                        <label class="form-check-label" for="privacyCheck">
+                        <label class="form-check-label" style="margin-left: 8px;" for="privacyCheck">
                             Saya <i><b>{{ auth.participant.name }}</b></i> menyetujui penggunaan data pribadi saya sesuai dengan ketentuan di atas
                         </label>
                     </div>
@@ -56,8 +56,8 @@
             </div>
         </div>
     </div>
-    <div class="row" v-if="exam_groups.length > 0">
-        <div class="col-md-6" v-for="(data, index) in exam_groups" :key="index">
+    <div class="row" v-if="filteredExamGroups.length > 0">
+        <div class="col-md-6" v-for="(data, index) in filteredExamGroups" :key="index">
             <div class="card border-0 shadow mb-3">
                 <div class="card-body">
                     <h5>{{ data.exam_group.exam.title }}</h5>
@@ -144,7 +144,7 @@
     </div>
 
     <!-- Modal Peringatan Ujian -->
-    <template v-for="(data, index) in exam_groups" :key="'modal-'+index">
+    <template v-for="(data, index) in filteredExamGroups" :key="'modal-'+index">
         <div class="modal fade" :id="'recordingModal'+data.exam_group.id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
             <div class="modal-dialog modal-lg modal-dialog">
                 <div class="modal-content">
@@ -162,12 +162,12 @@
                                 <li>Jawaban perserta akan <b>otomatis disimpan</b>, jika ada kendala dengan device / jaringan dapat dilanjutkan kembali sesuai waktu yang telah ditentukan.</li>
                             </ul>
                         </div>
-                        <div class="form-check mt-3">
+                        <div class="mt-3" style="margin-right: 8px;">
                             <input class="form-check-input" 
                                 type="checkbox" 
                                 v-model="recordingConsents[data.exam_group.id]" 
                                 :id="'consent'+data.exam_group.id">
-                            <label class="form-check-label" :for="'consent'+data.exam_group.id">
+                            <label class="form-check-label" style="margin-left: 8px" :for="'consent'+data.exam_group.id">
                                 Saya memahami dan menyetujui semua ketentuan di atas
                             </label>
                         </div>
@@ -194,7 +194,7 @@
     //import layout participant
     import LayoutParticipant from '../../../Layouts/Participant.vue';
     import { Link, Head } from '@inertiajs/vue3';  // Add Head import here
-    import { ref, onMounted } from 'vue';
+    import { ref, onMounted, computed } from 'vue';
     import { router } from '@inertiajs/vue3';
 
     export default {
@@ -211,13 +211,13 @@
             const recordingConsents = ref({});
             const privacyConsent = ref(false);
             const showAlert = ref(false);
-
+            
             const openRecordingModal = (examGroupId) => {
                 recordingConsents.value[examGroupId] = false;
                 const modal = new bootstrap.Modal(document.getElementById('recordingModal' + examGroupId));
                 modal.show();
             };
-
+            
             const closeModal = (examGroupId) => {
                 const modalElement = document.getElementById('recordingModal' + examGroupId);
                 if (modalElement) {
@@ -231,18 +231,18 @@
                     }
                 }
             };
-
+            
             const closeAlert = () => {
                 showAlert.value = false;
             };
-
+            
             const showAlertWithTimeout = () => {
                 showAlert.value = true;
                 setTimeout(() => {
                     showAlert.value = false;
                 }, 7000); // 7 detik
             };
-
+            
             onMounted(() => {
                 // Cek status persetujuan dari database
                 if (!props.auth?.participant?.PDP || props.auth.participant.PDP === 'false') {
@@ -257,7 +257,7 @@
                     }, 500);
                 }
             });
-
+            
             const acceptPrivacyPolicy = () => {
                 router.post('/participant/accept-privacy', {}, {
                     onSuccess: () => {
@@ -282,8 +282,38 @@
                     }
                 });
             };
-
+            
             // Remove duplicate openRecordingModal declaration
+            
+            // Computed property untuk memfilter ujian
+            const examTimeRangeChecker = (start_time, end_time) => {
+                return new Date() >= new Date(start_time) && new Date() <= new Date(end_time)
+            };
+            
+            const examTimeStartChecker = (start_time) => {
+                return new Date() < new Date(start_time)
+            };
+            
+            const examTimeEndChecker = (end_time) => {
+                return new Date() > new Date(end_time)
+            };
+            
+            const filteredExamGroups = computed(() => {
+                return props.exam_groups.filter(data => {
+                    // Jika ujian sudah dikerjakan oleh peserta ini (memiliki end_time), tidak ditampilkan
+                    if (data.grade.end_time !== null) {
+                        return false;
+                    }
+                    
+                    // Jika waktu ujian sudah terlewat, tidak ditampilkan
+                    if (!examTimeRangeChecker(data.exam_group.exam_session.start_time, data.exam_group.exam_session.end_time) && 
+                        !examTimeStartChecker(data.exam_group.exam_session.start_time)) {
+                        return false;
+                    }
+                    
+                    return true;
+                });
+            });
             
             return {
                 recordingConsents,
@@ -292,7 +322,8 @@
                 closeModal,
                 acceptPrivacyPolicy,
                 showAlert,
-                closeAlert
+                closeAlert,
+                filteredExamGroups
             };
         }
     }

@@ -28,7 +28,10 @@
         <meta property="og:site_name" content="Brempi">
         <meta property="og:locale" content="id_ID">
         
-        <title>Brempi - Brevetisasi Meraih Mimpi</title>
+        <title>Brempi - Empower Skills, Elevate Dreams</title>
+        <meta name="theme-color" content="#764ba2">
+<link rel="manifest" href="/manifest.json">
+
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -75,3 +78,4 @@
 <script src="{{ asset('assets/js/volt.js') }}"></script>
 </body>
 </html>
+<!-- Di dalam tag <head> -->

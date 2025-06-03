@@ -3,7 +3,7 @@
         <title>Ujian Dengan Nomor Soal : {{ page }} - Aplikasi Ujian Online</title>
     </Head>
     <div class="row mb-5">
-        <div class="col-md-7">
+        <div class="col-md-7 mb-4 mb-md-0">  <!-- Tambahkan mb-4 mb-md-0 -->
             <div class="card border-0 shadow">
                 <div class="card-header">
                     <div class="d-flex justify-content-between">
@@ -60,8 +60,9 @@
                         <div class="text-start">
                             <button v-if="page > 1" @click.prevent="prevPage" type="button" class="btn btn-gray-400 btn-sm btn-block mb-2">Sebelumnya</button>
                         </div>
-                        <div class="text-end">
-                            <button v-if="page < Object.keys(all_questions).length" @click.prevent="nextPage" type="button" class="btn btn-gray-400 btn-sm">Selanjutnya</button>
+                        <div class="text-end d-flex gap-2"> <!-- Tambahkan d-flex dan gap-2 -->
+                            <button v-if="page === Object.keys(all_questions).length" @click.prevent="showModalEndExam = true" type="button" class="btn btn-success btn-sm btn-block mb-2 text-white">Selesai Ujian</button>
+                            <button v-if="page < Object.keys(all_questions).length" @click.prevent="nextPage" type="button" class="btn btn-gray-400 btn-sm btn-block mb-2">Selanjutnya</button>
                         </div>
                     </div>
                 </div>
@@ -79,7 +80,7 @@
                         <span v-else>Expert ðŸ’Ž</span>
                     </div> -->
                 </div>
-                <div class="card-body" style="height: 330px;overflow-y: auto">
+                <div class="card-body" >
 
                     <div v-for="(question, index) in all_questions" :key="index">
                         <div width="20%" style="width: 20%; float: left;">
