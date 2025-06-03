@@ -189,7 +189,10 @@ Route::prefix('participant')->group(function() {
         Route::post('/performance-assessments/{assessment}/submit', [App\Http\Controllers\Participant\PerformanceAssessmentController::class, 'submit'])
             ->name('participant.performance_assessments.submit');
 
+        // Participant profile routes
         Route::get('/profile', [App\Http\Controllers\Participant\ParticipantController::class, 'profile'])->name('participant.profile');
+        Route::get('/profile/edit', [App\Http\Controllers\Participant\ParticipantController::class, 'edit'])->name('participant.profile.edit');
+        Route::put('/profile/update', [App\Http\Controllers\Participant\ParticipantController::class, 'update'])->name('participant.profile.update');
 
         // Praktik exam routes
         Route::get('/exam-praktik-start/{exam_group}', [ExamPraktikController::class, 'startExam'])
