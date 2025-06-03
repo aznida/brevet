@@ -5,15 +5,7 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-<<<<<<< HEAD
-    "file": "assets/app-CV8_id3w.js",
-=======
-<<<<<<< HEAD
-    "file": "assets/app-oi-JA7Vi.js",
-=======
-    "file": "assets/app-BL1jtjC6.js",
->>>>>>> 685487cc8c12575f4b8b103f9f837ca5edd5b455
->>>>>>> fc5c41fbc7ff3a95d679a87a06ec5c3b0bf4a2a0
+    "file": "assets/app-BB6Uz5Su.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
