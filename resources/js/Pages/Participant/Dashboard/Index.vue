@@ -194,7 +194,7 @@
     //import layout participant
     import LayoutParticipant from '../../../Layouts/Participant.vue';
     import { Link, Head } from '@inertiajs/vue3';  // Add Head import here
-    import { ref, onMounted, computed } from 'vue'; // Tambahkan computed
+    import { onMounted, ref, computed, onBeforeUnmount } from 'vue';
     import { router } from '@inertiajs/vue3';
 
     export default {
@@ -301,7 +301,29 @@
                 }, 7000); // 7 detik
             };
 
+            // Tambahkan ref untuk menyimpan data ujian
+            const examGroups = ref(props.exam_groups);
+
+            // Fungsi untuk memuat data ujian
+            const loadExamGroups = () => {
+                router.get(
+                    window.location.pathname,
+                    {},
+                    {
+                        preserveState: true,
+                        preserveScroll: true,
+                        only: ['exam_groups'],
+                        onSuccess: (response) => {
+                            examGroups.value = response.props.exam_groups;
+                        }
+                    }
+                );
+            };
+
             onMounted(() => {
+                // Muat data ujian segera setelah login
+                loadExamGroups();
+
                 // Pastikan scrolling berfungsi saat halaman dimuat
                 document.body.classList.remove('modal-open');
                 document.body.style.overflow = 'auto';
