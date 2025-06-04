@@ -5,20 +5,12 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-<<<<<<< HEAD
-    "file": "assets/app-Cf1Oxw1o.js",
-=======
-    "file": "assets/app-UrtTnYBv.js",
->>>>>>> 08456f79afbd2392be34dda55c5f2917565870aa
+    "file": "assets/app-BduMV6yY.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "css": [
-<<<<<<< HEAD
-      "assets/app-0cMWOSpu.css"
-=======
-      "assets/app-DJawgH-Y.css"
->>>>>>> 08456f79afbd2392be34dda55c5f2917565870aa
+      "assets/app-CZS5NOo5.css"
     ]
   }
 }

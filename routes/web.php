@@ -106,6 +106,7 @@ Route::prefix('admin')->group(function() {
         Route::middleware(['auth', 'role:admin'])->group(function() {
             Route::get('/admin/pending-exams', [PendingExamController::class, 'index'])->name('admin.pending-exams.index');
             Route::get('/admin/pending-exams/export', [PendingExamController::class, 'export'])->name('admin.pending-exams.export');
+            
         });
     });
     //route pending exams (remove duplicate routes)
