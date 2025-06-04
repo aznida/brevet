@@ -1,27 +1,18 @@
 deployment:
   tasks:
-    - echo "🚀 Memulai proses deployment..."
-    
-    # Masuk ke direktori Laravel Anda
+    - echo "🚀 Mulai Deployment"
+
     - cd /home/mybrempi/backend_brempi
 
-    # Pastikan sudah menarik commit terbaru dari GitHub
-    - git pull origin master
-
-    # Jalankan composer untuk update dependensi
     - /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader
 
-    # Laravel artisan optimisasi
     - php artisan config:cache
     - php artisan route:cache
     - php artisan view:cache
 
-    # Build Vue frontend menggunakan Vite (harus sudah ada npm & vite.config.js)
     - /opt/cpanel/ea-nodejs20/bin/npm install
     - /opt/cpanel/ea-nodejs20/bin/npm run build
 
-    # Salin hasil build ke public_html
     - rsync -a public/ /home/mybrempi/public_html/
 
-    # Selesai
-    - echo "✅ Deployment selesai."
+    - echo "✅ Deployment selesai"
