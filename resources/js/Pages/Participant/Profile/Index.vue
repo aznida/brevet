@@ -15,10 +15,13 @@
                 </div>
                 <div class="profile-info">
                     <h3 class="profile-name">{{ auth.participant.name }}</h3>
-                    <p class="profile-area">{{ auth.participant.area ? auth.participant.area.title : 'Area tidak tersedia' }}</p>
+                    <p class="profile-area text-black">{{ auth.participant.area ? auth.participant.area.title : 'Area tidak tersedia' }}</p>
                     <div class="profile-status">
                         <span :class="['status-badge', auth.participant.status === 'Aktif' ? 'status-active' : 'status-inactive']">
                             {{ auth.participant.status }}
+                        </span>
+                        <span style="margin-left:5px" :class="['status-badge', auth.participant.role === 'Teknisi' ? 'status-active' : 'status-inactive']">
+                         {{ auth.participant.role }}
                         </span>
                     </div>
                 </div>
@@ -47,7 +50,7 @@
                         </div>
                     </div>
                     
-                    <div class="info-item">
+                    <!-- <div class="info-item">
                         <div class="info-icon">
                             <i class="fas fa-phone-alt"></i>
                         </div>
@@ -55,7 +58,7 @@
                             <h4 class="info-label">No. HP</h4>
                             <p class="info-value">{{ auth.participant.hp }}</p>
                         </div>
-                    </div>
+                    </div> -->
                     
                     <div class="info-item">
                         <div class="info-icon">
@@ -115,7 +118,7 @@ export default {
 
 <style scoped>
 .profile-container {
-    padding: 1rem;
+    /* padding: 1rem; */
     max-width: 100%;
     margin: 0 auto;
 }
@@ -130,7 +133,8 @@ export default {
 .profile-header {
     position: relative;
     padding: 1.5rem 1rem;
-    background: linear-gradient(135deg, #1a2234 0%, #111827 100%);
+    background: #f5f8fc;
+    /* background: linear-gradient(135deg, #1a2234 0%, #111827 100%); */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -157,7 +161,7 @@ export default {
     font-size: 1.3rem;
     font-weight: 700;
     margin-bottom: 0.25rem;
-    color: white;
+    /* color: white; */
 }
 
 .profile-area {
@@ -167,7 +171,7 @@ export default {
 }
 
 .profile-status {
-    margin-bottom: 0.5rem;
+    /* margin-bottom: 0.5rem; */
 }
 
 .status-badge {
@@ -204,7 +208,7 @@ export default {
     align-items: center;
     padding: 0.75rem;
     border-radius: 8px;
-    background-color: #f8fafc;
+    background-color: #f5f8fc;
     border-left: 3px solid #1a2234;
 }
 
