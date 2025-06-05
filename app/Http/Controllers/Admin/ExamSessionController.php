@@ -283,38 +283,22 @@ class ExamSessionController extends Controller
                 ->get();
     
             foreach($participants as $participant) {
+                // Ganti kode pengiriman langsung dengan dispatch job
                 try {
-                    // Debug log untuk pengecekan NIK dan password
-                    \Log::info('Debug Info Participant:', [
-                        'nik' => $participant->nik,
-                        'password_hashed' => $participant->password,
-                        'name' => $participant->name,
-                        'email' => $participant->email
-                    ]);
-    
-                    // Decrypt password menggunakan Laravel encryption
                     $decryptedPassword = Crypt::decryptString($participant->password);
-    
-                    Mail::send('emails.participant_notification', [
-                        'name' => $participant->name,
-                        'nik' => $participant->nik,
-                        'password' => $decryptedPassword,
-                        'url' => 'https://brempi.com/',
-                    ], function($message) use ($participant) {
-                        $message->to($participant->email)
-                                ->subject('🔔 Akses Aplikasi Brevetisasi MO DEFA')
-                                ->priority(1)
-                                ->from(config('mail.from.address'), config('mail.from.name'))
-                                ->replyTo(config('mail.from.address'), config('mail.from.name'));
-                    });
                     
-                    // Debug log untuk password yang sudah di-decrypt
-                    \Log::info('Email berhasil dikirim ke: ' . $participant->email);
+                    // Dispatch job untuk mengirim email
+                    SendParticipantNotification::dispatch(
+                        $participant->email,
+                        $participant->name,
+                        $participant->nik,
+                        $decryptedPassword
+                    );
+                    
+                    \Log::info('Job pengiriman email di-dispatch untuk: ' . $participant->email);
                     $successCount++;
-                    
-                    sleep(rand(1, 3));
                 } catch (\Exception $e) {
-                    \Log::error('Gagal mengirim email ke ' . $participant->email . ': ' . $e->getMessage());
+                    \Log::error('Gagal memproses email untuk ' . $participant->email . ': ' . $e->getMessage());
                     $failedCount++;
                     $failedEmails[] = $participant->email;
                     continue;

@@ -38,39 +38,31 @@ class SendParticipantNotification implements ShouldQueue
      */
     public function handle()
     {
-        try {
-            Mail::send('emails.participant_notification', [
-                'name' => $this->name,
-                'nik' => $this->nik,
-                'password' => $this->password,
-                'url' => 'https://brempi.com/',
-            ], function($message) {
-                $message->to($this->email)
-                        ->subject('🔔 Akses Aplikasi Brevetisasi MO DEFA')
-                        ->priority(1)
-                        ->from(config('mail.from.address'), config('mail.from.name'))
-                        ->replyTo(config('mail.from.address'), config('mail.from.name'));
-            });
-            
-            \Log::info('Email berhasil dikirim ke: ' . $this->email);
-        } catch (\Exception $e) {
-            \Log::error('Gagal mengirim email ke ' . $this->email . ': ' . $e->getMessage());
-            // Jika perlu, Anda bisa menambahkan logika retry di sini
-            throw $e; // Melempar exception agar job bisa di-retry oleh Laravel
-        }
         $attempts = 0;
         $maxAttempts = 3;
         $success = false;
         
         while (!$success && $attempts < $maxAttempts) {
             try {
-                // Kode pengiriman email...
+                Mail::send('emails.participant_notification', [
+                    'name' => $this->name,
+                    'nik' => $this->nik,
+                    'password' => $this->password,
+                    'url' => 'https://brempi.com/',
+                ], function($message) {
+                    $message->to($this->email)
+                            ->subject('🔔 Akses Aplikasi Brevetisasi MO DEFA')
+                            ->priority(1)
+                            ->from(config('mail.from.address'), config('mail.from.name'))
+                            ->replyTo(config('mail.from.address'), config('mail.from.name'));
+                });
+                
+                \Log::info('Email berhasil dikirim ke: ' . $this->email);
                 $success = true;
             } catch (\Exception $e) {
                 $attempts++;
                 \Log::warning("Percobaan ke-{$attempts} gagal untuk {$this->email}: {$e->getMessage()}");
                 
-                sleep(rand(1, 3));
                 if ($attempts < $maxAttempts) {
                     sleep(5 * $attempts); // Backoff strategy
                 } else {
