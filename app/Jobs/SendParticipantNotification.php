@@ -48,6 +48,8 @@ class SendParticipantNotification implements ShouldQueue
     public function handle()
     {
         try {
+            \Log::info('Mencoba mengirim email ke: ' . $this->email . ' dengan server SMTP: ' . config('mail.mailers.smtp.host') . ':' . config('mail.mailers.smtp.port'));
+            
             Mail::send('emails.participant_notification', [
                 'name' => $this->name,
                 'nik' => $this->nik,
@@ -65,6 +67,13 @@ class SendParticipantNotification implements ShouldQueue
         } catch (\Exception $e) {
             \Log::error('Gagal mengirim email ke ' . $this->email . ': ' . $e->getMessage());
             \Log::error('Stack trace: ' . $e->getTraceAsString());
+            \Log::error('SMTP Config: ' . json_encode([
+                'host' => config('mail.mailers.smtp.host'),
+                'port' => config('mail.mailers.smtp.port'),
+                'encryption' => config('mail.mailers.smtp.encryption'),
+                'username' => config('mail.mailers.smtp.username'),
+                'from_address' => config('mail.from.address'),
+            ]));
             throw $e; // Melempar kembali exception agar job retry berjalan
         }
     }

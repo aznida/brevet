@@ -283,18 +283,25 @@ class ExamSessionController extends Controller
                 try {
                     $decryptedPassword = Crypt::decryptString($participant->password);
                     
-                    // Dispatch job untuk mengirim email
-                    SendParticipantNotification::dispatch(
-                        $participant->email,
-                        $participant->name,
-                        $participant->nik,
-                        $decryptedPassword
-                    );
+                    // Kirim email langsung untuk debugging
+                    Mail::send('emails.participant_notification', [
+                        'name' => $participant->name,
+                        'nik' => $participant->nik,
+                        'password' => $decryptedPassword,
+                        'url' => 'https://brempi.com/',
+                    ], function($message) use ($participant) {
+                        $message->to($participant->email)
+                                ->subject('🔔 Akses Aplikasi Brevetisasi MO DEFA')
+                                ->priority(1)
+                                ->from(config('mail.from.address'), config('mail.from.name'))
+                                ->replyTo(config('mail.from.address'), config('mail.from.name'));
+                    });
                     
-                    \Log::info('Job pengiriman email di-dispatch untuk: ' . $participant->email);
+                    \Log::info('Email berhasil dikirim langsung ke: ' . $participant->email);
                     $successCount++;
                 } catch (\Exception $e) {
                     \Log::error('Gagal memproses email untuk ' . $participant->email . ': ' . $e->getMessage());
+                    \Log::error('Stack trace: ' . $e->getTraceAsString());
                     $failedCount++;
                     $failedEmails[] = $participant->email;
                     continue;
