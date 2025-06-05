@@ -125,6 +125,14 @@ class ExamPraktikController extends Controller
             ->where('witel', auth()->guard('participant')->user()->witel)
             ->get();
 
+        // Ambil data draft dari grades yang belum memiliki end_time
+        $draftValues = [];
+        foreach ($grades as $grade) {
+            if ($grade->end_time === null && $grade->grade !== null) {
+                $draftValues[$grade->participant_id] = $grade->grade;
+            }
+        }
+
         // Calculate remaining duration from current time to end_time
         $endTime = Carbon::parse($exam_group->exam_session->end_time);
         $remainingDuration = Carbon::now()->diffInMilliseconds($endTime);
@@ -133,6 +141,7 @@ class ExamPraktikController extends Controller
             'exam_group' => $exam_group->load(['participant.area', 'exam', 'exam_session']),
             'grades' => $grades,
             'participants' => $participants,
+            'draft_values' => $draftValues, // Tambahkan draft_values
             'duration' => [
                 'id' => $exam_group->id,
                 'duration' => $remainingDuration

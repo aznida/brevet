@@ -71,10 +71,10 @@
                     </div>
                     <div v-if="!isBrempiApp" class="d-flex justify-content-center mt-4">
                         <div class="text-center">
-                            <p class="text-muted mb-3">Download Aplikasi Mobile:</p>
-                            <div class="d-flex gap-2 justify-content-center">
+                            <p class="text-muted mb-1">Download Aplikasi Mobile:</p>
+                            <div class="d-flex justify-content-center">
                                 <a href="/assets/app/brempi.1.0.apk" class="text-decoration-none">
-                                    <img src="/assets/images/android.png" alt="Get it on Google Play" height="40">
+                                    <img src="/assets/images/android.png" alt="Get it on Android" height="50">
                                 </a>
                             </div>
                         </div>
