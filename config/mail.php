@@ -47,6 +47,7 @@ return [
             'timeout' => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN'),
         ],
+        'timeout' => 60, // dalam detik
         'stream' => [
                 'ssl' => [
                     'verify_peer' => false,

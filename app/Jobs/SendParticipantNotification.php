@@ -18,6 +18,15 @@ class SendParticipantNotification implements ShouldQueue
     protected $nik;
     protected $password;
     
+    // Jumlah percobaan maksimal
+    public $tries = 3;
+    
+    // Waktu tunggu antar percobaan (dalam detik)
+    public $backoff = [10, 30, 60];
+    
+    // Timeout job (dalam detik)
+    public $timeout = 60;
+    
     /**
      * Create a new job instance.
      *
@@ -38,37 +47,25 @@ class SendParticipantNotification implements ShouldQueue
      */
     public function handle()
     {
-        $attempts = 0;
-        $maxAttempts = 3;
-        $success = false;
-        
-        while (!$success && $attempts < $maxAttempts) {
-            try {
-                Mail::send('emails.participant_notification', [
-                    'name' => $this->name,
-                    'nik' => $this->nik,
-                    'password' => $this->password,
-                    'url' => 'https://brempi.com/',
-                ], function($message) {
-                    $message->to($this->email)
-                            ->subject('🔔 Akses Aplikasi Brevetisasi MO DEFA')
-                            ->priority(1)
-                            ->from(config('mail.from.address'), config('mail.from.name'))
-                            ->replyTo(config('mail.from.address'), config('mail.from.name'));
-                });
-                
-                \Log::info('Email berhasil dikirim ke: ' . $this->email);
-                $success = true;
-            } catch (\Exception $e) {
-                $attempts++;
-                \Log::warning("Percobaan ke-{$attempts} gagal untuk {$this->email}: {$e->getMessage()}");
-                
-                if ($attempts < $maxAttempts) {
-                    sleep(5 * $attempts); // Backoff strategy
-                } else {
-                    throw $e;
-                }
-            }
+        try {
+            Mail::send('emails.participant_notification', [
+                'name' => $this->name,
+                'nik' => $this->nik,
+                'password' => $this->password,
+                'url' => 'https://brempi.com/',
+            ], function($message) {
+                $message->to($this->email)
+                        ->subject('🔔 Akses Aplikasi Brevetisasi MO DEFA')
+                        ->priority(1)
+                        ->from(config('mail.from.address'), config('mail.from.name'))
+                        ->replyTo(config('mail.from.address'), config('mail.from.name'));
+            });
+            
+            \Log::info('Email berhasil dikirim ke: ' . $this->email);
+        } catch (\Exception $e) {
+            \Log::error('Gagal mengirim email ke ' . $this->email . ': ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            throw $e; // Melempar kembali exception agar job retry berjalan
         }
     }
     
