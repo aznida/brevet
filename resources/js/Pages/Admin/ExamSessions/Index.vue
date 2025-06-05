@@ -306,6 +306,25 @@ export default {
                             
                             if (flash && typeof flash === 'object') {
                                 if (flash.type === 'success') {
+                                    // Buat daftar email yang gagal jika ada
+                                    let failedEmailsList = '';
+                                    if (flash.details.failed > 0 && flash.details.failed_emails && flash.details.failed_emails.length > 0) {
+                                        // Jika ada lebih dari 3 email yang gagal, tampilkan 3 pertama dan tambahkan tombol untuk melihat semua
+                                        const emailsToShow = flash.details.failed_emails.slice(0, 3);
+                                        const hasMoreEmails = flash.details.failed_emails.length > 3;
+                                        
+                                        failedEmailsList = `
+                                            <div class="mt-4 text-start">
+                                                <p class="text-danger mb-2"><strong>Email yang gagal terkirim:</strong></p>
+                                                <div class="failed-emails-list" style="max-height: 120px; overflow-y: auto; background-color: #f8f9fa; padding: 10px; border-radius: 4px; border-left: 3px solid #dc3545;">
+                                                    ${emailsToShow.map(email => `<div class="text-danger py-1"><i class="fa fa-times-circle mr-1"></i> ${email}</div>`).join('')}
+                                                    ${hasMoreEmails ? `<div class="mt-2 text-center text-secondary">...dan ${flash.details.failed_emails.length - 3} email lainnya</div>` : ''}
+                                                </div>
+                                                ${hasMoreEmails ? `<button id="showDetailFailedBtn" class="btn btn-sm btn-outline-danger mt-3 w-100" onclick="window.showFailedEmailsModal(${JSON.stringify(flash.details.failed_emails)})">Lihat Semua Email Gagal</button>` : ''}
+                                            </div>
+                                        `;
+                                    }
+                                
                                     Swal.fire({
                                         title: '<div class="text-success"><strong>Berhasil!</strong></div>',
                                         html: `
@@ -319,18 +338,38 @@ export default {
                                                 <h4 class="mb-3">Email Terkirim!</h4>
                                                 <p class="mb-2">${flash.message}</p>
                                                 <div class="mt-3">
-                                                    <small class="text-muted">Waktu: ${flash.details.timestamp}</small><br>
-                                                    <small class="text-success">Berhasil: ${flash.details.success} email</small>
-                                                    ${flash.details.failed > 0 ? `<br><small class="text-danger">Gagal: ${flash.details.failed} email</small>` : ''}
+                                                    <small class="text-muted">Waktu: ${flash.details.timestamp}</small>
                                                 </div>
+                                                <div class="mt-3 d-flex justify-content-center">
+                                                    <div class="px-3 text-center">
+                                                        <div class="h3 text-success">${flash.details.success}</div>
+                                                        <div class="small">Berhasil</div>
+                                                    </div>
+                                                    ${flash.details.failed > 0 ? `
+                                                    <div class="px-3 text-center">
+                                                        <div class="h3 text-danger">${flash.details.failed}</div>
+                                                        <div class="small">Gagal</div>
+                                                    </div>` : ''}
+                                                </div>
+                                                ${failedEmailsList}
                                             </div>
                                         `,
                                         icon: false,
-                                        timer: 5000,
+                                        timer: flash.details.failed > 0 ? 15000 : 5000, // Tampilkan lebih lama jika ada email yang gagal
                                         timerProgressBar: true,
-                                        showConfirmButton: false,
+                                        showConfirmButton: flash.details.failed > 0,
+                                        confirmButtonText: 'Tutup',
                                         customClass: {
                                             popup: 'animated bounceIn'
+                                        },
+                                        didOpen: () => {
+                                            // Tambahkan event listener untuk tombol detail
+                                            const detailBtn = document.getElementById('showDetailFailedBtn');
+                                            if (detailBtn) {
+                                                detailBtn.addEventListener('click', () => {
+                                                    window.showFailedEmailsModal(flash.details.failed_emails);
+                                                });
+                                            }
                                         }
                                     });
                                 } else {
@@ -423,6 +462,45 @@ export default {
             );
         });
 
+        // Tambahkan Fungsi untuk Menampilkan Modal Detail Email Gagal
+        
+        // Tambahkan fungsi berikut di dalam setup function
+        const showFailedEmailsModal = (failedEmails) => {
+            Swal.fire({
+                title: '<div class="text-danger"><i class="fa fa-exclamation-triangle mr-2"></i> Detail Email Gagal Terkirim</div>',
+                html: `
+                    <div class="failed-emails-detail">
+                        <p class="text-center mb-3">Total: <strong>${failedEmails.length}</strong> email gagal terkirim</p>
+                        <table class="table table-bordered table-striped">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th style="width: 10%" class="text-center">No</th>
+                                    <th>Alamat Email</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${failedEmails.map((email, index) => `
+                                    <tr>
+                                        <td class="text-center">${index + 1}</td>
+                                        <td class="text-danger">${email}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `,
+                width: '600px',
+                showConfirmButton: true,
+                confirmButtonText: 'Tutup',
+                customClass: {
+                    popup: 'animated fadeInUp'
+                }
+            });
+        };
+        
+        // Tambahkan ini untuk membuat fungsi tersedia secara global
+        window.showFailedEmailsModal = showFailedEmailsModal;
+        
         return {
             search,
             handleSearch,
@@ -434,11 +512,12 @@ export default {
             selectAll,
             toggleSelectAll,
             hasParticipants,
-            hasFilteredParticipants,  // Tambahkan ini
-            filteredParticipants,     // Tambahkan ini
-            participantSearch,        // Tambahkan ini
-            handleParticipantSearch,  // Tambahkan ini
-            allUniqueParticipants     // Tambahkan ini untuk menampilkan peserta unik
+            hasFilteredParticipants,
+            filteredParticipants,
+            participantSearch,
+            handleParticipantSearch,
+            allUniqueParticipants,
+            showFailedEmailsModal  // Tambahkan fungsi ini
         }
     }
 }
@@ -466,20 +545,66 @@ const checkSelection = () => {
     margin-left: 30px;
 }
 
+/* Tambahkan di dalam <style> */
+.failed-emails-list {
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.failed-emails-detail {
+    font-size: 14px;
+}
+
+/* Animasi untuk modal */
 .animated {
     animation-duration: 0.5s;
     animation-fill-mode: both;
 }
 
-@keyframes bounceIn {
-    0% { transform: scale(0.3); opacity: 0; }
-    50% { transform: scale(1.05); }
-    70% { transform: scale(0.9); }
-    100% { transform: scale(1); opacity: 1; }
-}
-
 .bounceIn {
     animation-name: bounceIn;
+}
+
+.fadeInUp {
+    animation-name: fadeInUp;
+}
+
+@keyframes bounceIn {
+    0%, 20%, 40%, 60%, 80%, 100% {
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    }
+    0% {
+        opacity: 0;
+        transform: scale3d(.3, .3, .3);
+    }
+    20% {
+        transform: scale3d(1.1, 1.1, 1.1);
+    }
+    40% {
+        transform: scale3d(.9, .9, .9);
+    }
+    60% {
+        opacity: 1;
+        transform: scale3d(1.03, 1.03, 1.03);
+    }
+    80% {
+        transform: scale3d(.97, .97, .97);
+    }
+    100% {
+        opacity: 1;
+        transform: scale3d(1, 1, 1);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 100%, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
 }
 
 @keyframes shake {

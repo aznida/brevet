@@ -24,7 +24,7 @@
         </tr>
         <tr>
             <td style="padding: 20px 0;">
-                <p>Berikut adalah informasi akses Anda untuk Assessment Brevetisasi:</p>
+                <p>Berikut adalah informasi akses Anda untuk <b>Aplikasi Brempi</b>:</p>
                 <ul>
                     <li>Akses dengan NIK: <strong>{{ $nik }}</strong></li>
                     <li>Kata Sandi: <strong>{{ $password }}</strong> <i>(Jika password tidak bisa silahkan lakukan forgot password)</i></li>
@@ -32,12 +32,12 @@
             </td>
         </tr>
         <tr>
-            <td align="center" style="padding: 20px 0;">
-                <p>Silakan akses assesment brevetisasi melalui tombol di bawah ini:</p>
+            <td align="center" style="padding: 10px 0;">
+                <p>Silakan akses aplikasi <b>Brempi</b> melalui tombol di bawah ini:</p>
                 <table cellpadding="0" cellspacing="0" border="0">
                     <tr>
                         <td align="center">
-                            <a href="{{ $url }}" style="background-color: #28a745; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 5px; font-weight: bold; display: inline-block;">Dashboard Brevetisasi</a>
+                            <a href="{{ $url }}" style="background-color: #28a745; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 5px; font-weight: bold; display: inline-block;">Dashboard Brempi</a>
                         </td>
                     </tr>
                     <tr>
@@ -49,22 +49,23 @@
             </td>
         </tr>
         <tr>
-            <td align="center" style="padding: 20px 0;">
+            <td align="center" style="padding: 10px 0;">
+                <p>Disarankan mengunakan aplikasi Android untuk memudahkan ujiannya:</p>
                 <p>Download Aplikasi Mobile:</p>
                 <a href="https://brempi.com/assets/app/brempi.1.0.apk">
-                    <img src="https://brempi.com/assets/images/android.png" alt="Download APK" height="40" style="display: block; margin: 0 auto;">
+                    <img src="https://brempi.com/assets/images/android.png" alt="Download APK" height="50" style="display: block; margin: 0 auto;">
                 </a>
             </td>
         </tr>
         <tr>
             <td style="padding-top: 30px; border-top: 1px solid #eee;">
-                <p>Terima Kasih,</p>
-                <p><strong>TIM BREVETISASI MO DEFA</strong></p>
+                <p>Best Regards,</p>
+                <p><strong>BREMPI TEAMS</strong></p>
                 
                 <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px;">
                     <p><strong>Noted:</strong> Apabila terdapat pertanyaan lebih lanjut, silakan hubungi:</p>
                     <p>
-                        Helpcare Brevet: <strong>+62852-1597-3482 (Made)</strong><br>
+                        Helpcare Brempi: <strong>+62852-1597-3482 (Made)</strong><br>
                         Telegram: <a href="https://t.me/madeadriandp" style="color: #0088cc; text-decoration: none;"><strong>@madeadriandp</strong></a>
                     </p>
                 </div>

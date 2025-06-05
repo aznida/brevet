@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Queue;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Queue::failing(function (JobFailed $event) {
+            // Kirim notifikasi ke admin jika job gagal
+            if ($event->job->resolveName() === 'App\\Jobs\\SendParticipantNotification') {
+                // Simpan ke database atau kirim notifikasi
+                \Log::critical('Email job gagal: ' . $event->exception->getMessage());
+            }
+        });
     }
 }

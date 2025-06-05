@@ -258,6 +258,11 @@ class ExamSessionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    /**
+     * Send notifications to participants
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function sendNotifications(Request $request)
     {
         try {
@@ -267,7 +272,7 @@ class ExamSessionController extends Controller
                 'participant_ids.*' => 'exists:participants,id'
             ]);
     
-            $successCount = 0;
+            $successCount = 0; 
             $failedCount = 0;
             $failedEmails = [];
     
@@ -286,10 +291,10 @@ class ExamSessionController extends Controller
                         'name' => $participant->name,
                         'email' => $participant->email
                     ]);
-
+    
                     // Decrypt password menggunakan Laravel encryption
                     $decryptedPassword = Crypt::decryptString($participant->password);
-
+    
                     Mail::send('emails.participant_notification', [
                         'name' => $participant->name,
                         'nik' => $participant->nik,
@@ -307,7 +312,7 @@ class ExamSessionController extends Controller
                     \Log::info('Email berhasil dikirim ke: ' . $participant->email);
                     $successCount++;
                     
-                    sleep(rand(3, 7));
+                    sleep(rand(1, 3));
                 } catch (\Exception $e) {
                     \Log::error('Gagal mengirim email ke ' . $participant->email . ': ' . $e->getMessage());
                     $failedCount++;
@@ -321,7 +326,7 @@ class ExamSessionController extends Controller
                 $message .= ", gagal mengirim ke {$failedCount} peserta";
             }
     
-            return back()->with([
+            $responseData = [
                 'type' => 'success',
                 'message' => $message,
                 'details' => [
@@ -330,14 +335,41 @@ class ExamSessionController extends Controller
                     'failed_emails' => $failedEmails,
                     'timestamp' => now()->format('d M Y H:i:s')
                 ]
-            ]);
+            ];
+    
+            // Jika request adalah dari Inertia, kembalikan respons Inertia
+            if ($request->header('X-Inertia')) {
+                return redirect()->back()->with($responseData);
+            }
+            
+            // Jika request adalah AJAX/XHR atau meminta JSON, kembalikan respons JSON
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json($responseData);
+            }
+    
+            // Jika bukan AJAX atau Inertia, lakukan redirect dengan flash data
+            return back()->with($responseData);
     
         } catch (\Exception $e) {
             \Log::error('Error pada proses pengiriman email: ' . $e->getMessage());
-            return back()->with([
+            
+            $errorData = [
                 'type' => 'error',
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-            ]);
+            ];
+            
+            // Jika request adalah dari Inertia, kembalikan respons Inertia
+            if ($request->header('X-Inertia')) {
+                return redirect()->back()->with($errorData);
+            }
+            
+            // Jika request adalah AJAX/XHR atau meminta JSON, kembalikan respons JSON
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json($errorData, 500);
+            }
+            
+            // Jika bukan AJAX atau Inertia, lakukan redirect dengan flash data
+            return back()->with($errorData);
         }
     }
 }
