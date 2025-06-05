@@ -11,6 +11,7 @@ use App\Models\ExamGroup;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
+use App\Jobs\SendParticipantNotification;
 
 class ExamSessionController extends Controller
 {
@@ -253,11 +254,6 @@ class ExamSessionController extends Controller
         return redirect()->route('admin.exam_sessions.show', $exam_session->id);
     }
 
-    /**
-     * Send notifications to participants
-     *
-     * @return \Illuminate\Http\Response
-     */
     /**
      * Send notifications to participants
      *
