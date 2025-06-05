@@ -353,12 +353,12 @@ class ExamController extends Controller
                     'level' => 'required',
                 ]);
             }
-
+    
             $request->validate($rules);
     
-            // Extract content from Quill editor data
+            // Extract content from Quill editor data - FIXED VERSION
             $questionContent = is_array($request->question) ? 
-                ($request->question['ops'][0]['insert'] ?? '') : $request->question;
+                json_encode($request->question) : $request->question;
     
             // Base update data
             $updateData = [
@@ -369,11 +369,11 @@ class ExamController extends Controller
             // Add type-specific data
             if ($exam->exam_type === 'multiple_choice') {
                 $updateData = array_merge($updateData, [
-                    'option_1' => is_array($request->option_1) ? ($request->option_1['ops'][0]['insert'] ?? '') : $request->option_1,
-                    'option_2' => is_array($request->option_2) ? ($request->option_2['ops'][0]['insert'] ?? '') : $request->option_2,
-                    'option_3' => is_array($request->option_3) ? ($request->option_3['ops'][0]['insert'] ?? '') : $request->option_3,
-                    'option_4' => is_array($request->option_4) ? ($request->option_4['ops'][0]['insert'] ?? '') : $request->option_4,
-                    'option_5' => is_array($request->option_5) ? ($request->option_5['ops'][0]['insert'] ?? '') : $request->option_5,
+                    'option_1' => is_array($request->option_1) ? json_encode($request->option_1) : $request->option_1,
+                    'option_2' => is_array($request->option_2) ? json_encode($request->option_2) : $request->option_2,
+                    'option_3' => is_array($request->option_3) ? json_encode($request->option_3) : $request->option_3,
+                    'option_4' => is_array($request->option_4) ? json_encode($request->option_4) : $request->option_4,
+                    'option_5' => is_array($request->option_5) ? json_encode($request->option_5) : $request->option_5,
                     'option_1_weight' => $request->filled('option_1_weight') ? $request->option_1_weight : null,
                     'option_2_weight' => $request->filled('option_2_weight') ? $request->option_2_weight : null,
                     'option_3_weight' => $request->filled('option_3_weight') ? $request->option_3_weight : null,
