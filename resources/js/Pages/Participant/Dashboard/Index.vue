@@ -26,7 +26,7 @@
                         <ul>
                             <li>Data Anda seperti <b><i>Nama lengkap, No.HP, Email, Gender, Tgl Lahir dan NIK</i></b> akan digunakan untuk keperluan pelaksanaan ujian</li>
                             <li>Data akan disimpan secara aman dan tidak akan dibagikan kepada pihak ketiga</li>
-                            <li>Anda memiliki hak untuk mengakses dan memperbarui data Anda</li>
+                            <!-- <li>Anda memiliki hak untuk mengakses dan memperbarui data Anda</li> -->
                         </ul>
                     </div>
                     <div class="mt-4">
