@@ -425,6 +425,7 @@ export default {
                     String(group.participant.name || '').toLowerCase().includes(searchLower) ||
                     String(group.participant.nik || '').toLowerCase().includes(searchLower) ||
                     String(group.participant.email || '').toLowerCase().includes(searchLower) ||
+                    String(group.participant.witel || '').toLowerCase().includes(searchLower) ||
                     String(group.participant.area?.title || '').toLowerCase().includes(searchLower)
                 );
             });
