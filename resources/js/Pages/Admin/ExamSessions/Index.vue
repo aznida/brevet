@@ -122,6 +122,7 @@
                                         </th>
                                         <th class="border-0">NAMA</th>
                                         <th class="border-0">NIK</th>
+                                        <th class="border-0">WITEL</th>
                                         <th class="border-0">EMAIL</th>
                                         <th class="border-0">TREG</th>
                                     </tr>
@@ -139,6 +140,7 @@
                                             </td>
                                             <td>{{ group.participant.name }}</td>
                                             <td>{{ group.participant.nik }}</td>
+                                            <td>{{ group.participant.witel }}</td>
                                             <td>{{ group.participant.email }}</td>
                                             <td>{{ group.participant.area?.title || '-' }}</td>
                                         </tr>
