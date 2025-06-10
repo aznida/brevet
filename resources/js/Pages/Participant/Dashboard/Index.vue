@@ -16,7 +16,7 @@
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title fw-bold">Persetujuan Penggunaan Data</h5>
                 </div>
-                <div class="modal-body p-4" style="max-height: 80vh; overflow-y: auto;">
+                <div class="modal-body p-4" style="max-height: 73vh; overflow-y: auto;">
                     <div class="alert alert-warning">
                         <p class="mb-2"><b>⚠️ Perhatian!</b></p>
                         <p>Sesuai dengan penerapan Persetujuan Pengguna berdasarkan UU PDP No. 27 Tahun 2022, semua pengolahan data peserta harus memiliki persetujuan aktif dari peserta yang disampaikan secara elektronik maupun non elektronik.</p>
