@@ -38,8 +38,11 @@
                                 <span class="input-group-text" id="basic-addon2">
                                     <i class="fa fa-lock"></i>
                                 </span>
-                                <input type="password" placeholder="Password" class="form-control"
+                                <input :type="showPassword ? 'text' : 'password'" placeholder="Password" class="form-control"
                                     v-model="form.password">
+                                <span class="input-group-text" @click="showPassword = !showPassword" style="cursor: pointer;">
+                                    <i :class="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+                                </span>
                             </div>
                             <div v-if="errors.password" class="alert alert-danger mt-2">
                                 {{ errors.password }}
@@ -126,6 +129,9 @@
                 password: '',
             });
 
+            // State untuk toggle password visibility
+            const showPassword = ref(false);
+
             // State to check if the device is Android
             const isAndroid = ref(false);
             const isWebView = ref(false);
@@ -158,7 +164,8 @@
                 router,
                 isAndroid,
                 isWebView,
-                isBrempiApp
+                isBrempiApp,
+                showPassword // Tambahkan showPassword ke return values
             }
         }
 

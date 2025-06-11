@@ -113,6 +113,15 @@ class ParticipantController extends Controller
             $participant->tanggal_lahir = date('Y-m-d', strtotime($participant->tanggal_lahir));
         }
         
+        // Dekripsi password jika ada
+        if ($participant->password) {
+            try {
+                $participant->decrypted_password = Crypt::decryptString($participant->password);
+            } catch (\Exception $e) {
+                $participant->decrypted_password = '';
+            }
+        }
+        
         return inertia('Admin/Participants/Edit', [
             'participant' => $participant,
             'areas' => Area::all()

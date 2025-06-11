@@ -139,7 +139,12 @@
                                 <div class="col-md-6">
                                     <div class="mb-4">
                                         <label>Password</label> 
-                                        <input type="password" class="form-control" placeholder="Masukkan Password" v-model="form.password">
+                                        <div class="input-group">
+                                            <input :type="showPassword ? 'text' : 'password'" class="form-control" placeholder="Masukkan Password" v-model="form.password">
+                                            <button type="button" class="btn btn-outline-secondary" @click="showPassword = !showPassword">
+                                                <i :class="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+                                            </button>
+                                        </div>
                                         <div v-if="errors.password" class="alert alert-danger mt-2">
                                             {{ errors.password }}
                                         </div>
@@ -148,7 +153,12 @@
                                 <div class="col-md-6">
                                     <div class="mb-4">
                                         <label>Konfirmasi Password</label> 
-                                        <input type="password" class="form-control" placeholder="Masukkan Konfirmasi Password" v-model="form.password_confirmation">
+                                        <div class="input-group">
+                                            <input :type="showPassword ? 'text' : 'password'" class="form-control" placeholder="Masukkan Konfirmasi Password" v-model="form.password_confirmation">
+                                            <button type="button" class="btn btn-outline-secondary" @click="showPassword = !showPassword">
+                                                <i :class="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -202,10 +212,11 @@ export default {
                 role: this.participant.role,
                 status: this.participant.status,
                 gender: this.participant.gender,
-                password: '',
+                password: this.participant.decrypted_password || '', // Gunakan password yang sudah didekripsi
                 password_confirmation: ''
             },
-            usia: ''
+            usia: '',
+            showPassword: false // Tambahkan state untuk toggle password visibility
         }
     },
 
