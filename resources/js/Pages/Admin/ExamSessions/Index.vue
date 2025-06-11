@@ -88,7 +88,7 @@
 
         <!-- Participant Modal -->
         <div class="modal fade" id="participantModal" tabindex="-1" aria-labelledby="participantModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="participantModalLabel">Pilih Peserta untuk Notifikasi</h5>
@@ -123,6 +123,7 @@
                                         <th class="border-0">NAMA</th>
                                         <th class="border-0">NIK</th>
                                         <th class="border-0">WITEL</th>
+                                        <th class="border-0">ROLE</th>
                                         <th class="border-0">EMAIL</th>
                                         <th class="border-0">TREG</th>
                                     </tr>
@@ -141,6 +142,7 @@
                                             <td>{{ group.participant.name }}</td>
                                             <td>{{ group.participant.nik }}</td>
                                             <td>{{ group.participant.witel }}</td>
+                                            <td>{{ group.participant.role }}</td>
                                             <td>{{ group.participant.email }}</td>
                                             <td>{{ group.participant.area?.title || '-' }}</td>
                                         </tr>
@@ -426,6 +428,7 @@ export default {
                     String(group.participant.nik || '').toLowerCase().includes(searchLower) ||
                     String(group.participant.email || '').toLowerCase().includes(searchLower) ||
                     String(group.participant.witel || '').toLowerCase().includes(searchLower) ||
+                    String(group.participant.role || '').toLowerCase().includes(searchLower) ||
                     String(group.participant.area?.title || '').toLowerCase().includes(searchLower)
                 );
             });
