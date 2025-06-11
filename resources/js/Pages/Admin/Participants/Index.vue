@@ -23,12 +23,20 @@
                     <div class="col-md-7 col-12 mb-2">
                         <div class="row">
                             <div class="col-md-8 col-12 mb-2">
-                                <form>
+                                <form @submit.prevent="handleSearch">
                                     <div class="input-group">
-                                        <input type="text" class="form-control border-0 shadow" placeholder="masukkan kata kunci dan enter...">
-                                        <span class="input-group-text border-0 shadow">
+                                        <input 
+                                            type="text" 
+                                            v-model="search"
+                                            class="form-control border-0 shadow" 
+                                            placeholder="masukkan kata kunci dan enter..."
+                                        >
+                                        <button 
+                                            type="submit" 
+                                            class="input-group-text border-0 shadow"
+                                        >
                                             <i class="fa fa-search"></i>
-                                        </span>
+                                        </button>
                                     </div>
                                 </form>
                             </div>
