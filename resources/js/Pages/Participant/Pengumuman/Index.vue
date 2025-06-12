@@ -34,6 +34,7 @@
                                 <li>Pastikan perangkat yang akan digunakan untuk ujian berfungsi dengan baik</li>
                                 <li>Siapkan koneksi internet yang stabil</li>
                                 <li>Istirahat yang cukup sebelum hari ujian</li>
+                                <li>Resecedule jadwal ujian jika terjadi perubahan <b><a href="https://docs.google.com/forms/d/e/1FAIpQLSdRnU9KOBE6OlSfhVNnHxxwzpR1rHRrKHIlaok0uL3x6C8zLg/viewform" style="color:red">Isi Form</a></b></li>
                                 <!-- <li>Gunakan aplikasi Brempi Android untuk memudahkan ujian. <a href="https://brempi.com/assets/app/brempi.1.0.apk">Download Aplikasi</a></li> -->
                                 <div class="text-center mt-3">
                                     <p class="text-muted mb-1">Download Aplikasi Mobile:</p>

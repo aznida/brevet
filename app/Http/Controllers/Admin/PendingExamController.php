@@ -25,7 +25,7 @@ class PendingExamController extends Controller
                 });
             })
             ->orderBy('created_at', 'DESC')
-            ->paginate(10);
+            ->paginate(2000);
 
         $categories = Category::orderBy('title')->get();
 
