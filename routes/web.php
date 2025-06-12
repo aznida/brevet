@@ -153,6 +153,11 @@ Route::prefix('participant')->group(function() {
         //route dashboard
         Route::get('/dashboard', App\Http\Controllers\Participant\DashboardController::class)->name('participant.dashboard');
         
+        // Rute pengumuman
+        Route::get('/pengumuman', function() {
+            return \Inertia\Inertia::render('Participant/Pengumuman/Index');
+        })->name('participant.pengumuman');
+        
         //route exam confirmation
         Route::get('/exam-confirmation/{id}', [App\Http\Controllers\Participant\ExamController::class, 'confirmation'])->name('participant.exams.confirmation');
         
@@ -218,3 +223,4 @@ Route::prefix('participant')->group(function() {
 
     
 });
+Route::post('/participant/update-credentials', [\App\Http\Controllers\Participant\ParticipantController::class, 'updateCredentials'])->name('participant.update-credentials');

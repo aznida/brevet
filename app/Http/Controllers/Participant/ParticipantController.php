@@ -8,6 +8,7 @@ use App\Models\Area;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class ParticipantController extends Controller
 {
@@ -18,7 +19,26 @@ class ParticipantController extends Controller
      */
     public function profile()
     {
-        return inertia('Participant/Profile/Index');
+        // Get authenticated participant
+        $participant = Auth::guard('participant')->user();
+        
+        // Decrypt password
+        $decryptedPassword = Crypt::decryptString($participant->password);
+        
+        // Check if NIK and password are the same - pastikan keduanya string untuk perbandingan yang akurat
+        $shouldShowUpdateModal = (string)$participant->nik === (string)$decryptedPassword;
+        
+        // Debug information
+        $debug = [
+            'nik' => $participant->nik,
+            'decrypted_password' => $decryptedPassword,
+            'should_show_modal' => $shouldShowUpdateModal
+        ];
+        
+        return inertia('Participant/Profile/Index', [
+            'shouldShowUpdateModal' => $shouldShowUpdateModal,
+            'debug' => $debug
+        ]);
     }
 
     /**
@@ -87,5 +107,31 @@ class ParticipantController extends Controller
         }
         
         return redirect()->route('participant.profile')->with('message', 'Profil berhasil diperbarui');
+    }
+
+    /**
+     * Update participant credentials (email and password)
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateCredentials(Request $request)
+    {
+        // Get authenticated participant
+        $participant = Auth::guard('participant')->user();
+        
+        // Validate request
+        $request->validate([
+            'email' => 'required|email|unique:participants,email,'.$participant->id,
+            'password' => 'required|confirmed|min:6',
+        ]);
+        
+        // Update participant data
+        $participant->update([
+            'email' => $request->email,
+            'password' => Crypt::encryptString($request->password)
+        ]);
+        
+        return redirect()->route('participant.profile')->with('message', 'Email dan password berhasil diperbarui');
     }
 }

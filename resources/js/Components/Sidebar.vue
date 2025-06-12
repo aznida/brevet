@@ -28,7 +28,7 @@
                 <li role="separator" class="dropdown-divider mt-4 mb-3 border-gray-700"></li>
 
                 <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/dashboard') }">
-                    <Link href="/admin/dashboard" class="nav-link d-flex justify-content-between">
+                    <Link href="/admin/dashboard" class="nav-link d-flex justify-content-between" @click="handleLinkClick">
                     <span>
                         <span class="sidebar-icon">
                             <!--begin::Svg Icon | path: /var/www/preview.keenthemes.com/keenthemes/metronic/docs/core/html/src/media/icons/duotune/abstract/abs027.svg-->
@@ -44,7 +44,7 @@
                     </Link>
                 </li>
                 <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/pending-exams') }">
-                    <Link href="/admin/pending-exams" class="nav-link d-flex justify-content-between">
+                    <Link href="/admin/pending-exams" class="nav-link d-flex justify-content-between" @click="handleLinkClick">
                         <span>
                             <span class="sidebar-icon">
                                 <!-- <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" 
@@ -67,7 +67,7 @@
                 <li role="separator" class="dropdown-divider mt-2 mb-2 border-gray-700"></li>
 
                 <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/categories') }">
-                    <Link href="/admin/categories" class="nav-link d-flex justify-content-between">
+                    <Link href="/admin/categories" class="nav-link d-flex justify-content-between" @click="handleLinkClick">
                     <span>
                         <span class="sidebar-icon">
                             <!-- <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
@@ -90,7 +90,7 @@
                 </li>
 
                 <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/areas') }">
-                    <Link href="/admin/areas" class="nav-link d-flex justify-content-between">
+                    <Link href="/admin/areas" class="nav-link d-flex justify-content-between" @click="handleLinkClick">
                     <span>
                         <span class="sidebar-icon">
                             <!-- <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
@@ -169,7 +169,7 @@
                                     <rect fill="currentcolor" opacity="0.3" x="7" y="17" width="2" height="2" rx="1"/>
                                     <rect fill="currentcolor" opacity="0.3" x="10" y="17" width="7" height="2" rx="1"/>
                                 </g>
-                            </svg>
+                            </svg> 
                             </span>
                         </span>
                         <span class="sidebar-text">Ujian</span>
@@ -276,6 +276,14 @@ export default {
         Link
     },
     
+    data() {
+        return {
+            collapsed: this.$page.props.sidebarCollapsed || false,
+            isTransitioning: false,
+            mouseTimer: null
+        }
+    },
+    
     // Make route function available to the template
     methods: {
         handleMouseEnter() {
@@ -305,6 +313,18 @@ export default {
                     this.isTransitioning = false;
                 }, 300);
             }, 100);
+        },
+        // Pindahkan method handleLinkClick ke dalam blok methods
+        handleLinkClick() {
+            if (window.innerWidth <= 768) {
+                // Hanya jalankan di tampilan mobile
+                const sidebar = document.querySelector('#sidebarMenu');
+                if (sidebar.classList.contains('show')) {
+                    sidebar.classList.remove('show');
+                    document.body.classList.remove('sidebar-mobile-open');
+                    document.body.style.overflow = '';
+                }
+            }
         }
     },
     watch: {
@@ -333,6 +353,7 @@ export default {
     position: fixed;
     top: 0;
     left: 0;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
 }
 
 .sidebar.collapsed {
@@ -371,16 +392,33 @@ export default {
         margin-left: -250px;
         width: 250px !important;
         transform: translateX(0);
-        transition: transform 0.3s ease-in-out;
+        transition: transform 0.3s ease-in-out, margin-left 0s;
+        box-shadow: none;
     }
 
     .sidebar.show {
         transform: translateX(250px);
         margin-left: -250px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        z-index: 1050;
     }
 
-    body.sidebar-mobile-open .navbar {
+    body.sidebar-mobile-open .content-wrapper {
         transform: translateX(250px);
+    }
+    
+    body.sidebar-mobile-open::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1030;
+        opacity: 1;
+        transition: opacity 0.3s ease-in-out;
+        pointer-events: auto;
     }
 }
 </style>
