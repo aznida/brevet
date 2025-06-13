@@ -21,17 +21,23 @@
                         <form @submit.prevent="submit">
                             <!-- Question input -->
                             
+                            <!-- Ganti QuillEditor dengan TinyMCE Editor -->
                             <div class="mb-4">
                                 <label>Soal</label>
-                                <QuillEditor
-                                    v-model:content="form.question"
-                                    contentType="html"
-                                    theme="snow"
-                                    :toolbar="[
-                                        ['bold', 'italic', 'underline'],
-                                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                                        ['link', 'image'],
-                                    ]"
+                                <editor
+                                    v-model="form.question"
+                                    :init="{
+                                        base_url: '/assets/tinymce/js/tinymce',
+                                        plugins: 'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount',
+                                        toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+                                        height: 200,
+                                        menubar: true,
+                                        branding: false,
+                                        statusbar: false,
+                                        skin: 'oxide',
+                                        content_css: 'default'
+                                    }"
+                                    :cloud-channel="undefined"
                                 />
                                 <div v-if="errors.question" class="alert alert-danger mt-2">
                                     {{ errors.question }}
@@ -42,11 +48,21 @@
                             <div v-if="isMultipleChoice">
                                 <div class="mb-4">
                                     <label>Pilihan A</label>
-                                    <QuillEditor
-                                        v-model:content="form.option_1"
-                                        contentType="html"
-                                        theme="snow"
-                                        :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]"
+                                    <editor
+                                        v-model="form.option_1"
+                                        :init="{
+                                            
+                                            base_url: '/assets/tinymce/js/tinymce',
+                                            plugins: 'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount',
+                                            toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+                                            height: 150,
+                                            menubar: false,
+                                            branding: false,
+                                            statusbar: false,
+                                            skin: 'oxide',
+                                            content_css: 'default'
+                                        }"
+                                        :cloud-channel="undefined"
                                     />
                                     <div v-if="exam.title.toLowerCase().includes('attitude')|| exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
                                         <label>Bobot Pilihan A (0~100)</label>
@@ -66,11 +82,20 @@
                                 </div>
                                 <div class="mb-4">
                                     <label>Pilihan B</label>
-                                    <QuillEditor
-                                        v-model:content="form.option_2"
-                                        contentType="html"
-                                        theme="snow"
-                                        :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]"
+                                    <editor
+                                        v-model="form.option_2"
+                                        :init="{
+                                            base_url: '/assets/tinymce/js/tinymce',
+                                            plugins: 'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount',
+                                            toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+                                            height: 150,
+                                            menubar: false,
+                                            branding: false,
+                                            statusbar: false,
+                                            skin: 'oxide',
+                                            content_css: 'default'
+                                        }"
+                                        :cloud-channel="undefined"
                                     />
                                     <div v-if="exam.title.toLowerCase().includes('attitude')|| exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
                                         <label>Bobot Pilihan B (0~100)</label>
@@ -90,7 +115,21 @@
                                 </div>
                                 <div class="mb-4">
                                     <label>Pilihan C</label>
-                                    <QuillEditor v-model:content="form.option_3" contentType="html" theme="snow" :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]" />
+                                    <editor
+                                        v-model="form.option_3"
+                                        :init="{
+                                            base_url: '/assets/tinymce/js/tinymce',
+                                            plugins: 'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount',
+                                            toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+                                            height: 150,
+                                            menubar: false,
+                                            branding: false,
+                                            statusbar: false,
+                                            skin: 'oxide',
+                                            content_css: 'default'
+                                        }"
+                                        :cloud-channel="undefined"
+                                    />
                                     <div v-if="exam.title.toLowerCase().includes('attitude')|| exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
                                         <label>Bobot Pilihan C (0~100)</label>
                                         <input 
@@ -109,7 +148,21 @@
                                 </div>
                                 <div class="mb-4">
                                     <label>Pilihan D</label>
-                                    <QuillEditor v-model:content="form.option_4" contentType="html" theme="snow" :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]" />
+                                    <editor
+                                        v-model="form.option_4"
+                                        :init="{
+                                            base_url: '/assets/tinymce/js/tinymce',
+                                            plugins: 'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount',
+                                            toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+                                            height: 150,
+                                            menubar: false,
+                                            branding: false,
+                                            statusbar: false,
+                                            skin: 'oxide',
+                                            content_css: 'default'
+                                        }"
+                                        :cloud-channel="undefined"
+                                    />
                                     <div v-if="exam.title.toLowerCase().includes('attitude')|| exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
                                         <label>Bobot Pilihan D (0~100)</label>
                                         <input 
@@ -128,7 +181,21 @@
                                 </div>
                                 <div class="mb-4">
                                     <label>Pilihan E</label>
-                                    <QuillEditor v-model:content="form.option_5" contentType="html" theme="snow" :toolbar="[['bold', 'italic', 'underline'], ['link', 'image']]" />
+                                    <editor
+                                        v-model="form.option_5"
+                                        :init="{
+                                            base_url: '/assets/tinymce/js/tinymce',
+                                            plugins: 'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount',
+                                            toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+                                            height: 150,
+                                            menubar: false,
+                                            branding: false,
+                                            statusbar: false,
+                                            skin: 'oxide',
+                                            content_css: 'default'
+                                        }"
+                                        :cloud-channel="undefined"
+                                    />
                                     <div v-if="exam.title.toLowerCase().includes('attitude')|| exam.title.toLowerCase().includes('sikap') || exam.title.toLowerCase().includes('akhlak')" class="mt-2">
                                         <label>Bobot Pilihan E (0~100)</label>
                                         <input 
@@ -209,8 +276,12 @@ import LayoutAdmin from '../../../Layouts/Admin.vue';
 //import components
 import { Head, Link, router } from '@inertiajs/vue3'
 import { reactive, onMounted, ref, computed } from 'vue'  // Added computed here
-import { QuillEditor } from '@vueup/vue-quill'
-import '@vueup/vue-quill/dist/vue-quill.snow.css'
+// Ganti import QuillEditor
+// import { QuillEditor } from '@vueup/vue-quill'
+// import '@vueup/vue-quill/dist/vue-quill.snow.css'
+
+// Tambahkan import TinyMCE
+import Editor from '@tinymce/tinymce-vue';
 import Swal from 'sweetalert2'
 
 export default {
@@ -218,13 +289,28 @@ export default {
     components: {
         Head,
         Link,
-        QuillEditor,
+        // QuillEditor, // Hapus ini
+        Editor, // Tambahkan ini
     },
     props: {
         errors: Object,
         exam: Object,
     },
-
+    mounted() {
+        // Pastikan TinyMCE dimuat dengan benar
+        if (window.tinymce) {
+            console.log("TinyMCE tersedia");
+        } else {
+            console.error("TinyMCE tidak tersedia");
+            // Muat ulang script TinyMCE jika diperlukan
+            const script = document.createElement('script');
+            script.src = '/assets/tinymce/js/tinymce/tinymce.min.js';
+            script.onload = () => {
+                console.log("TinyMCE berhasil dimuat ulang");
+            };
+            document.head.appendChild(script);
+        }
+    },
     // In the setup function, add the weight fields to the form
     setup(props) {
         const examType = props.exam.exam_type;
@@ -398,15 +484,23 @@ export default {
 </script>
 
 <style>
-.ql-editor {
+/* Hapus style QuillEditor */
+/* .ql-editor {
     min-height: 120px;
 }
 
 .ql-toolbar.ql-snow,
 .ql-container.ql-snow {
     border: 1px solid #ced4da;
+} */
+
+/* Tambahkan style TinyMCE jika diperlukan */
+.tox-tinymce {
+    border-radius: 0.25rem;
+    border: 1px solid #ced4da !important;
 }
 
+/* Style lainnya tetap sama */
 .rating-legend {
     background-color: #f8f9fa;
     padding: 10px;

@@ -14,7 +14,7 @@ Route::prefix('admin')->group(function() {
 
     //middleware "auth"
     Route::group(['middleware' => ['auth']], function () {
-
+        Route::resource('/announcements', \App\Http\Controllers\Admin\AnnouncementController::class, ['as' => 'admin']);
         //route dashboard
         Route::get('/dashboard', App\Http\Controllers\Admin\DashboardController::class)->name('admin.dashboard');
         
@@ -150,13 +150,14 @@ Route::prefix('participant')->group(function() {
     //middleware "participant"
     Route::group(['middleware' => 'participant'], function () {
         
+        Route::get('/pengumuman', [\App\Http\Controllers\Participant\AnnouncementController::class, 'index'])->name('participant.pengumuman.index');
         //route dashboard
         Route::get('/dashboard', App\Http\Controllers\Participant\DashboardController::class)->name('participant.dashboard');
         
-        // Rute pengumuman
-        Route::get('/pengumuman', function() {
-            return \Inertia\Inertia::render('Participant/Pengumuman/Index');
-        })->name('participant.pengumuman');
+        // Hapus route pengumuman yang tumpang tindih ini
+        // Route::get('/pengumuman', function() {
+        //     return \Inertia\Inertia::render('Participant/Pengumuman/Index');
+        // })->name('participant.pengumuman');
         
         //route exam confirmation
         Route::get('/exam-confirmation/{id}', [App\Http\Controllers\Participant\ExamController::class, 'confirmation'])->name('participant.exams.confirmation');
@@ -224,3 +225,4 @@ Route::prefix('participant')->group(function() {
     
 });
 Route::post('/participant/update-credentials', [\App\Http\Controllers\Participant\ParticipantController::class, 'updateCredentials'])->name('participant.update-credentials');
+Route::post('/admin/upload-image', [\App\Http\Controllers\Admin\ImageUploadController::class, 'upload'])->middleware(['auth']);

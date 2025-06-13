@@ -63,6 +63,10 @@ export default {
             if (window.innerWidth <= 768) {
                 // Mobile behavior
                 const sidebar = document.querySelector('#sidebarMenu');
+                if (!sidebar) {
+                    console.error("Element #sidebarMenu tidak ditemukan");
+                    return;
+                }
                 sidebar.classList.toggle('show');
                 
                 if (sidebar.classList.contains('show')) {
@@ -71,11 +75,6 @@ export default {
                 } else {
                     document.body.classList.remove('sidebar-mobile-open');
                     document.body.style.overflow = '';
-                    
-                    // Tambahkan delay untuk animasi overlay
-                    setTimeout(() => {
-                        // Kode tambahan jika diperlukan setelah transisi selesai
-                    }, 300);
                 }
             } else {
                 // Desktop behavior remains the same
@@ -83,7 +82,10 @@ export default {
                 this.$page.props.sidebarCollapsed = this.isSidebarCollapsed;
                 localStorage.setItem('sidebarCollapsed', this.isSidebarCollapsed);
                 document.body.classList.toggle('sidebar-collapsed');
-                document.querySelector('#sidebarMenu').classList.toggle('collapsed');
+                const sidebarMenu = document.querySelector('#sidebarMenu');
+                if (sidebarMenu) {
+                    sidebarMenu.classList.toggle('collapsed');
+                }
             }
         }
     },
@@ -101,6 +103,7 @@ export default {
             if (route.includes('/admin/participants')) return 'Manajemen Peserta';
             if (route.includes('/admin/reports')) return 'Laporan Hasil Ujian';
             if (route.includes('/admin/pending-exams')) return 'Progres Ujian';
+            if (route.includes('/admin/announcements')) return '📢 Manajemen Pengumuman';
             
             // Hapus atau komentar baris ini
             // if (route.includes('/participant/dashboard')) return 'Dashboard Peserta';

@@ -61,6 +61,9 @@
                         </span>
                         <!--end::Svg Icon-->
                         <span>Notice</span>
+                        <span v-if="notificationCount > 0" class="position-absolute top-0 start-100 translate-middle badge bg-danger notification-badge-desktop">
+                            {{ notificationCount }}
+                        </span>
                     </Link>
                      
                     
@@ -184,6 +187,7 @@
                 </span>
                 <!--end::Svg Icon-->
                 <span>Notice</span>
+                <span v-if="notificationCount > 0" class="mobile-notification-badge">{{ notificationCount }}</span>
             </Link>
             <Link 
                 href="/participant/profile" 
@@ -196,15 +200,15 @@
                                     </svg>
                                     </span> -->
                                     <!--end::Svg Icon-->
-                <!-- <span>Logout</span> -->
-                 <!--begin::Svg Icon | path: /var/www/preview.keenthemes.com/keenthemes/metronic/docs/core/html/src/media/icons/duotune/communication/com013.svg-->
-                 <span class="svg-icon svg-icon-muted svg-icon-2hx"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M6.28548 15.0861C7.34369 13.1814 9.35142 12 11.5304 12H12.4696C14.6486 12 16.6563 13.1814 17.7145 15.0861L19.3493 18.0287C20.0899 19.3618 19.1259 21 17.601 21H6.39903C4.87406 21 3.91012 19.3618 4.65071 18.0287L6.28548 15.0861Z" fill="currentColor"/>
-                                    <rect opacity="0.3" x="8" y="3" width="8" height="8" rx="4" fill="currentColor"/>
-                                    </svg>
-                                    </span>
-                                    <!--end::Svg Icon--> 
-                                    <span>Profile</span>
+                                    <!-- <span>Logout</span> -->
+                                     <!--begin::Svg Icon | path: /var/www/preview.keenthemes.com/keenthemes/metronic/docs/core/html/src/media/icons/duotune/communication/com013.svg-->
+                                     <span class="svg-icon svg-icon-muted svg-icon-2hx"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M6.28548 15.0861C7.34369 13.1814 9.35142 12 11.5304 12H12.4696C14.6486 12 16.6563 13.1814 17.7145 15.0861L19.3493 18.0287C20.0899 19.3618 19.1259 21 17.601 21H6.39903C4.87406 21 3.91012 19.3618 4.65071 18.0287L6.28548 15.0861Z" fill="currentColor"/>
+                                                    <rect opacity="0.3" x="8" y="3" width="8" height="8" rx="4" fill="currentColor"/>
+                                                    </svg>
+                                                    </span>
+                                                    <!--end::Svg Icon--> 
+                                                    <span>Profile</span>
             </Link>
         </div>
 
@@ -234,10 +238,20 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { Link } from '@inertiajs/vue3'
+import { ref, computed } from 'vue'
+import { Link, usePage } from '@inertiajs/vue3'
 
 const showLogoutModal = ref(false)
+const page = usePage()
+
+// Mendapatkan jumlah pengumuman dari shared props jika tersedia
+const notificationCount = computed(() => {
+    // Cek apakah ada data announcements di shared props
+    if (page.props.announcements) {
+        return page.props.announcements.length
+    }
+    return 0
+})
 
 const confirmLogout = () => {
     showLogoutModal.value = true
@@ -312,8 +326,45 @@ const closeModal = () => {
 }
 
 .mobile-nav-item.active {
-    color: #0ea5e9; /* Warna biru modern */
-    background-color: rgba(14, 165, 233, 0.1); /* Background dengan transparansi */
+    color: #fe566ee0; 
+    /* background-color: rgba(14, 165, 233, 0.1);  */
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.08); /* Subtle shadow untuk efek depth */
+}
+.mobile-nav-item:hover {
+    color: #1a2234;
+    background-color: rgba(26, 34, 52, 0.05);
+    border-radius: 8px;
+}
+.notification-badge-desktop {
+    border-radius: 10px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: bold;
+    background-color: #fe566ee0 !important;
+}
+/* Mobile Notification Badge */
+.mobile-notification-badge {
+    position: absolute;
+    top: 0;
+    right: 25%;
+    transform: translateX(5px);
+    background-color: #fe566ee0;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.mobile-nav-item.active {
+    color: #fe566ee0; /* Warna biru modern */
+    /* background-color: rgba(14, 165, 233, 0.1);  */
     box-shadow: 0 2px 8px rgba(14, 165, 233, 0.08); /* Subtle shadow untuk efek depth */
 }
 .mobile-nav-item:hover {
