@@ -35,7 +35,16 @@ const props = defineProps({
 });
 </script>
 
+<style>
+/* Style untuk konten yang dirender dengan v-html */
+.card-body img {
+    max-width: 100%;
+    height: auto;
+}
+</style>
+
 <style scoped>
+/* Style yang sudah ada tetap di sini */
 .card {
     border-radius: 8px;
     overflow: hidden;
