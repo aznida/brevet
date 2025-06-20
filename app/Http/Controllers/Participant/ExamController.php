@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use App\Models\Answer;
 use App\Models\Question;
+use App\Models\Category;
 
 class ExamController extends Controller
 {
@@ -556,7 +557,7 @@ class ExamController extends Controller
                     }
                 }
                 
-                // Calculate weighted average
+                // Calculate weighted average - PERSIS SAMA dengan results()
                 $weightedSum = 0;
                 $totalWeight = 0;
                 
@@ -565,8 +566,7 @@ class ExamController extends Controller
                     $totalWeight += $data['weight'];
                 }
                 
-                $finalAverage = $totalWeight > 0 ? round($weightedSum, 2) : 0;
-                
+                // Gunakan format yang sama persis dengan results()
                 return [
                     'participant_id' => $participantGrades->first()->participant_id,
                     'participant' => $participantGrades->first()->participant,
@@ -610,15 +610,41 @@ class ExamController extends Controller
             ->first();
         
         $debugData['exam_types'] = $grades->pluck('exam_type')->unique()->values();
+        
+        // Ambil semua kategori ujian
+        $categories = Category::all();
+        
+        // Tambahkan category_scores untuk setiap teknisi
+        $allParticipantGrades = $allParticipantGrades->map(function($item) use ($grades) {
+            // Ambil semua grade untuk participant ini
+            $participantGrades = Grade::with(['exam.category'])
+                ->where('participant_id', $item['participant_id'])
+                ->whereNotNull('end_time')
+                ->where('grade', '>', 0)
+                ->get();
+            
+            // Hitung nilai rata-rata per kategori
+            $categoryScores = [];
+            $participantGrades->groupBy(function($grade) {
+                return $grade->exam->category->title;
+            })->each(function($grades, $categoryName) use (&$categoryScores) {
+                $categoryScores[$categoryName] = $grades->avg('grade');
+            });
+            
+            $item['category_scores'] = $categoryScores;
+            return $item;
+        });
 
         return inertia('Participant/Results/Index', [
             'results' => $results,
             'chartData' => $chartData,
             'topTechniciansArea' => $topTechniciansArea,
             'topTechniciansNational' => $topTechniciansNational,
+            'topTechniciansByWitel' => $allParticipantGrades, // Kirim semua data teknisi untuk difilter di frontend
             'userAreaRank' => $userAreaRank,
             'userNationalRank' => $userNationalRank,
-            'debugInfo' => $debugData  // Changed from 'debug' to 'debugInfo'
+            'debugInfo' => $debugData,  // Changed from 'debug' to 'debugInfo'
+            'categories' => $categories // Tambahkan kategori ujian
         ]);
     }
 
@@ -695,6 +721,150 @@ public function history()
         if ($grade >= 61) return 'Intermediate';
         if ($grade >= 31) return 'Basic';
         return 'Starter';
+    }
+
+    public function technicianDetail($participant_id)
+{
+    // Get participant data
+    $technician = \App\Models\Participant::findOrFail($participant_id);
+    
+    // Get grades with exam and category relationships
+    $grades = \App\Models\Grade::with(['exam.category', 'exam_session'])
+        ->where('participant_id', $participant_id)
+        ->get();
+        
+    // Get categories
+    $categories = \App\Models\Category::orderBy('title')->get();
+    
+    // Calculate scores per category
+    $categoryScores = [];
+    $totalScore = 0;
+    $scoreCount = 0;
+    
+    foreach ($categories as $category) {
+        $categoryGrades = $grades->filter(function($grade) use ($category) {
+            return $grade->exam->category_id === $category->id;
+        });
+        
+        if ($categoryGrades->count() > 0) {
+            $avgScore = $categoryGrades->avg('grade');
+            $categoryScores[$category->title] = round($avgScore, 2);
+            $totalScore += $avgScore;
+            $scoreCount++;
+        } else {
+            $categoryScores[$category->title] = 0;
+        }
+    }
+    
+    $averageGrade = $scoreCount > 0 ? round($totalScore / $scoreCount, 2) : 0;
+    
+    // Get area and national rankings
+    $allParticipantGrades = $this->calculateAllParticipantGrades();
+    
+    // Filter untuk area
+    $topTechniciansArea = $allParticipantGrades
+        ->filter(function($item) use ($technician) {
+            return $item['participant']->area_id === $technician->area_id;
+        })
+        ->sortByDesc('average_grade')
+        ->values();
+    
+    // Untuk nasional (semua area)
+    $topTechniciansNational = $allParticipantGrades
+        ->sortByDesc('average_grade')
+        ->values();
+    
+    $areaRank = $topTechniciansArea
+        ->search(function($item) use ($participant_id) {
+            return $item['participant_id'] == $participant_id;
+        }) + 1;
+    
+    $nationalRank = $topTechniciansNational
+        ->search(function($item) use ($participant_id) {
+            return $item['participant_id'] == $participant_id;
+        }) + 1;
+        $grades = Grade::with(['exam.category'])
+        ->where('participant_id', $participant_id)
+        ->orderBy('created_at', 'DESC')
+        ->get();
+    
+    // Format data untuk tabel riwayat nilai
+    $results = $grades->map(function($grade) {
+        return [
+            'exam_title' => $grade->exam->title,
+            'category' => $grade->exam->category->title,
+            'grade' => $grade->grade,
+            'level' => $this->determineLevel($grade->grade),
+            'date' => $grade->created_at->format('d/m/Y H:i')
+        ];
+    });
+    return inertia('Participant/Results/TechnicianDetail', [
+        'technician' => $technician,
+        'categories' => $categories,
+        'categoryScores' => $categoryScores,
+        'averageGrade' => $averageGrade,
+        'areaRank' => $areaRank,
+        'nationalRank' => $nationalRank,
+        'topTechniciansArea' => $topTechniciansArea,
+        'topTechniciansNational' => $topTechniciansNational,
+        'results' => $results
+    ]);
+}
+
+    private function calculateAllParticipantGrades()
+    {
+        return Grade::with(['participant.area'])
+            ->whereNotNull('end_time')
+            ->where('grade', '>', 0)
+            ->get()
+            ->groupBy('participant_id')
+            ->map(function($participantGrades) {
+                // Group grades by exam_type
+                $examTypeAverages = [];
+                $grades = $participantGrades->groupBy('exam_type');
+                
+                // Define weights
+                $weights = [
+                    'multiple_choice' => 0.35,
+                    'ujian_attitude' => 0.15,
+                    'ujian_pratik' => 0.50
+                ];
+                
+                // Calculate averages for each exam type
+                foreach ($grades as $examType => $typeGrades) {
+                    if ($examType === null) continue;
+                    
+                    $validGrades = $typeGrades->filter(function($grade) {
+                        return $grade->grade > 0;
+                    });
+                    
+                    if ($validGrades->isNotEmpty() && isset($weights[$examType])) {
+                        $examTypeAverages[$examType] = [
+                            'average' => $validGrades->avg('grade'),
+                            'weight' => $weights[$examType]
+                        ];
+                    }
+                }
+                
+                // Calculate weighted average
+                $weightedSum = 0;
+                $totalWeight = 0;
+                
+                foreach ($examTypeAverages as $type => $data) {
+                    $weightedSum += $data['average'] * $data['weight'];
+                    $totalWeight += $data['weight'];
+                }
+                
+                // Gunakan perhitungan yang sama dengan results()
+                $finalAverage = $totalWeight > 0 ? $weightedSum : 0;
+                
+                // Return with same format as in results()
+                return [
+                    'participant_id' => $participantGrades->first()->participant_id,
+                    'participant' => $participantGrades->first()->participant,
+                    'average_grade' => round($finalAverage, 2)
+                ];
+            });
     }
 
 }

@@ -213,6 +213,9 @@ Route::prefix('participant')->group(function() {
             ->name('participant.exam.praktik.submit');
         Route::post('/exam-praktik-end', [ExamPraktikController::class, 'endExam'])
             ->name('participant.exam.praktik.end');
+            //route technician detail
+        Route::get('/technician-detail/{participant_id}', [App\Http\Controllers\Participant\ExamController::class, 'technicianDetail'])
+        ->name('participant.technician.detail');
     });
     
     //route untuk notifikasi email peserta

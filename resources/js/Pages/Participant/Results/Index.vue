@@ -117,7 +117,7 @@
                                         <span class="badge bg-warning">
                                             {{ Number(topTechniciansArea?.find(tech => 
                                                 String(tech.participant_id) === String($page.props.auth.participant.id))?.average_grade || 0).toFixed(2) 
-                                            }}</span>     
+                                        }}</span>     
                                         <i><b>     Posisi:</b> </i> 
                                         <span class="badge bg-success">#{{ 
                                             topTechniciansArea.findIndex(tech => 
@@ -221,6 +221,54 @@
                 </div>
             </div>
         </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-12" v-if="$page.props.auth.participant.role === 'Supervisor'">
+                <div class="card border-0 shadow">
+                    <div class="card-body">
+                        <h5><!--begin::Svg Icon | path: /var/www/preview.keenthemes.com/keenthemes/metronic/docs/core/html/src/media/icons/duotune/abstract/abs027.svg-->
+                        <!--begin::Svg Icon | path: /var/www/preview.keenthemes.com/keenthemes/metronic/docs/core/html/src/media/icons/duotune/general/gen012.svg-->
+                                <span class="svg-icon svg-icon-muted svg-icon-2hx"><svg width="14" height="18" viewBox="0 0 14 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path opacity="0.3" d="M12 6.20001V1.20001H2V6.20001C2 6.50001 2.1 6.70001 2.3 6.90001L5.6 10.2L2.3 13.5C2.1 13.7 2 13.9 2 14.2V19.2H12V14.2C12 13.9 11.9 13.7 11.7 13.5L8.4 10.2L11.7 6.90001C11.9 6.70001 12 6.50001 12 6.20001Z" fill="currentColor"/>
+                                <path d="M13 2.20001H1C0.4 2.20001 0 1.80001 0 1.20001C0 0.600012 0.4 0.200012 1 0.200012H13C13.6 0.200012 14 0.600012 14 1.20001C14 1.80001 13.6 2.20001 13 2.20001ZM13 18.2H10V16.2L7.7 13.9C7.3 13.5 6.7 13.5 6.3 13.9L4 16.2V18.2H1C0.4 18.2 0 18.6 0 19.2C0 19.8 0.4 20.2 1 20.2H13C13.6 20.2 14 19.8 14 19.2C14 18.6 13.6 18.2 13 18.2ZM4.4 6.20001L6.3 8.10001C6.7 8.50001 7.3 8.50001 7.7 8.10001L9.6 6.20001H4.4Z" fill="currentColor"/>
+                                </svg>
+                                </span>
+                                <!--end::Svg Icon-->
+                        <!--end::Svg Icon--> Progres Teknisi</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-centered table-nowrap mb-0 rounded">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th>NO.</th>
+                                        <th>ACTION</th>
+                                        <th>NAMA</th>
+                                        <th>WITEL</th>
+                                        <th v-for="category in categories" :key="category.id" class="border-0">
+                                            {{ category.title.toUpperCase() }}
+                                        </th>
+                                        <th>TOTAL NILAI</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-if="!topTechniciansByWitel || !$page.props.auth.participant.witel || !filteredWitelTechnicians.length">
+                                        <td colspan="8" class="text-center">Data tidak tersedia untuk witel Anda</td>
+                                    </tr>
+                                    <tr v-else v-for="(tech, index) in filteredWitelTechnicians" :key="index" >
+                                        <td class="text-center">{{ index + 1 }}</td>
+                                        <td><a :href="`/participant/technician-detail/${tech.participant_id}`" class="btn btn-sm btn-danger">Details</a></td>
+                                        <td>{{ tech.participant?.name }}</td>
+                                        <td>{{ tech.participant?.witel }}</td>
+                                        <td v-for="category in categories" :key="category.id" class="text-center">
+                                            {{ getCategoryScore(tech, category.title) }}
+                                        </td>
+                                        <td class="text-center">{{ getTotalScore(tech) }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -240,10 +288,13 @@ export default {
         chartData: Object,
         topTechniciansArea: Array,
         topTechniciansNational: Array,
+        topTechniciansByWitel: Array, // Ubah dari Object menjadi Array
         userAreaRank: Number,
         userNationalRank: Number,
-        debugInfo: Object
+        debugInfo: Object,
+        categories: Array // Tambahkan prop categories
     },
+    
     mounted() {
         // Debug logging
         console.log('Debug Data:', {
@@ -251,15 +302,101 @@ export default {
             chartData: this.chartData,
             topTechnicians: {
                 area: this.topTechniciansArea,
-                national: this.topTechniciansNational
+                national: this.topTechniciansNational,
+                witel: this.topTechniciansByWitel // Lihat struktur data
             },
+            auth: this.$page.props.auth.participant,
+            witel: this.$page.props.auth.participant.witel,
             ranks: {
                 area: this.userAreaRank,
                 national: this.userNationalRank
             }
         });
+        console.log('Filtered Witel Technicians:', this.filteredWitelTechnicians);
+    // Periksa nilai kategori untuk setiap teknisi
+    this.filteredWitelTechnicians.forEach(tech => {
+        console.log(`Technician ${tech.participant?.name} category scores:`, tech.category_scores);
+    });
     },
     computed: {
+        getTotalScore() {
+                return function(tech) {
+                    if (!tech.average_grade) return '❌';
+                    
+                    const grade = Number(tech.average_grade).toFixed(2);
+                    
+                    // Tambahkan emoji level berdasarkan nilai
+                    if (grade >= 91) return `${grade} 💎`; // Expert
+                    if (grade >= 71) return `${grade} 🥇`; // Advanced
+                    if (grade >= 61) return `${grade} 🥈`; // Intermediate
+                    if (grade >= 31) return `${grade} 🥉`; // Basic
+                    return `${grade} 🌱`; // Starter
+                }
+            },
+        filteredWitelTechnicians() {
+            if (!this.topTechniciansByWitel || !this.$page.props.auth.participant.witel) {
+                return [];
+            }
+            
+            // Log untuk debugging
+            console.log('Total teknisi dalam topTechniciansByWitel:', this.topTechniciansByWitel.length);
+            console.log('Witel user saat ini:', this.$page.props.auth.participant.witel);
+            
+            // Tampilkan semua partisipan dari witel yang sama
+            const filtered = this.topTechniciansByWitel.filter(tech => 
+                tech.participant?.witel === this.$page.props.auth.participant.witel
+            );
+            
+            console.log('Total teknisi dengan Witel yang sama:', filtered.length);
+            console.log('Data teknisi dengan Witel yang sama:', filtered);
+            
+            return filtered;
+        },
+        getCategoryScore() {
+            return function(tech, categoryName) {
+                // Pastikan tech.category_scores ada
+                if (tech.category_scores) {
+                    // Cek dengan penulisan yang benar (Assessment)
+                    if (tech.category_scores.hasOwnProperty(categoryName)) {
+                        // Jika nilainya 0, tampilkan 0.00
+                        if (tech.category_scores[categoryName] === 0) {
+                            return "❌";
+                        }
+                        
+                        // Format nilai dan tambahkan emoji level berdasarkan nilai
+                        const grade = Number(tech.category_scores[categoryName]).toFixed(2);
+                        
+                        // Tambahkan emoji level berdasarkan nilai
+                        if (grade >= 91) return `${grade} 💎`; // Expert
+                        if (grade >= 71) return `${grade} 🥇`; // Advanced
+                        if (grade >= 61) return `${grade} 🥈`; // Intermediate
+                        if (grade >= 31) return `${grade} 🥉`; // Basic
+                        return `${grade} 🌱`; // Starter
+                    }
+                    
+                    // Cek dengan penulisan alternatif (Assesment dengan satu 's')
+                    const altCategoryName = categoryName === 'Assessment Praktik' ? 'Assesment Praktik' : categoryName;
+                    if (tech.category_scores.hasOwnProperty(altCategoryName)) {
+                        // Jika nilainya 0, tampilkan 0.00
+                        if (tech.category_scores[altCategoryName] === 0) {
+                            return "0.00";
+                        }
+                        
+                        // Format nilai dan tambahkan emoji level berdasarkan nilai
+                        const grade = Number(tech.category_scores[altCategoryName]).toFixed(2);
+                        
+                        // Tambahkan emoji level berdasarkan nilai
+                        if (grade >= 91) return `${grade} 💎`; // Expert
+                        if (grade >= 71) return `${grade} 🥇`; // Advanced
+                        if (grade >= 61) return `${grade} 🥈`; // Intermediate
+                        if (grade >= 31) return `${grade} 🥉`; // Basic
+                        return `${grade} 🌱`; // Starter
+                    }
+                }
+                // Jika tidak ada nilai untuk kategori tersebut, tampilkan tanda strip
+                return '❌';
+            }
+        },
         getUserLevel() {
             console.log('Auth Participant ID:', this.$page.props.auth.participant.id);
             console.log('Top Technicians National:', this.topTechniciansNational);
@@ -268,6 +405,7 @@ export default {
                 String(tech.participant_id) === String(this.$page.props.auth.participant.id))?.average_grade || 0);
             
             console.log('Average Grade:', averageGrade);
+            
             
             let level = {
                 level: 'starter',
@@ -485,15 +623,8 @@ export default {
                 name: 'Nilai',
                 data: averageGrades
             }];
-        },
-        mounted() {
-            console.log('Debug Data:', {
-                auth: this.$page.props.auth,
-                topTechnicians: this.topTechniciansNational,
-                averageGrade: Number(this.topTechniciansNational?.find(tech => 
-                    tech.participant_id === this.$page.props.auth.participant.id)?.average_grade || 0).toFixed(2)
-            });
         }
+        // Hapus mounted() yang ada di dalam computed
     }
 };
 </script>
