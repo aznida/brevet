@@ -622,4 +622,10 @@ const checkSelection = () => {
 .shake {
     animation-name: shake;
 }
+
+/* Kustom style untuk modal yang lebih lebar */
+:deep(.modal-dialog.modal-xl) {
+    max-width: 95%; /* Atur lebar maksimum sesuai kebutuhan, misalnya 95% dari lebar layar */
+    width: 1400px; /* Atau atur lebar tetap dalam piksel */
+}
 </style>

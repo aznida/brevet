@@ -44,8 +44,8 @@ class ParticipantsImport implements ToModel, WithHeadingRow, WithValidation
         }
 
         // Rest of the code remains the same
-        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $password = substr(str_shuffle($characters), 0, 8);
+        // $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        // $password = substr(str_shuffle($characters), 0, 8);
 
         return new Participant([
             'nik'           => (int) ($row['nik'] ?? 0),
@@ -53,7 +53,7 @@ class ParticipantsImport implements ToModel, WithHeadingRow, WithValidation
             'email'         => $row['email'] ?? '',
             'hp'            => $row['hp'] ?? '',
             'witel'         => $row['witel'] ?? '',
-            'password'      => Crypt::encryptString($password),
+            'password'      => Crypt::encryptString($row['nik'] ?? '0'),
             'role'          => $row['role'] ?? 'Teknisi',
             'gender'        => $row['gender'] ?? 'L',
             'status'        => 'Aktif',

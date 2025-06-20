@@ -7,6 +7,8 @@ use App\Models\Grade;
 use App\Models\ExamGroup;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Announcement;
+use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
@@ -18,15 +20,20 @@ class DashboardController extends Controller
      */
     public function __invoke(Request $request)
     {
-        //get exam groups
+        // Ambil pengumuman aktif
+        $announcements = Announcement::where('is_active', true)
+                               ->orderBy('created_at', 'desc')
+                               ->get();
+        
+        // Get exam groups
         $exam_groups = ExamGroup::with('exam.category', 'exam_session', 'participant.area')
             ->where('participant_id', auth()->guard('participant')->user()->id)
             ->get();
 
-        //define variable array
+        // Define variable array
         $data = [];
 
-        //get nilai
+        // Get nilai
         foreach($exam_groups as $exam_group) {
             
             //get data nilai / grade
@@ -57,10 +64,12 @@ class DashboardController extends Controller
 
         }
 
-        //return with inertia
-        return inertia('Participant/Dashboard/Index', [
+        // Return with inertia
+        return Inertia::render('Participant/Dashboard/Index', [
             'exam_groups' => $data,
-            'timestamp' => now()->timestamp, // Tambahkan timestamp untuk memastikan data selalu fresh
+            'timestamp' => now()->timestamp,
+        ])->with([
+            'announcements' => $announcements,
         ]);
     }
 

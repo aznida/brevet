@@ -12,7 +12,7 @@
 <style scoped> 
 .footer {
     border-radius: 0 !important;
-    margin: 0 !important;
+    margin: 0 !important; 
     padding: 0 !important;
     width: 100% !important;
     background-color: white !important;
@@ -56,6 +56,15 @@
         width: 100% !important;
     }
 
+    .footer {
+        height: auto !important;
+        transition: transform 0.3s ease-in-out !important;
+    }
+    
+    body.sidebar-mobile-open .footer {
+        transform: translateX(250px) !important;
+    }
+
     .footer .d-flex {
         flex-direction: column;
         align-items: center;
@@ -63,10 +72,6 @@
         gap: 4px;
         padding-top: 4px !important;
         padding-bottom: 4px !important;
-    }
-
-    .footer {
-        height: auto !important;
     }
 }
 </style>

@@ -5,12 +5,20 @@
     "isEntry": true
   },
   "resources/js/app.js": {
+<<<<<<< HEAD
     "file": "assets/app-bdkzkXUi.js",
+=======
+    "file": "assets/app-CoiDW8-e.js",
+>>>>>>> 29a7d213f32525e15353f20369a2189893f5bdc2
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "css": [
+<<<<<<< HEAD
       "assets/app-ZmbpdUU-.css"
+=======
+      "assets/app-hWwtH26X.css"
+>>>>>>> 29a7d213f32525e15353f20369a2189893f5bdc2
     ]
   }
 }

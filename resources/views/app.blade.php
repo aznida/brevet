@@ -76,6 +76,10 @@
 <script src="{{ asset('assets/js/smooth-scroll.polyfills.min.js') }}"></script>
 <script src="{{ asset('assets/js/simplebar.min.js') }}"></script>
 <script src="{{ asset('assets/js/volt.js') }}"></script>
+<!-- Add this before the closing </body> tag -->
+<!-- Pastikan path ini benar dan file ada -->
+<!-- Ubah path script TinyMCE untuk memastikan path yang benar -->
+<script src="/assets/tinymce/js/tinymce/tinymce.min.js"></script>
 </body>
 </html>
 <!-- Di dalam tag <head> -->

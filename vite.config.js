@@ -17,4 +17,13 @@ export default defineConfig({
             },
         }),
     ],
+    server: {
+        hmr: {
+            host: 'localhost',
+        },
+        // Add these lines to fix CORS issues
+        cors: true,
+        strictPort: true,
+        port: 5173
+    },
 });

@@ -627,6 +627,10 @@ class ExamController extends Controller
  *
  * @return void
  */
+public function pengumuman(){
+    return inertia('Participant/Pengumuman/Index');
+}
+
 public function history()
 {
     //get participant
