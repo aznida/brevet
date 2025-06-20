@@ -28,6 +28,44 @@
                         <h5><i class="fa fa-user-plus"></i> Enrolled Participan</h5>
                         <hr>
                         <form @submit.prevent="submit">
+                            <!-- Filter Section -->
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <input 
+                                        type="text" 
+                                        v-model="filters.name" 
+                                        class="form-control" 
+                                        placeholder="Filter Nama Partisipan"
+                                    >
+                                </div>
+                                <div class="col-md-3">
+                                    <select 
+                                        v-model="filters.area" 
+                                        class="form-select"
+                                    >
+                                        <option value="">-- Pilih TREG-Area --</option>
+                                        <option v-for="area in uniqueAreas" :key="area" :value="area">{{ area }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <input 
+                                        type="text" 
+                                        v-model="filters.witel" 
+                                        class="form-control" 
+                                        placeholder="Filter Witel"
+                                    >
+                                </div>
+                                <div class="col-md-3">
+                                    <select 
+                                        v-model="filters.role" 
+                                        class="form-select"
+                                    >
+                                        <option value="">-- Pilih Job Role --</option>
+                                        <option value="Teknisi">Teknisi</option>
+                                        <option value="Supervisor">Supervisor</option>
+                                    </select>
+                                </div>
+                            </div>
 
                             <div class="table-responsive mb-4">
                                 <table class="table table-bordered table-centered table-nowrap mb-0 rounded">
@@ -115,15 +153,44 @@
         setup(props) {
             const search = ref('');
             
+            // Define filters for each column
+            const filters = reactive({
+                name: '',
+                area: '',
+                witel: '',
+                role: ''
+            });
+            
+            // Get unique area titles from participants
+            const uniqueAreas = computed(() => {
+                const areas = props.participants
+                    .filter(participant => participant.status === 'Aktif')
+                    .map(participant => participant.area.title);
+                return [...new Set(areas)].sort();
+            });
+            
             const activeParticipants = computed(() => {
                 const searchTerm = search.value.toLowerCase();
                 return props.participants
                     .filter(participant => participant.status === 'Aktif')
                     .filter(participant => {
-                        return participant.name.toLowerCase().includes(searchTerm) ||
-                               participant.area.title.toLowerCase().includes(searchTerm) ||
-                               participant.witel.toLowerCase().includes(searchTerm) ||
-                               participant.role.toLowerCase().includes(searchTerm);
+                        // Apply global search if provided
+                        if (searchTerm) {
+                            return participant.name.toLowerCase().includes(searchTerm) ||
+                                   participant.area.title.toLowerCase().includes(searchTerm) ||
+                                   participant.witel.toLowerCase().includes(searchTerm) ||
+                                   participant.role.toLowerCase().includes(searchTerm);
+                        }
+                        return true;
+                    })
+                    .filter(participant => {
+                        // Apply column-specific filters
+                        const nameMatch = !filters.name || participant.name.toLowerCase().includes(filters.name.toLowerCase());
+                        const areaMatch = !filters.area || participant.area.title.toLowerCase().includes(filters.area.toLowerCase());
+                        const witelMatch = !filters.witel || participant.witel.toLowerCase().includes(filters.witel.toLowerCase());
+                        const roleMatch = !filters.role || participant.role.toLowerCase().includes(filters.role.toLowerCase());
+                        
+                        return nameMatch && areaMatch && witelMatch && roleMatch;
                     });
             });
 
@@ -172,13 +239,12 @@
                 selectAll,
                 submit,
                 search,
+                filters,
                 participants: activeParticipants,
+                uniqueAreas,
             };
-
         }
-
     }
-
 </script>
 
 <style>
