@@ -8,11 +8,11 @@
                 <div class="text-center text-md-center mt-md-0">
                 <img src="/assets/images/favicon.png" alt="Brevetisasi DEFA Logo" class="brand-logo mb-2" style="height: 60px;">
                 <h4 class="mt-2" style="margin:0px">Hello, Welcome Back!</h4>
-                <span class="text-muted">Let’s Empower Your Skills</span>
+                <span class="text-muted">Let’s Empower Your Skills!</span>
             </div>
                 <div v-if="errors.message" class="alert alert-danger mt-2">
                     {{ errors.message }}
-                </div>
+                </div> 
                 <div v-if="$page.props.session.error" class="alert alert-danger mt-2">
                     {{ $page.props.session.error }}
                 </div>
