@@ -107,16 +107,17 @@ Route::prefix('admin')->group(function() {
         Route::middleware(['auth', 'role:admin'])->group(function() {
             Route::get('/admin/pending-exams', [PendingExamController::class, 'index'])->name('admin.pending-exams.index');
             Route::get('/admin/pending-exams/export', [PendingExamController::class, 'export'])->name('admin.pending-exams.export');
+            Route::middleware(['auth', 'admin'])->group(function () {
+        Route::get('/admin/participants/export', [ParticipantController::class, 'export'])->name('admin.participants.export');
             
         });
     });
     //route pending exams (remove duplicate routes)
-    Route::get('/pending-exams', [\App\Http\Controllers\Admin\PendingExamController::class, 'index'])
-        ->name('admin.pending-exams.index');
-    Route::get('/pending-exams/export', [\App\Http\Controllers\Admin\PendingExamController::class, 'export'])
-        ->name('admin.pending-exams.export');
-    Route::middleware(['auth', 'admin'])->group(function () {
-        Route::get('/admin/participants/export', [ParticipantController::class, 'export'])->name('admin.participants.export');
+    // Route::get('/pending-exams', [\App\Http\Controllers\Admin\PendingExamController::class, 'index'])
+    //     ->name('admin.pending-exams.index');
+    // Route::get('/pending-exams/export', [\App\Http\Controllers\Admin\PendingExamController::class, 'export'])
+    //     ->name('admin.pending-exams.export');
+    
     });
 });
 
