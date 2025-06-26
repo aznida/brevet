@@ -2,11 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Participant\ExamPraktikController;
+use App\Http\Controllers\Admin\PendingExamController;
+use App\Http\Controllers\Admin\ParticipantController;
+use App\Http\Controllers\Admin\ExamController;
+use App\Http\Controllers\Admin\PerformanceAssessmentController;
+use App\Http\Controllers\Admin\ExamSessionController;
 
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 
 //prefix "admin"
@@ -112,12 +114,6 @@ Route::prefix('admin')->group(function() {
             
         });
     });
-    //route pending exams (remove duplicate routes)
-    // Route::get('/pending-exams', [\App\Http\Controllers\Admin\PendingExamController::class, 'index'])
-    //     ->name('admin.pending-exams.index');
-    // Route::get('/pending-exams/export', [\App\Http\Controllers\Admin\PendingExamController::class, 'export'])
-    //     ->name('admin.pending-exams.export');
-    
     });
 });
 
@@ -221,7 +217,7 @@ Route::prefix('participant')->group(function() {
     
     //route untuk notifikasi email peserta
     // Ubah dari POST menjadi GET
-    Route::get('/exam_sessions/send-notifications', [ExamSessionController::class, 'sendNotifications'])->name('admin.exam_sessions.send-notifications');
+    // Route::get('/exam_sessions/send-notifications', [ExamSessionController::class, 'sendNotifications'])->name('admin.exam_sessions.send-notifications');
     // Pindahkan route accept-privacy ke dalam middleware
     Route::post('/accept-privacy', [App\Http\Controllers\Participant\DashboardController::class, 'acceptPrivacy'])
         ->name('participant.accept-privacy');
