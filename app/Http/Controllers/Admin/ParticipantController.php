@@ -21,9 +21,14 @@ class ParticipantController extends Controller
     {
         //get participants
         $participants = Participant::when(request()->q, function($participants) {
-            $participants = $participants->where('name', 'like', '%'. request()->q . '%')
-                                      ->orWhere('nik', 'like', '%'. request()->q . '%')
-                                      ->orWhere('witel', 'like', '%'. request()->q . '%');
+            $participants = $participants->where(function($query) {
+                $query->where('name', 'like', '%'. request()->q . '%')
+                      ->orWhere('nik', 'like', '%'. request()->q . '%')
+                      ->orWhere('witel', 'like', '%'. request()->q . '%')
+                      ->orWhereHas('area', function($areaQuery) {
+                          $areaQuery->where('title', 'like', '%'. request()->q . '%');
+                      });
+            });
         })->with(['area'])->latest()->paginate(50);
 
         //append query string to pagination links
