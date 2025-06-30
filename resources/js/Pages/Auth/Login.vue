@@ -8,10 +8,12 @@
         <div class="text-center text-md-center mb-5 mt-md-0">
             <img src="/assets/images/favicon.png" alt="Brevetisasi DEFA Logo" class="brand-logo mb-2" style="height: 60px;">
             <h4 class="mt-2" style="margin:0px">Hello, Welcome Back!</h4>
-            <span class="text-muted">Let’s Empower Your Skills</span>
+            <span class="text-muted">Let's Empower Your Skills</span>
         </div>
         <form @submit.prevent="submit" class="mt-4">
-            @csrf
+            <!-- Tambahkan CSRF Token di sini -->
+            <input type="hidden" name="_token" :value="$page.props.csrf_token">
+            
             <div class="form-group mb-4">
                 <label for="email">Email Address</label>
                 <div class="input-group">
@@ -105,6 +107,7 @@
                     //data
                     email: form.email,
                     password: form.password,
+                    _token: document.querySelector('input[name="_token"]')?.value
                 });
             }
 
@@ -115,7 +118,5 @@
             };
 
         }
-
     }
-
 </script>
