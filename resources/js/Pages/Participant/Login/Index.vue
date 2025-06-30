@@ -17,7 +17,7 @@
                     {{ $page.props.session.error }}
                 </div>
                 <form @submit.prevent="submit" class="mt-4">
-
+                     @csrf
                     <div class="form-group mb-4">
                         <label for="email">Nik</label>
                         <div class="input-group">

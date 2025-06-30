@@ -11,6 +11,7 @@
             <span class="text-muted">Let’s Empower Your Skills</span>
         </div>
         <form @submit.prevent="submit" class="mt-4">
+            @csrf
             <div class="form-group mb-4">
                 <label for="email">Email Address</label>
                 <div class="input-group">
