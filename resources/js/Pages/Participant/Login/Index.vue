@@ -7,17 +7,19 @@
             <div class="bg-white shadow border-0 rounded border-light p-4 p-lg-5 w-100 fmxw-500">
                 <div class="text-center text-md-center mt-md-0">
                 <img src="/assets/images/favicon.png" alt="Brevetisasi DEFA Logo" class="brand-logo mb-2" style="height: 60px;">
-                <h4 class="mt-2" style="margin:0px">Hello, Welcome Back!</h4>
-                <span class="text-muted">Let’s Empower Your Skills</span>
+                <h4 class="mt-2" style="margin:0px">Hello, Welcome Back 👋!</h4>
+                <span class="text-muted">Let's Empower Your Skills!</span>
             </div>
                 <div v-if="errors.message" class="alert alert-danger mt-2">
                     {{ errors.message }}
-                </div>
+                </div> 
                 <div v-if="$page.props.session.error" class="alert alert-danger mt-2">
                     {{ $page.props.session.error }}
                 </div>
                 <form @submit.prevent="submit" class="mt-4">
-
+                    <!-- Tambahkan CSRF Token di sini -->
+                    <input type="hidden" name="_token" :value="$page.props.csrf_token">
+                    
                     <div class="form-group mb-4">
                         <label for="email">Nik</label>
                         <div class="input-group">
@@ -30,7 +32,7 @@
                             {{ errors.nik }}
                         </div>
                     </div>
-
+                    
                     <div class="form-group">
                         <div class="form-group mb-4">
                             <label for="password">Password</label>
@@ -147,13 +149,12 @@
 
             //submit method
             const submit = () => {
-
                 //send data to server
                 router.post('/participants/login', {
-
                     //data
                     nik: form.nik,
                     password: form.password,
+                    _token: document.querySelector('input[name="_token"]')?.value
                 });
             }
 

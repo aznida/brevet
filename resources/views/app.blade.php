@@ -16,6 +16,7 @@
         <meta property="og:title" content="Brempi - Let’s Empower Your Skills">
         <meta property="og:description" content="Platform ujian online brevetisasi yang memungkinkan peserta untuk mengikuti ujian sertifikasi teknisi secara digital. Tingkatkan kompetensimu bersama DEFA!">
         <meta property="og:image" content="/assets/images/icon.png">
+         <meta name="csrf-token" content="{{ csrf_token() }}">
         
         <!-- Twitter -->
         <meta property="twitter:card" content="summary_large_image">

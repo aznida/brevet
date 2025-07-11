@@ -156,10 +156,8 @@
                             <p class="mb-2"><b>⚠️ Perhatian!</b></p>
                             <ul class="mb-0">
                                 <li>Dilarang keras bekerja sama dalam bentuk apapun selama ujian berlangsung</li>
-                                <li>Dilarang membuka tab baru atau mencari jawaban di Google</li>
                                 <li>Konsekuensi pelanggaran: <b>Dapat Berakibat Diberhentikannya Kontrak Kerja!</b></li>
                                 <li>Sistem akan merekam <b>Layar, Camera Device</b> dan <b>Suara</b> melalui mikrofon selama ujian berlangsung</li>
-                                <li>Jawaban perserta akan <b>otomatis disimpan</b>, jika ada kendala dengan device / jaringan dapat dilanjutkan kembali sesuai waktu yang telah ditentukan.</li>
                             </ul>
                         </div>
                         <div class=" mt-3">
@@ -168,7 +166,7 @@
                                 v-model="recordingConsents[data.exam_group.id]" 
                                 :id="'consent'+data.exam_group.id">
                             <label class="form-check-label" style="margin-left: 8px;" :for="'consent'+data.exam_group.id">
-                                Saya memahami dan menyetujui semua ketentuan di atas
+                                Saya Setuju
                             </label>
                         </div>
                     </div>

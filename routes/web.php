@@ -2,11 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Participant\ExamPraktikController;
+use App\Http\Controllers\Admin\PendingExamController;
+use App\Http\Controllers\Admin\ParticipantController;
+use App\Http\Controllers\Admin\ExamController;
+use App\Http\Controllers\Admin\PerformanceAssessmentController;
+use App\Http\Controllers\Admin\ExamSessionController;
 
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 
 //prefix "admin"
@@ -104,19 +106,20 @@ Route::prefix('admin')->group(function() {
         //update assignment
         Route::put('/performance_assessments/{assessment}/assignments/{assignment}', [\App\Http\Controllers\Admin\PerformanceAssessmentAssignmentController::class, 'update'])->name('admin.performance-assessments.assignments.update');
 
-        Route::middleware(['auth', 'role:admin'])->group(function() {
-            Route::get('/admin/pending-exams', [PendingExamController::class, 'index'])->name('admin.pending-exams.index');
-            Route::get('/admin/pending-exams/export', [PendingExamController::class, 'export'])->name('admin.pending-exams.export');
+        
+            // Hapus route dengan prefix /admin yang salah
+            // Route::get('/admin/pending-exams', [App\Http\Controllers\Admin\PendingExamController::class, 'index'])->name('admin.pending-exams.index');
+            // Route::get('/admin/pending-exams/export', [App\Http\Controllers\Admin\PendingExamController::class, 'export'])->name('admin.pending-exams.export');
             
-        });
+            // Tambahkan route yang benar
+            Route::get('/pending-exams', [App\Http\Controllers\Admin\PendingExamController::class, 'index'])->name('admin.pending-exams.index');
+            Route::get('/pending-exams/export', [App\Http\Controllers\Admin\PendingExamController::class, 'export'])->name('admin.pending-exams.export');
+            
+            Route::middleware(['auth', 'admin'])->group(function () {
+        Route::get('/participants/export', [App\Http\Controllers\Admin\ParticipantController::class, 'export'])->name('admin.participants.export');
+            
+        
     });
-    //route pending exams (remove duplicate routes)
-    Route::get('/pending-exams', [\App\Http\Controllers\Admin\PendingExamController::class, 'index'])
-        ->name('admin.pending-exams.index');
-    Route::get('/pending-exams/export', [\App\Http\Controllers\Admin\PendingExamController::class, 'export'])
-        ->name('admin.pending-exams.export');
-    Route::middleware(['auth', 'admin'])->group(function () {
-        Route::get('/admin/participants/export', [ParticipantController::class, 'export'])->name('admin.participants.export');
     });
 });
 
@@ -213,11 +216,14 @@ Route::prefix('participant')->group(function() {
             ->name('participant.exam.praktik.submit');
         Route::post('/exam-praktik-end', [ExamPraktikController::class, 'endExam'])
             ->name('participant.exam.praktik.end');
+            //route technician detail
+        Route::get('/technician-detail/{participant_id}', [App\Http\Controllers\Participant\ExamController::class, 'technicianDetail'])
+        ->name('participant.technician.detail');
     });
     
     //route untuk notifikasi email peserta
     // Ubah dari POST menjadi GET
-    Route::get('/exam_sessions/send-notifications', [ExamSessionController::class, 'sendNotifications'])->name('admin.exam_sessions.send-notifications');
+    // Route::get('/exam_sessions/send-notifications', [ExamSessionController::class, 'sendNotifications'])->name('admin.exam_sessions.send-notifications');
     // Pindahkan route accept-privacy ke dalam middleware
     Route::post('/accept-privacy', [App\Http\Controllers\Participant\DashboardController::class, 'acceptPrivacy'])
         ->name('participant.accept-privacy');
