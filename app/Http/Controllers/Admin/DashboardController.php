@@ -154,15 +154,87 @@ class DashboardController extends Controller
                     'expert_participants' => $participantsByLevel['expert'],
                 ];
             });
-
+        
+        // Get assessment data by category
+        $assessmentData = $this->getAssessmentDataByCategory();
+    
         return inertia('Admin/Dashboard/Index', [
             'participants'  => $participants,
             'exams'         => $exams,
             'exam_sessions' => $exam_sessions,
             'areas'         => $areas,
-            'areaLevelStats' => $areaLevelStats
+            'areaLevelStats' => $areaLevelStats,
+            'assessmentData' => $assessmentData
         ]);
     }
+    
+    /**
+     * Get assessment data grouped by category and level
+     */
+    private function getAssessmentDataByCategory()
+    {
+        // Define the specific 5 categories to show
+        $categories = ['Mechanical', 'Electrical', 'Maintenance', 'Monitoring', 'Automation', 'Attitude', 'Pratik'];
+        
+        $assessmentData = [
+            'categories' => $categories, // Add categories to the response
+            'starter' => [],
+            'basic' => [],
+            'intermediate' => [],
+            'advanced' => [],
+            'expert' => []
+        ];
+    
+        foreach ($categories as $category) {
+            // Get grades for each category
+            $grades = \App\Models\Grade::whereHas('exam.category', function($query) use ($category) {
+                $query->where('title', $category);
+            })
+            ->whereNotNull('end_time')
+            ->where('grade', '>', 0)
+            ->whereNotNull('grade')
+            ->with(['participant', 'exam.category'])
+            ->get();
+            
+            // Group participants by grade levels for this category
+            $categoryLevels = [
+                'starter' => 0,
+                'basic' => 0,
+                'intermediate' => 0,
+                'advanced' => 0,
+                'expert' => 0
+            ];
+            
+            // Group grades by participant to get their average for this category
+            $participantGrades = $grades->groupBy('participant_id');
+            
+            foreach ($participantGrades as $participantId => $participantGradesList) {
+                $averageGrade = $participantGradesList->avg('grade');
+                
+                // Categorize based on average grade
+                if ($averageGrade >= 0 && $averageGrade <= 30) {
+                    $categoryLevels['starter']++;
+                } elseif ($averageGrade <= 60) {
+                    $categoryLevels['basic']++;
+                } elseif ($averageGrade <= 70) {
+                    $categoryLevels['intermediate']++;
+                } elseif ($averageGrade <= 90) {
+                    $categoryLevels['advanced']++;
+                } else {
+                    $categoryLevels['expert']++;
+                }
+            }
+            
+            // Add to assessment data
+            $assessmentData['starter'][] = $categoryLevels['starter'];
+            $assessmentData['basic'][] = $categoryLevels['basic'];
+            $assessmentData['intermediate'][] = $categoryLevels['intermediate'];
+            $assessmentData['advanced'][] = $categoryLevels['advanced'];
+            $assessmentData['expert'][] = $categoryLevels['expert'];
+        }
+        
+        return $assessmentData;
+    }  
 }
 
 // Around line 43, you likely have something like:

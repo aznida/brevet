@@ -348,6 +348,7 @@ import VueApexCharts from 'vue3-apexcharts';
             exam_sessions: Number,
             areas: Number,
             areaLevelStats: Array,
+            assessmentData: Object, // Add this line
         },
 
         computed: {
@@ -401,13 +402,10 @@ import VueApexCharts from 'vue3-apexcharts';
             
             return topParticipants;
         },
-    },
-    data() {
-        return {
-            modalTitle: '',
-            selectedParticipants: [],
-            modal: null,
-            assessmentSeries: [{
+        assessmentSeries() {
+        if (!this.assessmentData) {
+            // Fallback to hardcoded data if no backend data
+            return [{
                 name: 'Starter 🌱',
                 data: [3, 10, 3, 1, 2]
             }, {
@@ -422,7 +420,33 @@ import VueApexCharts from 'vue3-apexcharts';
             }, {
                 name: 'Expert 💎',
                 data: [2, 1, 1, 5, 2]
-            }],
+            }];
+        }
+        
+        return [{
+            name: 'Starter 🌱',
+            data: this.assessmentData.starter || []
+        }, {
+            name: 'Basic 🥉',
+            data: this.assessmentData.basic || []
+        }, {
+            name: 'Intermediate 🥈',
+            data: this.assessmentData.intermediate || []
+        }, {
+            name: 'Advanced 🥇',
+            data: this.assessmentData.advanced || []
+        }, {
+            name: 'Expert 💎',
+            data: this.assessmentData.expert || []
+        }];
+     }
+    },
+    data() {
+        return {
+            modalTitle: '',
+            selectedParticipants: [],
+            modal: null,
+
             assessmentChartOptions: {
                 chart: {
                     type: 'bar',
@@ -446,7 +470,7 @@ import VueApexCharts from 'vue3-apexcharts';
                     }
                 },
                 xaxis: {
-                    categories: ['MECHANICAL', 'ELECTRICAL', 'MAINTENANCE', 'MONITORING', 'AUTOMATION'],
+                    categories: ['MECHANICAL', 'ELECTRICAL', 'MAINTENANCE', 'MONITORING', 'AUTOMATION' , 'ATTITUDE', 'PRAKTIK'],
                     labels: {
                         style: {
                             fontSize: '12px'
@@ -458,8 +482,9 @@ import VueApexCharts from 'vue3-apexcharts';
                         text: 'Number of Teknisi'
                     },
                     min: 0,
-                    max: 10,
-                    tickAmount: 6
+                    // Remove max: 10 to allow dynamic scaling
+                    tickAmount: 6,
+                    forceNiceScale: true // This ensures nice round numbers on the scale
                 },
                 colors: ['#00e396', '#008ffb', '#feb019', '#ff6178', '#8b75d7'],
                 legend: {
@@ -485,14 +510,24 @@ import VueApexCharts from 'vue3-apexcharts';
                     type: 'pie',
                 },
                 labels: ['Starter 🌱', 'Basic 🥉', 'Intermediate 🥈', 'Advanced 🥇', 'Expert 💎'],
-                colors: ['#00e396', '#008ffb', '#feb019', '#ff6178', '#8b75d7'], // Updated colors to match the reference
+                colors: ['#00e396', '#008ffb', '#feb019', '#ff6178', '#8b75d7'],
                 legend: {
                     position: 'bottom'
                 },
                 dataLabels: {
                     enabled: true,
                     formatter: function (val, opts) {
-                        return opts.w.config.series[opts.seriesIndex]
+                        return val.toFixed(1) + '%'  // Show percentage with 1 decimal place
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    formatter: function(val, opts) {
+                        const total = opts.series.reduce((a, b) => a + b, 0);
+                        const percentage = ((val / total) * 100).toFixed(1);
+                        return '<b>' + opts.w.config.labels[opts.seriesIndex] + '</b><br/>' + 
+                               'Count: ' + val + '<br/>' + 
+                               'Percentage: ' + percentage + '%';
                     }
                 },
                 responsive: [{
