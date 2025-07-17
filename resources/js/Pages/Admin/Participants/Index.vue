@@ -64,10 +64,10 @@
                                         <th class="border-0">Nama</th>
                                         <!-- <th class="border-0">Email</th> -->
                                         <!-- <th class="border-0">No. Hp</th> -->
-                                        
-                                        <th class="border-0">TREG</th>
                                         <th class="border-0">Witel/Kota</th>
                                         <th class="border-0">Password</th>
+                                        <th class="border-0">Role</th>
+                                        <th class="border-0">TREG</th>
                                         <th class="border-0">Status</th>
                                         <th class="border-0 rounded-end" style="width:15%">Aksi</th>
                                     </tr>
@@ -81,10 +81,14 @@
                                         <td>{{ participant.name }}</td>
                                         <!-- <td>{{ participant.email }}</td> -->
                                         <!-- <td>{{ participant.hp }}</td> -->
-                                        <td>{{ participant.area.title }}</td>
                                         <td>{{ participant.witel }}</td>
                                         <td>{{ participant.decrypted_password }}</td>
-                                                                                <td class="text-center">
+                                        <td class="text-center">
+                                            <span v-if="participant.role === 'Supervisor'" class="badge bg-danger">{{ participant.role }}</span>
+                                            <span v-else>{{ participant.role }}</span>
+                                        </td>
+                                        <td>{{ participant.area.title }}</td>
+                                        <td class="text-center">
                                             <span v-if="participant.status === 'Aktif'" class="badge bg-success">{{ participant.status }}</span>
                                             <span v-else-if="participant.status === 'Block'" class="badge bg-danger">{{ participant.status }}</span>
                                             <span v-else>{{ participant.status }}</span>
