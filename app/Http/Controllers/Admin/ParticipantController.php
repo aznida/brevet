@@ -31,6 +31,15 @@ class ParticipantController extends Controller
             });
         })->with(['area'])->latest()->paginate(50);
 
+        // Dekripsi password untuk setiap partisipan
+        foreach ($participants as $participant) {
+            try {
+                $participant->decrypted_password = Crypt::decryptString($participant->password);
+            } catch (\Exception $e) {
+                $participant->decrypted_password = '';
+            }
+        }
+
         //append query string to pagination links
         $participants->appends(['q' => request()->q]);
 
