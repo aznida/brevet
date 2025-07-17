@@ -526,6 +526,7 @@ class ExamController extends Controller
         //get top technicians regional and national
         $allParticipantGrades = Grade::with(['participant.area'])
             ->whereNotNull('end_time')
+            ->whereNotNull('exam_type')
             ->where('grade', '>', 0)
             ->get()
             ->groupBy('participant_id')
@@ -620,6 +621,7 @@ class ExamController extends Controller
             $participantGrades = Grade::with(['exam.category'])
                 ->where('participant_id', $item['participant_id'])
                 ->whereNotNull('end_time')
+                ->whereNotNull('exam_type')
                 ->where('grade', '>', 0)
                 ->get();
             
@@ -815,6 +817,7 @@ public function history()
     {
         return Grade::with(['participant.area'])
             ->whereNotNull('end_time')
+            ->whereNotNull('exam_type')
             ->where('grade', '>', 0)
             ->get()
             ->groupBy('participant_id')

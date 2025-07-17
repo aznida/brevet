@@ -39,7 +39,8 @@ class DashboardController extends Controller
                         $q->select('id', 'participant_id', 'grade', 'exam_id', 'exam_type')
                             ->whereNotNull('end_time')
                             ->where('grade', '>', 0)
-                            ->whereNotNull('grade');
+                            ->whereNotNull('grade')
+                            ->whereNotNull('exam_type');
                     }]);
             }])
             ->get()
@@ -174,7 +175,7 @@ class DashboardController extends Controller
     private function getAssessmentDataByCategory()
     {
         // Define the specific 5 categories to show
-        $categories = ['Mechanical', 'Electrical', 'Maintenance', 'Monitoring', 'Automation', 'Attitude', 'Pratik'];
+        $categories = ['Mechanical', 'Electrical', 'Maintenance', 'Monitoring', 'Automation', 'Attitude', 'Praktik'];
         
         $assessmentData = [
             'categories' => $categories, // Add categories to the response
@@ -193,6 +194,7 @@ class DashboardController extends Controller
             ->whereNotNull('end_time')
             ->where('grade', '>', 0)
             ->whereNotNull('grade')
+            ->whereNotNull('exam_type') // Filter tambahan di sini
             ->with(['participant', 'exam.category'])
             ->get();
             
