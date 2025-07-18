@@ -20,6 +20,9 @@ Route::prefix('admin')->group(function() {
         //route dashboard
         Route::get('/dashboard', App\Http\Controllers\Admin\DashboardController::class)->name('admin.dashboard');
         
+        //route resource users
+        Route::resource('/users', \App\Http\Controllers\Admin\UserController::class, ['as' => 'admin']);
+
         //route resource categories    
         Route::resource('/categories', \App\Http\Controllers\Admin\CategoryController::class, ['as' => 'admin']);
 

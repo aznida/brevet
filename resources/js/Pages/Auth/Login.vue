@@ -107,7 +107,8 @@
                     //data
                     email: form.email,
                     password: form.password,
-                    _token: document.querySelector('input[name="_token"]')?.value
+                    // Remove the _token line below, Inertia handles this automatically
+                    // _token: document.querySelector('input[name="_token"]')?.value
                 });
             }
 
