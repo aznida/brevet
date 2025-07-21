@@ -65,8 +65,11 @@
                 </li>
 
                 <li role="separator" class="dropdown-divider mt-2 mb-2 border-gray-700"></li>
-
-                <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/users') }">
+                
+                <!-- Hide these menu items for local admin -->
+                <template v-if="$page.props.auth.user.role !== 'local admin'">
+                    <!-- USER MANAGEMENT -->
+                    <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/users') }">
                     <Link href="/admin/users" class="nav-link d-flex justify-content-between">
                     <span>
                         <span class="sidebar-icon">
@@ -81,6 +84,7 @@
                     </Link>
                 </li>
 
+                <!--KATEGORI-->
                 <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/categories') }">
                     <Link href="/admin/categories" class="nav-link d-flex justify-content-between" @click="handleLinkClick">
                     <span>
@@ -104,6 +108,7 @@
                     </Link>
                 </li>
 
+                <!--AREA-->
                 <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/areas') }">
                     <Link href="/admin/areas" class="nav-link d-flex justify-content-between" @click="handleLinkClick">
                     <span>
@@ -125,6 +130,7 @@
                     </Link>
                 </li>
 
+                <!--PARTICIPANT-->
                 <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/participants') }">
                     <Link href="/admin/participants" class="nav-link d-flex justify-content-between">
                     <span>
@@ -151,6 +157,7 @@
                     </Link>
                 </li>
 
+                <!--EXAM-->
                 <li role="separator" class="dropdown-divider mt-2 mb-2 border-gray-700"></li>
 
                 <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/exams') }">
@@ -191,23 +198,8 @@
                     </span>
                     </Link>
                 </li>
-                <!---
-                <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/performance_assessments') }">
-                    <Link href="/admin/performance_assessments" class="nav-link d-flex justify-content-between">
-                    <span>
-                        <span class="sidebar-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
-                                class="bi bi-stopwatch icon icon-xs me-2" viewBox="0 0 16 16">
-                                <path d="M8.5 5.6a.5.5 0 1 0-1 0v2.9h-3a.5.5 0 0 0 0 1H8a.5.5 0 0 0 .5-.5V5.6z" />
-                                <path
-                                    d="M6.5 1A.5.5 0 0 1 7 .5h2a.5.5 0 0 1 0 1v.57c1.36.196 2.594.78 3.584 1.64a.715.715 0 0 1 .012-.013l.354-.354-.354-.353a.5.5 0 0 1 .707-.708l1.414 1.415a.5.5 0 1 1-.707.707l-.353-.354-.354.354a.512.512 0 0 1-.013.012A7 7 0 1 1 7 2.071V1.5a.5.5 0 0 1-.5-.5zM8 3a6 6 0 1 0 .001 12A6 6 0 0 0 8 3z" />
-                            </svg>
-                        </span>
-                        <span class="sidebar-text">360 Assessment</span>
-                    </span>
-                    </Link>
-                </li>
-            -->
+
+                <!--SESI UJIAN-->
                 <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/exam_sessions') }">
                     <Link href="/admin/exam_sessions" class="nav-link d-flex justify-content-between">
                     <span>
@@ -231,6 +223,8 @@
                     </span>
                     </Link>
                 </li>
+
+                <!--ANNOUNCEMENT-->
                 <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/announcements') }">
                     <Link href="/admin/announcements" class="nav-link d-flex justify-content-between">
                     <span>
@@ -256,27 +250,7 @@
 
                 <li role="separator" class="dropdown-divider mt-2 mb-2 border-gray-700"></li>
 
-                <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/reports') }">
-                    <Link href="/admin/reports" class="nav-link d-flex justify-content-between">
-                    <span>
-                        <span class="sidebar-icon">
-                            <!-- <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
-                                class="bi bi-graph-up-arrow icon icon-xs me-2" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd"
-                                    d="M0 0h1v15h15v1H0V0Zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5Z" />
-                            </svg> -->
-                            <!--begin::Svg Icon | path: /var/www/preview.keenthemes.com/keenthemes/metronic/docs/core/html/src/media/icons/duotune/graphs/gra012.svg-->
-                            <span class="svg-icon svg-icon-muted svg-icon-2hx"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path opacity="0.3" d="M8.4 14L15.6 8.79999L20 9.90002V6L16 4L9 11L5 12V14H8.4Z" fill="currentColor"/>
-                            <path d="M21 18H20V12L16 11L9 16H6V3C6 2.4 5.6 2 5 2C4.4 2 4 2.4 4 3V18H3C2.4 18 2 18.4 2 19C2 19.6 2.4 20 3 20H4V21C4 21.6 4.4 22 5 22C5.6 22 6 21.6 6 21V20H21C21.6 20 22 19.6 22 19C22 18.4 21.6 18 21 18Z" fill="currentColor"/>
-                            </svg>
-                            </span>
-                            <!--end::Svg Icon-->
-                        </span>
-                        <span class="sidebar-text">Laporan Hasil Ujian</span>
-                    </span>
-                    </Link>
-                </li>
+                <!--PARTICIPANT FEEDBACK-->
                 <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/feedback') }">
                     <Link href="/admin/feedback" class="nav-link d-flex justify-content-between">
                     <span>
@@ -296,6 +270,11 @@
                     </span>
                     </Link>
                 </li>
+
+                </template>
+                
+            
+               
             </ul>
         </div>
     </nav>

@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->alias([
             'participant' => \App\Http\Middleware\AuthParticipant::class,
+            'check.local.admin' => \App\Http\Middleware\CheckLocalAdmin::class, // Add this line
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

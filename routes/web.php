@@ -15,7 +15,7 @@ use App\Http\Controllers\Admin\ExamSessionController;
 Route::prefix('admin')->group(function() {
 
     //middleware "auth"
-    Route::group(['middleware' => ['auth']], function () {
+    Route::group(['middleware' => ['auth', 'check.local.admin']], function () { // Add check.local.admin middleware
         Route::resource('/announcements', \App\Http\Controllers\Admin\AnnouncementController::class, ['as' => 'admin']);
         //route dashboard
         Route::get('/dashboard', App\Http\Controllers\Admin\DashboardController::class)->name('admin.dashboard');
