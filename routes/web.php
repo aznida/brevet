@@ -9,8 +9,9 @@ use App\Http\Controllers\Admin\PerformanceAssessmentController;
 use App\Http\Controllers\Admin\ExamSessionController;
 use App\Http\Controllers\Admin\MitraDashboardController;
 
-
-
+// Admin login routes (add these before your admin prefix group)
+Route::get('/admin/login', [\App\Http\Controllers\Admin\LoginController::class, 'showLoginForm'])->name('admin.login');
+Route::post('/admin/login', [\App\Http\Controllers\Admin\LoginController::class, 'login']);
 
 //prefix "admin"
 Route::prefix('admin')->group(function() {
@@ -141,7 +142,17 @@ Route::get('/', function () {
     if(auth()->guard('participant')->check()) {
         return redirect()->route('participant.dashboard');
     }
-    //return view login
+    
+    // Check if admin user is logged in
+    if(auth()->check()) {
+        $user = auth()->user();
+        if ($user->role === 'mitra') {
+            return redirect()->route('admin.dashboard.mitra');
+        }
+        return redirect(config('fortify.home'));
+    }
+    
+    // Return the participant login page instead of redirecting
     return \Inertia\Inertia::render('Participant/Login/Index');
 });
 
@@ -245,3 +256,4 @@ Route::prefix('participant')->group(function() {
 });
 Route::post('/participant/update-credentials', [\App\Http\Controllers\Participant\ParticipantController::class, 'updateCredentials'])->name('participant.update-credentials');
 Route::post('/admin/upload-image', [\App\Http\Controllers\Admin\ImageUploadController::class, 'upload'])->middleware(['auth']);
+

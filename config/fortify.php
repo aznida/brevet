@@ -86,7 +86,7 @@ return [
     |
     */
 
-    'prefix' => '',
+    'prefix' => '', // Change this to admin
 
     'domain' => null,
 

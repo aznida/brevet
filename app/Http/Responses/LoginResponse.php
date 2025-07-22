@@ -25,7 +25,6 @@ class LoginResponse implements LoginResponseContract
         
         // Redirect based on user role
         if ($user && $user->role === 'mitra') {
-            // Use named route instead of absolute path
             return redirect()->route('admin.dashboard.mitra');
         }
         
