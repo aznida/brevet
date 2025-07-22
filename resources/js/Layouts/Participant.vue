@@ -225,7 +225,7 @@
                 <div class="custom-modal-footer">
                     <button class="btn-secondary" @click="closeModal">Cancel</button>
                     <Link 
-                        href="/logout" 
+                        href="/logout"
                         method="post" 
                         as="button" 
                         class="btn-danger"

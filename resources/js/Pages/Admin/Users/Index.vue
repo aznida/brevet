@@ -62,6 +62,7 @@
                                         <td class="text-center">
                                             <span v-if="user.role === 'super admin'" class="badge bg-danger">Super Admin</span>
                                             <span v-else-if="user.role === 'local admin'" class="badge bg-primary">Local Admin</span>
+                                            <span v-else-if="user.role === 'mitra'" class="badge bg-success">Mitra</span>
                                             <span v-else class="badge bg-secondary">{{ user.role }}</span>
                                         </td>
                                         <td class="text-center">

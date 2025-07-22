@@ -42,6 +42,7 @@
                                     <option value="">-- Pilih Role --</option>
                                     <option value="super admin">Super Admin</option>
                                     <option value="local admin">Local Admin</option>
+                                    <option value="mitra">Mitra</option>
                                 </select>
                                 <div v-if="errors.role" class="alert alert-danger mt-2">
                                     {{ errors.role }}

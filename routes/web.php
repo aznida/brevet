@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ParticipantController;
 use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\PerformanceAssessmentController;
 use App\Http\Controllers\Admin\ExamSessionController;
+use App\Http\Controllers\Admin\MitraDashboardController;
 
 
 
@@ -14,116 +15,124 @@ use App\Http\Controllers\Admin\ExamSessionController;
 //prefix "admin"
 Route::prefix('admin')->group(function() {
 
-    //middleware "auth"
-    Route::group(['middleware' => ['auth', 'check.local.admin']], function () { // Add check.local.admin middleware
-        Route::resource('/announcements', \App\Http\Controllers\Admin\AnnouncementController::class, ['as' => 'admin']);
-        //route dashboard
-        Route::get('/dashboard', App\Http\Controllers\Admin\DashboardController::class)->name('admin.dashboard');
+    //middleware for both local admin and mitra
+    Route::group(['middleware' => ['auth']], function () { // accessable for all users
+
+        Route::group(['middleware' => ['check.local.admin']], function () {
         
-        //route resource users
-        Route::resource('/users', \App\Http\Controllers\Admin\UserController::class, ['as' => 'admin']);
-
-        //route resource categories    
-        Route::resource('/categories', \App\Http\Controllers\Admin\CategoryController::class, ['as' => 'admin']);
-
-        //route resource areas    
-        Route::resource('/areas', \App\Http\Controllers\Admin\AreaController::class, ['as' => 'admin']);
-
-        //route participant import
-        Route::get('/participants/import', [\App\Http\Controllers\Admin\ParticipantController::class, 'import'])->name('admin.participants.import');
-
-        //route participant store import
-        Route::post('/participants/import', [\App\Http\Controllers\Admin\ParticipantController::class, 'storeImport'])->name('admin.participants.storeImport');
-
-        //route resource participants   
-        Route::resource('/participants', \App\Http\Controllers\Admin\ParticipantController::class, ['as' => 'admin']);
-
-        //route resource exams    
-        Route::resource('/exams', \App\Http\Controllers\Admin\ExamController::class, ['as' => 'admin']);
-
-        //custom route for create question exam
-        Route::get('/exams/{exam}/questions/create', [\App\Http\Controllers\Admin\ExamController::class, 'createQuestion'])->name('admin.exams.createQuestion');
-
-        //custom route for store question exam
-        Route::post('/exams/{exam}/questions/store', [\App\Http\Controllers\Admin\ExamController::class, 'storeQuestion'])->name('admin.exams.storeQuestion');
-        
-        //custom route for edit question exam
-        Route::get('/exams/{exam}/questions/{question}/edit', [\App\Http\Controllers\Admin\ExamController::class, 'editQuestion'])->name('admin.exams.editQuestion');
-
-        //custom route for update question exam
-        
-        Route::put('/exams/{exam}/questions/{question}/update', [\App\Http\Controllers\Admin\ExamController::class, 'updateQuestion'])->name('admin.exams.updateQuestion');
-        
-        //custom route for destroy question exam
-        Route::delete('/exams/{exam}/questions/{question}/destroy', [\App\Http\Controllers\Admin\ExamController::class, 'destroyQuestion'])->name('admin.exams.destroyQuestion');
-
-        //route Question import
-        Route::get('/exams/{exam}/questions/import', [\App\Http\Controllers\Admin\ExamController::class, 'import'])->name('admin.exam.questionImport');
-
-        //route Question Store import
-        Route::post('/exams/{exam}/questions/import', [\App\Http\Controllers\Admin\ExamController::class, 'storeImport'])->name('admin.exam.questionStoreImport');
-        
-        //route resource exam_sessions    
-        Route::resource('/exam_sessions', \App\Http\Controllers\Admin\ExamSessionController::class, ['as' => 'admin']);
-        
-        // Admin feedback routes
-        Route::get('/feedback', [\App\Http\Controllers\Admin\FeedbackController::class, 'index'])->name('admin.feedback.index');
-        Route::get('/exam_sessions/{exam_session}/feedback', [\App\Http\Controllers\Admin\FeedbackController::class, 'examSessionFeedback'])->name('admin.exam_sessions.feedback');
-        
-        //route untuk notifikasi email peserta
-        Route::post('/exam-sessions/send-notifications', [\App\Http\Controllers\Admin\ExamSessionController::class, 'sendNotifications'])
-            ->name('admin.exam_sessions.send-notifications');
-        
-        //custom route for enrolled create
-        Route::get('/exam_sessions/{exam_session}/enrolled/create', [\App\Http\Controllers\Admin\ExamSessionController::class, 'createEnrolled'])
-            ->name('admin.exam_sessions.createEnrolled');
-
-        //custom route for enrolled store
-        Route::post('/exam_sessions/{exam_session}/enrolled/store', [\App\Http\Controllers\Admin\ExamSessionController::class, 'storeEnrolled'])->name('admin.exam_sessions.storeEnrolled');
-
-        //custom route for enrolle destroy
-        Route::delete('/exam_sessions/{exam_session}/enrolled/{exam_group}/destroy', [\App\Http\Controllers\Admin\ExamSessionController::class, 'destroyEnrolled'])->name('admin.exam_sessions.destroyEnrolled');
-
-        //route index reports
-        Route::get('/reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('admin.reports.index');
-
-        //route index reports filter
-        Route::get('/reports/filter', [\App\Http\Controllers\Admin\ReportController::class, 'filter'])->name('admin.reports.filter');
-
-        //route index reports export
-        Route::get('/reports/export', [\App\Http\Controllers\Admin\ReportController::class, 'export'])->name('admin.reports.export');
-
-        //route resource performance_assessments    
-        Route::resource('/performance_assessments', \App\Http\Controllers\Admin\PerformanceAssessmentController::class, ['as' => 'admin']);
-
-        //custom route for assign assessor
-        Route::get('/performance_assessments/{assessment}/assign', [\App\Http\Controllers\Admin\PerformanceAssessmentController::class, 'assign'])->name('admin.performance_assessments.assign');
-
-        //custom route for store assessor
-        Route::post('/performance_assessments/{assessment}/store-assessor', [\App\Http\Controllers\Admin\PerformanceAssessmentController::class, 'storeAssessor'])->name('admin.performance_assessments.storeAssessor');
-
-
-        //delete assignment route
-        Route::delete('/performance_assessments/{assessment}/assignments/{assignment}', [\App\Http\Controllers\Admin\PerformanceAssessmentAssignmentController::class, 'destroy'])->name('admin.performance-assessments.assignments.destroy');
-        
-        //update assignment
-        Route::put('/performance_assessments/{assessment}/assignments/{assignment}', [\App\Http\Controllers\Admin\PerformanceAssessmentAssignmentController::class, 'update'])->name('admin.performance-assessments.assignments.update');
-
-        
-            // Hapus route dengan prefix /admin yang salah
-            // Route::get('/admin/pending-exams', [App\Http\Controllers\Admin\PendingExamController::class, 'index'])->name('admin.pending-exams.index');
-            // Route::get('/admin/pending-exams/export', [App\Http\Controllers\Admin\PendingExamController::class, 'export'])->name('admin.pending-exams.export');
+            //route resource announcements
+            Route::resource('/announcements', \App\Http\Controllers\Admin\AnnouncementController::class, ['as' => 'admin']);
             
-            // Tambahkan route yang benar
-            Route::get('/pending-exams', [App\Http\Controllers\Admin\PendingExamController::class, 'index'])->name('admin.pending-exams.index');
-            Route::get('/pending-exams/export', [App\Http\Controllers\Admin\PendingExamController::class, 'export'])->name('admin.pending-exams.export');
+            //route dashboard
+            Route::get('/dashboard', App\Http\Controllers\Admin\DashboardController::class)->name('admin.dashboard');
             
-            Route::middleware(['auth', 'admin'])->group(function () {
-        Route::get('/participants/export', [App\Http\Controllers\Admin\ParticipantController::class, 'export'])->name('admin.participants.export');
+            //route resource users
+            Route::resource('/users', \App\Http\Controllers\Admin\UserController::class, ['as' => 'admin']);
+
+            //route resource categories    
+            Route::resource('/categories', \App\Http\Controllers\Admin\CategoryController::class, ['as' => 'admin']);
+
+            //route resource areas    
+            Route::resource('/areas', \App\Http\Controllers\Admin\AreaController::class, ['as' => 'admin']);
+
+            //route participant import
+            Route::get('/participants/import', [\App\Http\Controllers\Admin\ParticipantController::class, 'import'])->name('admin.participants.import');
+
+            //route participant store import
+            Route::post('/participants/import', [\App\Http\Controllers\Admin\ParticipantController::class, 'storeImport'])->name('admin.participants.storeImport');
+
+            //route resource participants   
+            Route::resource('/participants', \App\Http\Controllers\Admin\ParticipantController::class, ['as' => 'admin']);
+
+            //route resource exams    
+            Route::resource('/exams', \App\Http\Controllers\Admin\ExamController::class, ['as' => 'admin']);
+
+            //custom route for create question exam
+            Route::get('/exams/{exam}/questions/create', [\App\Http\Controllers\Admin\ExamController::class, 'createQuestion'])->name('admin.exams.createQuestion');
+
+            //custom route for store question exam
+            Route::post('/exams/{exam}/questions/store', [\App\Http\Controllers\Admin\ExamController::class, 'storeQuestion'])->name('admin.exams.storeQuestion');
             
-        
-    });
-    });
+            //custom route for edit question exam
+            Route::get('/exams/{exam}/questions/{question}/edit', [\App\Http\Controllers\Admin\ExamController::class, 'editQuestion'])->name('admin.exams.editQuestion');
+
+            //custom route for update question exam
+            
+            Route::put('/exams/{exam}/questions/{question}/update', [\App\Http\Controllers\Admin\ExamController::class, 'updateQuestion'])->name('admin.exams.updateQuestion');
+            
+            //custom route for destroy question exam
+            Route::delete('/exams/{exam}/questions/{question}/destroy', [\App\Http\Controllers\Admin\ExamController::class, 'destroyQuestion'])->name('admin.exams.destroyQuestion');
+
+            //route Question import
+            Route::get('/exams/{exam}/questions/import', [\App\Http\Controllers\Admin\ExamController::class, 'import'])->name('admin.exam.questionImport');
+
+            //route Question Store import
+            Route::post('/exams/{exam}/questions/import', [\App\Http\Controllers\Admin\ExamController::class, 'storeImport'])->name('admin.exam.questionStoreImport');
+            
+            //route resource exam_sessions    
+            Route::resource('/exam_sessions', \App\Http\Controllers\Admin\ExamSessionController::class, ['as' => 'admin']);
+            
+            // Admin feedback routes
+            Route::get('/feedback', [\App\Http\Controllers\Admin\FeedbackController::class, 'index'])->name('admin.feedback.index');
+            Route::get('/exam_sessions/{exam_session}/feedback', [\App\Http\Controllers\Admin\FeedbackController::class, 'examSessionFeedback'])->name('admin.exam_sessions.feedback');
+            
+            //route untuk notifikasi email peserta
+            Route::post('/exam-sessions/send-notifications', [\App\Http\Controllers\Admin\ExamSessionController::class, 'sendNotifications'])
+                ->name('admin.exam_sessions.send-notifications');
+            
+            //custom route for enrolled create
+            Route::get('/exam_sessions/{exam_session}/enrolled/create', [\App\Http\Controllers\Admin\ExamSessionController::class, 'createEnrolled'])
+                ->name('admin.exam_sessions.createEnrolled');
+
+            //custom route for enrolled store
+            Route::post('/exam_sessions/{exam_session}/enrolled/store', [\App\Http\Controllers\Admin\ExamSessionController::class, 'storeEnrolled'])->name('admin.exam_sessions.storeEnrolled');
+
+            //custom route for enrolle destroy
+            Route::delete('/exam_sessions/{exam_session}/enrolled/{exam_group}/destroy', [\App\Http\Controllers\Admin\ExamSessionController::class, 'destroyEnrolled'])->name('admin.exam_sessions.destroyEnrolled');
+
+            //route index reports
+            Route::get('/reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('admin.reports.index');
+
+            //route index reports filter
+            Route::get('/reports/filter', [\App\Http\Controllers\Admin\ReportController::class, 'filter'])->name('admin.reports.filter');
+
+            //route index reports export
+            Route::get('/reports/export', [\App\Http\Controllers\Admin\ReportController::class, 'export'])->name('admin.reports.export');
+
+            //route resource performance_assessments    
+            Route::resource('/performance_assessments', \App\Http\Controllers\Admin\PerformanceAssessmentController::class, ['as' => 'admin']);
+
+            //custom route for assign assessor
+            Route::get('/performance_assessments/{assessment}/assign', [\App\Http\Controllers\Admin\PerformanceAssessmentController::class, 'assign'])->name('admin.performance_assessments.assign');
+
+            //custom route for store assessor
+            Route::post('/performance_assessments/{assessment}/store-assessor', [\App\Http\Controllers\Admin\PerformanceAssessmentController::class, 'storeAssessor'])->name('admin.performance_assessments.storeAssessor');
+
+            //delete assignment route
+            Route::delete('/performance_assessments/{assessment}/assignments/{assignment}', [\App\Http\Controllers\Admin\PerformanceAssessmentAssignmentController::class, 'destroy'])->name('admin.performance-assessments.assignments.destroy');
+            
+            //update assignment
+            Route::put('/performance_assessments/{assessment}/assignments/{assignment}', [\App\Http\Controllers\Admin\PerformanceAssessmentAssignmentController::class, 'update'])->name('admin.performance-assessments.assignments.update');
+
+            
+                // Hapus route dengan prefix /admin yang salah
+                // Route::get('/admin/pending-exams', [App\Http\Controllers\Admin\PendingExamController::class, 'index'])->name('admin.pending-exams.index');
+                // Route::get('/admin/pending-exams/export', [App\Http\Controllers\Admin\PendingExamController::class, 'export'])->name('admin.pending-exams.export');
+                
+                // Tambahkan route yang benar
+                Route::get('/pending-exams', [App\Http\Controllers\Admin\PendingExamController::class, 'index'])->name('admin.pending-exams.index');
+                Route::get('/pending-exams/export', [App\Http\Controllers\Admin\PendingExamController::class, 'export'])->name('admin.pending-exams.export');
+                
+                Route::middleware(['auth', 'admin'])->group(function () {
+                    Route::get('/participants/export', [App\Http\Controllers\Admin\ParticipantController::class, 'export'])->name('admin.participants.export'); 
+                });
+            });
+        // Routes with mitra check
+        Route::group(['middleware' => ['check.mitra']], function () {
+            // Route for mitra dashboard
+            Route::get('/dashboard-mitra', MitraDashboardController::class)->name('admin.dashboard.mitra');
+        });
+    }); 
 });
 
 //route homepage
@@ -138,6 +147,7 @@ Route::get('/', function () {
 
 //login participants
 Route::post('/participants/login', \App\Http\Controllers\Participant\LoginController::class)->name('participant.login');
+
 
 // forgot password routes
 Route::get('/participant/forgot-password', [\App\Http\Controllers\Participant\ForgotPasswordController::class, 'index'])
