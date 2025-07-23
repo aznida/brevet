@@ -134,7 +134,12 @@
                                 </tbody>
                             </table>
                         </div>
-                        <Pagination :links="participants.links" align="end" />
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                Showing {{ participants.from }} to {{ participants.to }} of {{ participants.total }} entries
+                            </div>
+                            <Pagination :links="participants.links" align="end" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -252,52 +257,66 @@ export default {
             selectedRole.value = '';
             //handleFilter();
             router.get('/admin/pending-exams', {
-                q: search.value
-                // Omitting the filter parameters will clear them
+                q: search.value, // Omitting the filter parameters will clear them
+                page: 1 // Reset to page 1 when clearing filters
             });
         };
 
-        const exportToExcel = () => {
-            // Create CSV content
-            let csvContent = 'No,NIK,Nama,TREG,Witel,Job Role';
-            // Add category headers
-            props.categories.forEach(category => {
-                csvContent += `,${category.title}`;
-            });
-            csvContent += '\n';
-
-            // Add data rows
-            props.participants.data.forEach((participant, index) => {
-                const rowNum = index + 1 + (props.participants.current_page-1) * props.participants.per_page;
-                let row = `${rowNum},${participant.nik},"${participant.name}",${participant.area.title},${participant.witel},${participant.role}`;
+        const exportToExcel = async () => {
+            try {
+                // Fetch all records with current filters
+                const response = await fetch(`/admin/pending-exams/export?q=${encodeURIComponent(search.value)}&area_id=${encodeURIComponent(selectedArea.value)}&witel=${encodeURIComponent(selectedWitel.value)}&role=${encodeURIComponent(selectedRole.value)}`);
                 
-                // Add grades for each category
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Create CSV content with all records
+                let csvContent = 'No,NIK,Nama,TREG,Witel,Job Role';
+                // Add category headers
                 props.categories.forEach(category => {
-                    const status = getExamStatus(participant, category.title);
-                    // Remove icons and handle "Belum Ujian" for Excel
-                    let excelStatus = status;
-                    if (status === '❌') {
-                        excelStatus = 'Belum Ujian';
-                    } else if (status.includes('💎') || status.includes('🥇') || 
-                             status.includes('🥈') || status.includes('🥉') || 
-                             status.includes('🌱')) {
-                        excelStatus = status.split(' ')[0]; // Keep only the grade number
-                    }
-                    row += `,"${excelStatus}"`;
+                    csvContent += `,${category.title}`;
                 });
-                csvContent += row + '\n';
-            });
+                csvContent += '\n';
 
-            // Create and download file
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', 'progress_Ujian_Brevet.csv');
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+                // Add data rows
+                data.participants.forEach((participant, index) => {
+                    const rowNum = index + 1;
+                    let row = `${rowNum},${participant.nik},"${participant.name}",${participant.area.title},${participant.witel},${participant.role}`;
+                    
+                    // Add grades for each category
+                    props.categories.forEach(category => {
+                        const status = getExamStatus(participant, category.title);
+                        // Remove icons and handle "Belum Ujian" for Excel
+                        let excelStatus = status;
+                        if (status === '❌') {
+                            excelStatus = 'Belum Ujian';
+                        } else if (status.includes('💎') || status.includes('🥇') || 
+                                 status.includes('🥈') || status.includes('🥉') || 
+                                 status.includes('🌱')) {
+                            excelStatus = status.split(' ')[0]; // Keep only the grade number
+                        }
+                        row += `,"${excelStatus}"`;
+                    });
+                    csvContent += row + '\n';
+                });
+
+                // Create and download file
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'progress_Ujian_Brevet.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (error) {
+                console.error('Error exporting to Excel:', error);
+                alert('Failed to export data. Please try again later.');
+            }
         };
 
         const getExamStatus = (participant, categoryTitle) => {
@@ -333,7 +352,8 @@ export default {
                 q: search.value,
                 area_id: selectedArea.value,
                 witel: selectedWitel.value,
-                role: selectedRole.value
+                role: selectedRole.value,
+                page: 1 // Reset to page 1 when searching
             }); 
         }
 
@@ -342,7 +362,8 @@ export default {
                 q: search.value,
                 area_id: selectedArea.value,
                 witel: selectedWitel.value,
-                role: selectedRole.value
+                role: selectedRole.value,
+                page: 1 // Reset to page 1 when searching
             });
         }
 
