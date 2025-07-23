@@ -16,6 +16,15 @@ class PendingExamController extends Controller
 {
     public function index()
     {
+        // Get all areas for the filter dropdown
+        $areas = Area::orderBy('title')->get();
+        
+        // Get unique witel values for the filter dropdown
+        $witels = Participant::select('witel')->distinct()->whereNotNull('witel')->orderBy('witel')->pluck('witel');
+        
+        // Get unique role values for the filter dropdown
+        $roles = Participant::select('role')->distinct()->whereNotNull('role')->orderBy('role')->pluck('role');
+        
         $participants = Participant::with(['area', 'grades.exam.category'])
             ->when(request('q'), function($query, $search) {
                 $query->where(function($q) use ($search) {
@@ -24,6 +33,15 @@ class PendingExamController extends Controller
                       ->orWhere('witel', 'like', "%{$search}%");
                 });
             })
+            ->when(request('area_id'), function($query, $areaId) {
+                $query->where('area_id', $areaId);
+            })
+            ->when(request('witel'), function($query, $witel) {
+                $query->where('witel', $witel);
+            })
+            ->when(request('role'), function($query, $role) {
+                $query->where('role', $role);
+            })
             ->orderBy('created_at', 'DESC')
             ->paginate(2000);
 
@@ -31,7 +49,11 @@ class PendingExamController extends Controller
 
         return Inertia::render('Admin/PendingExams/Index', [
             'participants' => $participants,
-            'categories' => $categories
+            'categories' => $categories,
+            'areas' => $areas,
+            'witels' => $witels,
+            'roles' => $roles,
+            'filters' => request()->only(['q', 'area_id', 'witel', 'role'])
         ]);
     }
 }
