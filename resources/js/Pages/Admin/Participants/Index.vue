@@ -50,6 +50,71 @@
                 Export</Link>
             </div>
         </div>
+
+        <!-- Filter Section -->
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div class="card border-0 shadow">
+                    <div class="card-body">
+                        <!-- <h5 class="mb-3"><i class="fa fa-filter"></i> Filter</h5> -->
+                        <div class="row">
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">TREG (Area)</label>
+                                <select v-model="selectedArea" class="form-select" @change="handleFilter">
+                                    <option value="">Semua TREG</option>
+                                    <option v-for="area in areas" :key="area.id" :value="area.id">
+                                        {{ area.title }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Witel</label>
+                                <select v-model="selectedWitel" class="form-select" @change="handleFilter">
+                                    <option value="">Semua Witel</option>
+                                    <option v-for="witel in filteredWitels" :key="witel" :value="witel">
+                                        {{ witel }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Job Role</label>
+                                <select v-model="selectedRole" class="form-select" @change="handleFilter">
+                                    <option value="">Semua Job Role</option>
+                                    <option v-for="role in filteredRoles" :key="role" :value="role">
+                                        {{ role }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-2" v-if="hasActiveFilters">
+                            <div class="col-md-12">
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">Active Filters:</span>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <span v-if="selectedArea" class="badge bg-primary">
+                                            TREG: {{ getAreaName(selectedArea) }}
+                                            <button type="button" class="btn-close btn-close-white ms-2" aria-label="Close" @click="clearAreaFilter"></button>
+                                        </span>
+                                        <span v-if="selectedWitel" class="badge bg-primary">
+                                            Witel: {{ selectedWitel }}
+                                            <button type="button" class="btn-close btn-close-white ms-2" aria-label="Close" @click="clearWitelFilter"></button>
+                                        </span>
+                                        <span v-if="selectedRole" class="badge bg-primary">
+                                            Job Role: {{ selectedRole }}
+                                            <button type="button" class="btn-close btn-close-white ms-2" aria-label="Close" @click="clearRoleFilter"></button>
+                                        </span>
+                                        <button v-if="hasActiveFilters" @click="clearAllFilters" class="btn btn-sm btn-outline-secondary">
+                                            Clear All
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row mt-1">
             <div class="col-md-12">
                 <div class="card border-0 shadow">
@@ -188,7 +253,7 @@
     //import layout
     import LayoutAdmin from '../../../Layouts/Admin.vue';
     import Pagination from '../../../Components/Pagination.vue';
-    import { ref, onMounted } from 'vue';
+    import { ref, computed, onMounted } from 'vue'; // Add computed import here
     import Swal from 'sweetalert2';
     import { Head, Link, router } from '@inertiajs/vue3';
 
@@ -201,15 +266,117 @@
         },
         props: {
             participants: Object,
+            areas: Array,
+            witels: Array,
+            roles: Array,
+            filters: Object
         },
-        setup() {
-            const search = ref('' || (new URL(document.location)).searchParams.get('q'));
+        setup(props) { // Add props parameter here
+            const search = ref(props.filters?.q || '');
+            const selectedArea = ref(props.filters?.area_id || ''); // Define selectedArea
+            const selectedWitel = ref(props.filters?.witel || ''); // Define selectedWitel
+            const selectedRole = ref(props.filters?.role || ''); // Define selectedRole
             const selectedParticipant = ref(null);
             let modal = null;
 
             onMounted(() => {
                 modal = new bootstrap.Modal(document.getElementById('detailModal'));
             });
+
+            // Add filteredWitels computed property
+            const filteredWitels = computed(() => {
+                if (!selectedArea.value) {
+                    return props.witels; // Return all witels if no area is selected
+                }
+                
+                // Filter participants by the selected area_id and get their unique witels
+                const witelsInArea = props.participants.data
+                    .filter(participant => participant.area_id === parseInt(selectedArea.value) || 
+                                          participant.area.id === parseInt(selectedArea.value))
+                    .map(participant => participant.witel);
+                
+                // Remove duplicates
+                return [...new Set(witelsInArea)].sort();
+            });
+
+            //add filter
+            const filteredRoles = computed(() => {
+                if (!selectedArea.value && !selectedWitel.value) {
+                    return props.roles; // Return all roles if no area or witel is selected
+                }
+                
+                // Filter participants based on selected filters
+                const filteredParticipants = props.participants.data.filter(participant => {
+                    let matchesArea = true;
+                    let matchesWitel = true;
+                    
+                    if (selectedArea.value) {
+                        matchesArea = (participant.area_id === parseInt(selectedArea.value) || 
+                                      participant.area.id === parseInt(selectedArea.value));
+                    }
+                    
+                    if (selectedWitel.value) {
+                        matchesWitel = participant.witel === selectedWitel.value;
+                    }
+                    
+                    return matchesArea && matchesWitel;
+                });
+                
+                // Extract unique roles from filtered participants
+                const rolesInFiltered = filteredParticipants
+                    .map(participant => participant.role)
+                    .filter(role => role); // Filter out null/undefined roles
+                
+                // Remove duplicates
+                return [...new Set(rolesInFiltered)].sort();
+            });
+
+            const hasActiveFilters = computed(() => {
+                return selectedArea.value || selectedWitel.value || selectedRole.value;
+            });
+
+            const getAreaName = (areaId) => {
+                const area = props.areas.find(a => a.id === parseInt(areaId));
+                return area ? area.title : '';
+            };
+
+            const clearAreaFilter = () => {
+                selectedArea.value = '';
+                selectedWitel.value = ''; // Also clear witel when area is cleared
+                selectedRole.value = ''; // Also clear role when area is cleared
+                handleFilter();
+            };
+
+            const clearWitelFilter = () => {
+                selectedWitel.value = '';
+                selectedRole.value = ''; // Also clear role when witel is cleared
+                handleFilter();
+            };
+
+            const clearRoleFilter = () => {
+                selectedRole.value = '';
+                handleFilter();
+            };
+
+            const clearAllFilters = () => {
+                selectedArea.value = '';
+                selectedWitel.value = '';
+                selectedRole.value = '';
+                router.get('/admin/participants', {
+                    q: search.value, // Omitting the filter parameters will clear them
+                    page: 1 // Reset to page 1 when clearing filters
+                });
+            };
+
+            const handleFilter = () => {
+                router.get('/admin/participants', {
+                    q: search.value,
+                    area_id: selectedArea.value,
+                    witel: selectedWitel.value,
+                    role: selectedRole.value,
+                    page: 1 // Reset to page 1 when filtering
+                });
+            }
 
             const showModal = (participant) => {
                 selectedParticipant.value = participant;
@@ -286,7 +453,20 @@
                 showModal,
                 selectedParticipant,
                 calculateAge,
-                formatTanggalIndonesia  // Tambahkan ini
+                formatTanggalIndonesia,
+                //filter
+                filteredRoles,
+                filteredWitels, // Add filteredWitels to return
+                selectedArea,
+                selectedWitel,
+                selectedRole,
+                hasActiveFilters,
+                getAreaName,
+                clearAreaFilter,
+                clearWitelFilter,
+                clearRoleFilter,
+                clearAllFilters,
+                handleFilter
             }
         }
     }
@@ -306,5 +486,13 @@
 }
 .bg-light {
     background-color: #f8f9fa !important;
+}
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5em 0.75em;
+}
+.btn-close {
+    font-size: 0.65em;
 }
 </style>

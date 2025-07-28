@@ -25,7 +25,13 @@ class PendingExamController extends Controller
         // Get unique role values for the filter dropdown
         $roles = Participant::select('role')->distinct()->whereNotNull('role')->orderBy('role')->pluck('role');
         
-        $participants = Participant::with(['area', 'grades.exam.category'])
+        // Get per_page parameter with default of 10
+        $perPage = request('per_page', 10);
+        
+        // Check if we should show all records
+        $shouldPaginate = $perPage !== 'all';
+        
+        $query = Participant::with(['area', 'grades.exam.category'])
             ->when(request('q'), function($query, $search) {
                 $query->where(function($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
@@ -42,8 +48,23 @@ class PendingExamController extends Controller
             ->when(request('role'), function($query, $role) {
                 $query->where('role', $role);
             })
-            ->orderBy('created_at', 'DESC')
-            ->paginate(10); // Changed from 2000 to 10 records per page
+            ->orderBy('created_at', 'DESC');
+        
+        // Either paginate or get all records
+        $participants = $shouldPaginate 
+            ? $query->paginate($perPage) 
+            : $query->get()->toArray();
+        
+        // If showing all records, manually create a pagination-like structure
+        if (!$shouldPaginate) {
+            $participants = [
+                'data' => $participants,
+                'links' => [],
+                'total' => count($participants),
+                'per_page' => 'all',
+                'current_page' => 1,
+            ];
+        }
 
         $categories = Category::orderBy('title')->get();
 
@@ -53,7 +74,7 @@ class PendingExamController extends Controller
             'areas' => $areas,
             'witels' => $witels,
             'roles' => $roles,
-            'filters' => request()->only(['q', 'area_id', 'witel', 'role'])
+            'filters' => request()->only(['q', 'area_id', 'witel', 'role', 'per_page'])
         ]);
     }
 

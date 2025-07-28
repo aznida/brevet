@@ -5,7 +5,7 @@
     <div class="container-fluid mb-5 mt-5">
         <div class="row">
             <div class="col-md-12">
-                <Link href="/admin/users" class="btn btn-md btn-primary border-0 shadow mb-3" type="button"><i class="fa fa-long-arrow-alt-left me-2"></i> Kembali</Link>
+                <Link :href="route('admin.users.index')" class="btn btn-md btn-primary border-0 shadow mb-3" type="button"><i class="fa fa-long-arrow-alt-left me-2"></i> Kembali</Link>
                 <div class="card border-0 shadow">
                     <div class="card-body">
                         <h5><i class="fa fa-user"></i> Edit User</h5>
@@ -29,7 +29,12 @@
 
                             <div class="mb-4">
                                 <label>Password</label> 
-                                <input type="password" class="form-control" placeholder="Masukkan Password Baru (Opsional)" v-model="form.password">
+                                <div class="input-group">
+                                    <input :type="showPassword ? 'text' : 'password'" class="form-control" placeholder="Masukkan Password Baru (Opsional)" v-model="form.password">
+                                    <button class="btn btn-outline-secondary" type="button" @click="showPassword = !showPassword">
+                                        <i :class="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+                                    </button>
+                                </div>
                                 <small class="text-muted">Kosongkan jika tidak ingin mengubah password</small>
                                 <div v-if="errors.password" class="alert alert-danger mt-2">
                                     {{ errors.password }}
@@ -71,7 +76,7 @@
     } from '@inertiajs/vue3';
 
     //import reactive from vue
-    import { reactive } from 'vue';
+    import { reactive,ref } from 'vue';
 
     //import sweet alert2
     import Swal from 'sweetalert2';
@@ -102,6 +107,9 @@
                 role: props.user.role,
             });
 
+            // Add this line to track password visibility
+            const showPassword = ref(false);
+
             //method "submit"
             const submit = () => {
                 //send data to server
@@ -129,6 +137,7 @@
             return {
                 form,
                 submit,
+                showPassword, // Add this line
             }
         }
     }

@@ -34,7 +34,10 @@
                         <span class="input-group-text" id="basic-addon2">
                             <i class="fa fa-lock"></i>
                         </span>
-                        <input type="password" placeholder="Password" class="form-control" v-model="form.password">
+                        <input :type="showPassword ? 'text' : 'password'" placeholder="Password" class="form-control" v-model="form.password">
+                        <button type="button" class="btn btn-outline-secondary" @click="showPassword = !showPassword">
+                            <i :class="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+                        </button>
                     </div>
                     <div v-if="errors.password" class="alert alert-danger mt-2">
                         {{ errors.password }}
@@ -70,7 +73,8 @@
 
     //import reactive
     import {
-        reactive
+        reactive,
+        ref
     } from 'vue';
 
     export default {
@@ -97,6 +101,9 @@
                 email: '',
                 password: '',
             });
+            
+            // Add this line to track password visibility
+            const showPassword = ref(false);
 
             //submit method
             const submit = () => {
@@ -116,6 +123,7 @@
             return {
                 form,
                 submit,
+                showPassword, // Add this line
             };
 
         }

@@ -134,12 +134,54 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <div>
-                                Showing {{ participants.from }} to {{ participants.to }} of {{ participants.total }} entries
+                        <!-- Replace your current pagination section with this exact match to the reference image -->
+                        <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+                            <div class="d-flex align-items-center">
+                                <span class="text-muted me-2">Items per page</span>
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="perPageDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="min-width: 70px;">
+                                        {{ perPage }}
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="perPageDropdown">
+                                        <li><a class="dropdown-item" href="#" @click.prevent="setPerPage(10)">10</a></li>
+                                        <li><a class="dropdown-item" href="#" @click.prevent="setPerPage(25)">25</a></li>
+                                        <li><a class="dropdown-item" href="#" @click.prevent="setPerPage(50)">50</a></li>
+                                        <li><a class="dropdown-item" href="#" @click.prevent="setPerPage(100)">100</a></li>
+                                    </ul>
+                                </div>
+                                <span class="ms-2">of {{ participants.total }} entries</span>
                             </div>
-                            <Pagination :links="participants.links" align="end" />
+                            
+                            <!-- Pagination navigation buttons -->
+                            <div class="d-flex align-items-center">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination pagination-sm mb-0">
+                                        <li class="page-item" :class="{ disabled: !participants.prev_page_url }">
+                                            <a class="page-link" href="#" @click.prevent="goToPage(participants.current_page - 1)" aria-label="Previous">
+                                                <span aria-hidden="true">« Previous</span>
+                                            </a>
+                                        </li>
+                                        <li v-for="page in pageNumbers" :key="page" class="page-item" :class="{ active: page === participants.current_page }">
+                                            <a class="page-link" href="#" @click.prevent="goToPage(page)">{{ page }}</a>
+                                        </li>
+                                        <li class="page-item" :class="{ disabled: !participants.next_page_url }">
+                                            <a class="page-link" href="#" @click.prevent="goToPage(participants.current_page + 1)" aria-label="Next">
+                                                <span aria-hidden="true">Next »</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
                         </div>
+                        <!-- Remove the card-footer with the duplicate pagination -->
+                        <!-- <div class="card-footer bg-white">
+                            <Pagination 
+                                :links="participants.links" 
+                                align="center" 
+                                :show-per-page="true"
+                                :filters="filters"
+                            />
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -175,6 +217,8 @@ export default {
         const selectedArea = ref(props.filters.area_id || '');
         const selectedWitel = ref(props.filters.witel || '');
         const selectedRole = ref(props.filters.role || '');
+        const perPage = ref(props.filters.per_page || '10');
+
 
         // Add a computed property to filter witels based on selected area
         const filteredWitels = computed(() => {
@@ -367,6 +411,68 @@ export default {
             });
         }
 
+        const setPerPage = (value) => {
+            perPage.value = value;
+            router.get('/admin/pending-exams', {
+                q: search.value,
+                area_id: selectedArea.value,
+                witel: selectedWitel.value,
+                role: selectedRole.value,
+                per_page: perPage.value,
+                page: 1 // Reset to page 1 when changing items per page
+            });
+        }
+
+        const goToPage = (page) => {
+            if (page < 1 || page > props.participants.last_page) return;
+            router.get('/admin/pending-exams', {
+                q: search.value,
+                area_id: selectedArea.value,
+                witel: selectedWitel.value,
+                role: selectedRole.value,
+                per_page: perPage.value,
+                page: page
+            });
+        }
+
+        const pageNumbers = computed(() => {
+            const currentPage = props.participants.current_page;
+            const lastPage = props.participants.last_page;
+            const delta = 2; // Number of pages to show before and after current page
+            
+            let pages = [];
+            
+            // Always include first page
+            pages.push(1);
+            
+            // Calculate range of pages to show around current page
+            const rangeStart = Math.max(2, currentPage - delta);
+            const rangeEnd = Math.min(lastPage - 1, currentPage + delta);
+            
+            // Add ellipsis if there's a gap after page 1
+            if (rangeStart > 2) {
+                pages.push('...');
+            }
+            
+            // Add pages in the calculated range
+            for (let i = rangeStart; i <= rangeEnd; i++) {
+                pages.push(i);
+            }
+            
+            // Add ellipsis if there's a gap before last page
+            if (rangeEnd < lastPage - 1) {
+                pages.push('...');
+            }
+            
+            // Always include last page if it's different from first page
+            if (lastPage > 1) {
+                pages.push(lastPage);
+            }
+            
+            return pages;  
+            
+        });
+
         return {
             search,
             selectedArea,
@@ -383,7 +489,11 @@ export default {
             handleSearch,
             handleFilter,
             getExamStatus,
-            exportToExcel
+            exportToExcel,
+            perPage,
+            goToPage,
+            setPerPage,
+            pageNumbers
         }
     }
 };

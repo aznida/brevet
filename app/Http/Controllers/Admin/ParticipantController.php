@@ -19,6 +19,15 @@ class ParticipantController extends Controller
      */
     public function index()
     {
+        // Get all areas for the filter dropdown
+        $areas = Area::orderBy('title')->get();
+        
+        // Get unique witel values for the filter dropdown
+        $witels = Participant::select('witel')->distinct()->whereNotNull('witel')->orderBy('witel')->pluck('witel');
+        
+        // Get unique role values for the filter dropdown
+        $roles = Participant::select('role')->distinct()->whereNotNull('role')->orderBy('role')->pluck('role');
+        
         //get participants
         $participants = Participant::when(request()->q, function($participants) {
             $participants = $participants->where(function($query) {
@@ -29,7 +38,17 @@ class ParticipantController extends Controller
                           $areaQuery->where('title', 'like', '%'. request()->q . '%');
                       });
             });
-        })->with(['area'])->latest()->paginate(50);
+        })
+        ->when(request('area_id'), function($query, $areaId) {
+            $query->where('area_id', $areaId);
+        })
+        ->when(request('witel'), function($query, $witel) {
+            $query->where('witel', $witel);
+        })
+        ->when(request('role'), function($query, $role) {
+            $query->where('role', $role);
+        })
+        ->with(['area'])->latest()->paginate(50);
 
         // Dekripsi password untuk setiap partisipan
         foreach ($participants as $participant) {
@@ -41,11 +60,15 @@ class ParticipantController extends Controller
         }
 
         //append query string to pagination links
-        $participants->appends(['q' => request()->q]);
+        $participants->appends(request()->only(['q', 'area_id', 'witel', 'role']));
 
         //render with inertia
         return inertia('Admin/Participants/Index', [
             'participants' => $participants,
+            'areas' => $areas,
+            'witels' => $witels,
+            'roles' => $roles,
+            'filters' => request()->only(['q', 'area_id', 'witel', 'role'])
         ]);
     }
 
