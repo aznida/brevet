@@ -28,6 +28,9 @@ class ParticipantController extends Controller
         // Get unique role values for the filter dropdown
         $roles = Participant::select('role')->distinct()->whereNotNull('role')->orderBy('role')->pluck('role');
         
+        // Get per_page parameter with default of 10
+        $perPage = request('per_page', 10);
+        
         //get participants
         $participants = Participant::when(request()->q, function($participants) {
             $participants = $participants->where(function($query) {
@@ -48,8 +51,8 @@ class ParticipantController extends Controller
         ->when(request('role'), function($query, $role) {
             $query->where('role', $role);
         })
-        ->with(['area'])->latest()->paginate(50);
-
+        ->with(['area'])->latest()->paginate($perPage);
+    
         // Dekripsi password untuk setiap partisipan
         foreach ($participants as $participant) {
             try {
@@ -58,17 +61,17 @@ class ParticipantController extends Controller
                 $participant->decrypted_password = '';
             }
         }
-
+    
         //append query string to pagination links
-        $participants->appends(request()->only(['q', 'area_id', 'witel', 'role']));
-
+        $participants->appends(request()->only(['q', 'area_id', 'witel', 'role', 'per_page']));
+    
         //render with inertia
         return inertia('Admin/Participants/Index', [
             'participants' => $participants,
             'areas' => $areas,
             'witels' => $witels,
             'roles' => $roles,
-            'filters' => request()->only(['q', 'area_id', 'witel', 'role'])
+            'filters' => request()->only(['q', 'area_id', 'witel', 'role', 'per_page'])
         ]);
     }
 
