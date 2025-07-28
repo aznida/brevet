@@ -89,22 +89,6 @@
 
                  <!-- menu for admin -->
                     <template v-if="$page.props.auth.user.role !== 'local admin' && $page.props.auth.user.role !== 'mitra'">
-                        
-                            <!-- USER MANAGEMENT -->
-                        <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/users') }">
-                        <Link href="/admin/users" class="nav-link d-flex justify-content-between">
-                        <span>
-                            <span class="sidebar-icon">
-                                <span class="svg-icon svg-icon-muted svg-icon-2hx"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M6.28548 15.0861C7.34369 13.1814 9.35142 12 11.5304 12H12.4696C14.6486 12 16.6563 13.1814 17.7145 15.0861L19.3493 18.0287C20.0899 19.3618 19.1259 21 17.601 21H6.39903C4.87406 21 3.91012 19.3618 4.65071 18.0287L6.28548 15.0861Z" fill="currentColor"/>
-                                <rect opacity="0.3" x="8" y="3" width="8" height="8" rx="4" fill="currentColor"/>
-                                </svg>
-                                </span>
-                            </span>
-                            <span class="sidebar-text">User Management</span>
-                            </span>
-                        </Link>
-                        </li>
 
                     <!--KATEGORI-->
                     <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/categories') }">
@@ -292,6 +276,22 @@
                         </span>
                         </Link>
                     </li>
+
+                                                <!-- USER MANAGEMENT -->
+                        <li class="nav-item" :class="{ 'active': $page.url.startsWith('/admin/users') }">
+                        <Link href="/admin/users" class="nav-link d-flex justify-content-between">
+                        <span>
+                            <span class="sidebar-icon">
+                                <span class="svg-icon svg-icon-muted svg-icon-2hx"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6.28548 15.0861C7.34369 13.1814 9.35142 12 11.5304 12H12.4696C14.6486 12 16.6563 13.1814 17.7145 15.0861L19.3493 18.0287C20.0899 19.3618 19.1259 21 17.601 21H6.39903C4.87406 21 3.91012 19.3618 4.65071 18.0287L6.28548 15.0861Z" fill="currentColor"/>
+                                <rect opacity="0.3" x="8" y="3" width="8" height="8" rx="4" fill="currentColor"/>
+                                </svg>
+                                </span>
+                            </span>
+                            <span class="sidebar-text">User Management</span>
+                            </span>
+                        </Link>
+                        </li>
                         
 
                     </template>

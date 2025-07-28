@@ -369,7 +369,6 @@ export default {
             const categoryGrades = participant.grades.filter(grade => 
                 grade.exam?.category?.title?.toLowerCase() === categoryTitle.toLowerCase() &&
                 grade.end_time !== null &&
-                grade.grade > 0 &&
                 grade.grade !== null &&
                 grade.exam_type !== null // Filter tambahan di sini
             );

@@ -34,11 +34,10 @@ class DashboardController extends Controller
         // Get area level statistics
         $areaLevelStats = Area::select('id', 'title')
             ->with(['participants' => function($query) {
-                $query->select('id', 'name', 'area_id', 'witel')
+                $query->select('id', 'name', 'area_id', 'witel','role')
                     ->with(['grades' => function($q) {
                         $q->select('id', 'participant_id', 'grade', 'exam_id', 'exam_type')
                             ->whereNotNull('end_time')
-                            ->where('grade', '>', 0)
                             ->whereNotNull('grade')
                             ->whereNotNull('exam_type');
                     }]);
@@ -72,7 +71,7 @@ class DashboardController extends Controller
                         if ($examType === null) continue;
                         
                         $validGrades = $typeGrades->filter(function($grade) {
-                            return $grade->grade > 0;
+                            return $grade->grade !== null; // Ubah dari grade > 0 menjadi grade !== null
                         });
                         
                         if ($validGrades->isNotEmpty()) {
@@ -91,12 +90,13 @@ class DashboardController extends Controller
                         $totalWeight += $weight;
                     }
 
-                    // Only process if there are any valid grades
-                    if (!empty($examTypeAverages)) {
+                    // Only process if there are any valid grades and weighted sum is not 0
+                    if (!empty($examTypeAverages) && $weightedSum > 0) {
                         $averageGrade = round($weightedSum, 2);
                         
                         $participantData = [
                             'name' => $participant->name,
+                            'role' => $participant->role,
                             'grade' => $averageGrade,
                             'witel' => $participant->witel
                         ];
@@ -191,14 +191,17 @@ class DashboardController extends Controller
             $grades = \App\Models\Grade::whereHas('exam.category', function($query) use ($category) {
                 $query->where('title', $category);
             })
+            ->whereHas('participant', function($query) {
+                $query->where('role', '!=', 'supervisor');
+            })
             ->whereNotNull('end_time')
-            ->where('grade', '>', 0)
+            #->where('grade', '>', 0)
             ->whereNotNull('grade')
             ->whereNotNull('exam_type') // Filter tambahan di sini
             ->with(['participant', 'exam.category'])
             ->get();
             
-            // Group participants by grade levels for this category
+            
             $categoryLevels = [
                 'starter' => 0,
                 'basic' => 0,

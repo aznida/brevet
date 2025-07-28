@@ -218,7 +218,11 @@
                             </table>
                         </div>
     <!-- Modal -->
-    <div class="modal fade" id="participantsModal" tabindex="-1" aria-labelledby="participantsModalLabel" aria-hidden="true">
+
+        </div>
+        </div>
+        </div>
+            <div class="modal fade" id="participantsModal" tabindex="-1" aria-labelledby="participantsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-fullwidth">
             <div class="modal-content">
                 <div class="modal-header">
@@ -240,6 +244,7 @@
                                         <th class="border-0">Nama</th>
                                         <th class="border-0">TREG - Area</th>
                                         <th class="border-0">Witel</th>
+                                        <th class="border-0">Role</th>
                                         <th class="border-0">Nilai</th>
                                         <th class="border-0 rounded-end" style="width:20%">Level Stream</th>
                                     </tr>
@@ -250,6 +255,7 @@
                                         <td>{{ participant.name }}</td>
                                         <td>{{ participant.areas }}</td>
                                         <td>{{ participant.witel || '-' }}</td>
+                                        <td>{{ participant.role }}</td>
                                         <td class="text-center">{{ participant.grade }}</td>
                                         <td class="text-center">{{ participant.level }}</td>
                                     </tr>
@@ -264,9 +270,6 @@
             </div>
         </div>
     </div>
-        </div>
-        </div>
-        </div>
         </div>
         </div>
         <!-- End Dashboard tabel level stream per regional -->
@@ -565,6 +568,7 @@ import VueApexCharts from 'vue3-apexcharts';
                 ...participant,
                 areas: area,
                 witel: participant.witel,  // Preserve witel
+                role: participant.role || '-', // Pastikan role ditampilkan
                 level: `${level.charAt(0).toUpperCase() + level.slice(1)} ${levelEmoji[level]}`
             })) || [];
             this.modal.show();
@@ -590,6 +594,7 @@ import VueApexCharts from 'vue3-apexcharts';
                         ...p,
                         areas: stat.title,
                         witel: p.witel,  // Preserve witel
+                        role: p.role || '-', // Pastikan role ditampilkan
                         level: `${level.charAt(0).toUpperCase() + level.slice(1)} ${levelEmoji[level]}`
                     });
                 });
@@ -612,6 +617,7 @@ import VueApexCharts from 'vue3-apexcharts';
                             name: p.name,
                             areas: stat.title,
                             witel: p.witel,  // Add witel to export
+                            role: p.role || '-', // Tambahkan role ke ekspor
                             grade: p.grade,
                             level: this.getLevelWithEmoji(level)
                         });
@@ -619,8 +625,8 @@ import VueApexCharts from 'vue3-apexcharts';
                 });
             });
         
-            // Update headers to include Witel
-            const headers = ['No.', 'Nama', 'TREG - Area', 'Witel', 'Nilai', 'Level Stream'];
+            // Update headers to include Witel and Role
+            const headers = ['No.', 'Nama', 'TREG - Area', 'Witel', 'Role', 'Nilai', 'Level Stream'];
             const csvContent = [
                 headers,
                 ...allParticipants.map((p, index) => [
@@ -628,6 +634,7 @@ import VueApexCharts from 'vue3-apexcharts';
                     p.name,
                     p.areas,
                     p.witel || '-',
+                    p.role || '-', // Tambahkan role ke ekspor
                     p.grade,
                     p.level
                 ])
@@ -657,9 +664,9 @@ import VueApexCharts from 'vue3-apexcharts';
         getTotalByLevel(level) {
             return this.filteredAreaStats.reduce((total, stat) => total + (stat[level] || 0), 0);
         },
-            exportToExcel() {
+                    exportToExcel() {
             // Create CSV content
-            const headers = ['No.', 'Nama', 'TREG - Area', 'Witel', 'Nilai', 'Level Stream'];
+            const headers = ['No.', 'Nama', 'TREG - Area', 'Witel', 'Role', 'Nilai', 'Level Stream'];
                 const csvContent = [
                     headers,
                     ...this.selectedParticipants.map((p, index) => [
@@ -667,6 +674,7 @@ import VueApexCharts from 'vue3-apexcharts';
                         p.name,
                         p.areas,
                         p.witel || '-',
+                        p.role || '-', // Tambahkan role ke ekspor
                         p.grade,
                         p.level
                     ])
@@ -697,8 +705,8 @@ import VueApexCharts from 'vue3-apexcharts';
     background-color: rgba(0,0,0,0.05);
 }
 .modal-fullwidth {
-    max-width: 70%;
-    width: 70%;
+    max-width: 80%;
+    width: 80%;
     margin: 1.75rem auto;
 }
 </style>
