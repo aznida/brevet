@@ -384,9 +384,9 @@ export default {
             // Add level indicator based on grade
             const grade = average.toFixed(2);
             if (grade >= 91) return `${grade} 💎`; // Expert
-            if (grade >= 71) return `${grade} 🥇`; // Advanced
+            if (grade >= 76) return `${grade} 🥇`; // Advanced
             if (grade >= 61) return `${grade} 🥈`; // Intermediate
-            if (grade >= 31) return `${grade} 🥉`; // Basic
+            if (grade >= 41) return `${grade} 🥉`; // Basic
             return `${grade} 🌱`; // Starter
         }
 

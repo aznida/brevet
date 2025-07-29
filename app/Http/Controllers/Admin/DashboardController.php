@@ -102,7 +102,7 @@ class DashboardController extends Controller
                         ];
                     
                         // Categorize based on average grade
-                        if ($averageGrade >= 0 && $averageGrade <= 30) {
+                        if ($averageGrade >= 0 && $averageGrade <= 40) {
                             if (!collect($participantsByLevel['starter'])->contains('name', $participant->name)) {
                                 $participantsByLevel['starter'][] = $participantData;
                             }
@@ -110,7 +110,7 @@ class DashboardController extends Controller
                             if (!collect($participantsByLevel['basic'])->contains('name', $participant->name)) {
                                 $participantsByLevel['basic'][] = $participantData;
                             }
-                        } elseif ($averageGrade <= 70) {
+                        } elseif ($averageGrade <= 75) {
                             if (!collect($participantsByLevel['intermediate'])->contains('name', $participant->name)) {
                                 $participantsByLevel['intermediate'][] = $participantData;
                             }
@@ -217,11 +217,11 @@ class DashboardController extends Controller
                 $averageGrade = $participantGradesList->avg('grade');
                 
                 // Categorize based on average grade
-                if ($averageGrade >= 0 && $averageGrade <= 30) {
+                if ($averageGrade >= 0 && $averageGrade <= 40) {
                     $categoryLevels['starter']++;
                 } elseif ($averageGrade <= 60) {
                     $categoryLevels['basic']++;
-                } elseif ($averageGrade <= 70) {
+                } elseif ($averageGrade <= 75) {
                     $categoryLevels['intermediate']++;
                 } elseif ($averageGrade <= 90) {
                     $categoryLevels['advanced']++;
