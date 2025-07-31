@@ -5,7 +5,11 @@
     "isEntry": true
   },
   "resources/js/app.js": {
+<<<<<<< HEAD
     "file": "assets/app-DGnLIfPJ.js",
+=======
+    "file": "assets/app-CLXZmv6-.js",
+>>>>>>> 01447e2290f8a2fc9544828838503422bfb648b1
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,

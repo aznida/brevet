@@ -28,11 +28,10 @@ class MitraDashboardController extends Controller
         // Get area level statistics (Level Stream per Regional)
         $areaLevelStats = Area::select('id', 'title')
             ->with(['participants' => function($query) {
-                $query->select('id', 'name', 'area_id', 'witel')
+                $query->select('id', 'name', 'area_id', 'witel', 'role')
                     ->with(['grades' => function($q) {
                         $q->select('id', 'participant_id', 'grade', 'exam_id', 'exam_type')
                             ->whereNotNull('end_time')
-                            ->where('grade', '>', 0)
                             ->whereNotNull('grade')
                             ->whereNotNull('exam_type');
                     }]);
@@ -66,7 +65,7 @@ class MitraDashboardController extends Controller
                         if ($examType === null) continue;
                         
                         $validGrades = $typeGrades->filter(function($grade) {
-                            return $grade->grade > 0;
+                            return $grade->grade !== null; // Ubah dari grade > 0 menjadi grade !== null
                         });
                         
                         if ($validGrades->isNotEmpty()) {
@@ -85,18 +84,19 @@ class MitraDashboardController extends Controller
                         $totalWeight += $weight;
                     }
 
-                    // Only process if there are any valid grades
-                    if (!empty($examTypeAverages)) {
+                    // Only process if there are any valid grades and weighted sum is not 0
+                    if (!empty($examTypeAverages) && $weightedSum > 0) {
                         $averageGrade = round($weightedSum, 2);
                         
                         $participantData = [
                             'name' => $participant->name,
+                            'role' => $participant->role,
                             'grade' => $averageGrade,
                             'witel' => $participant->witel
                         ];
                     
                         // Categorize based on average grade
-                        if ($averageGrade >= 0 && $averageGrade <= 30) {
+                        if ($averageGrade >= 0 && $averageGrade <= 40) {
                             if (!collect($participantsByLevel['starter'])->contains('name', $participant->name)) {
                                 $participantsByLevel['starter'][] = $participantData;
                             }
@@ -104,7 +104,7 @@ class MitraDashboardController extends Controller
                             if (!collect($participantsByLevel['basic'])->contains('name', $participant->name)) {
                                 $participantsByLevel['basic'][] = $participantData;
                             }
-                        } elseif ($averageGrade <= 70) {
+                        } elseif ($averageGrade <= 75) {
                             if (!collect($participantsByLevel['intermediate'])->contains('name', $participant->name)) {
                                 $participantsByLevel['intermediate'][] = $participantData;
                             }
@@ -119,6 +119,21 @@ class MitraDashboardController extends Controller
                         }
                     }
                 }
+
+                // Debug information
+                \Log::info("Area {$area->title} participants:", [
+                    'total_participants' => $area->participants->count(),
+                    'participants_with_grades' => $area->participants->filter(function($p) {
+                        return $p->grades->isNotEmpty();
+                    })->count(),
+                    'level_counts' => [
+                        'starter' => count($participantsByLevel['starter']),
+                        'basic' => count($participantsByLevel['basic']),
+                        'intermediate' => count($participantsByLevel['intermediate']),
+                        'advanced' => count($participantsByLevel['advanced']),
+                        'expert' => count($participantsByLevel['expert']),
+                    ]
+                ]);
 
                 return [
                     'title' => $area->title,
@@ -170,14 +185,16 @@ class MitraDashboardController extends Controller
             $grades = \App\Models\Grade::whereHas('exam.category', function($query) use ($category) {
                 $query->where('title', $category);
             })
+            ->whereHas('participant', function($query) {
+                $query->where('role', '!=', 'supervisor');
+            })
             ->whereNotNull('end_time')
-            ->where('grade', '>', 0)
+            #->where('grade', '>', 0)
             ->whereNotNull('grade')
             ->whereNotNull('exam_type') // Filter tambahan di sini
             ->with(['participant', 'exam.category'])
             ->get();
             
-            // Group participants by grade levels for this category
             $categoryLevels = [
                 'starter' => 0,
                 'basic' => 0,
@@ -193,11 +210,11 @@ class MitraDashboardController extends Controller
                 $averageGrade = $participantGradesList->avg('grade');
                 
                 // Categorize based on average grade
-                if ($averageGrade >= 0 && $averageGrade <= 30) {
+                if ($averageGrade >= 0 && $averageGrade <= 40) {
                     $categoryLevels['starter']++;
                 } elseif ($averageGrade <= 60) {
                     $categoryLevels['basic']++;
-                } elseif ($averageGrade <= 70) {
+                } elseif ($averageGrade <= 75) {
                     $categoryLevels['intermediate']++;
                 } elseif ($averageGrade <= 90) {
                     $categoryLevels['advanced']++;
