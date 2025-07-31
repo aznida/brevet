@@ -103,6 +103,8 @@
                                         <th class="border-0">Nama</th>
                                         <th class="border-0">TREG</th>
                                         <th class="border-0">Witel</th>
+                                        <th class="border-0">Usia</th>
+                                        <th class="border-0">Masa Kerja</th>
                                         <th class="border-0">Job Role</th>
                                         <th v-for="category in categories" :key="category.id" class="border-0">
                                             {{ category.title }}
@@ -116,7 +118,9 @@
                                         <td>{{ participant.name }}</td>
                                         <td>{{ participant.area.title }}</td>
                                         <td>{{ participant.witel }}</td>
-                                        <td  class="text-center">
+                                        <td>{{ calculateAge(participant.tanggal_lahir) }} Tahun</td>
+                                        <td>{{ participant.masa_kerja }} Tahun</td>
+                                        <td class="text-center">
                                             <span v-if="participant.role === 'Teknisi'" class="badge bg-success">
                                                 {{ participant.role }}
                                             </span>
@@ -472,6 +476,25 @@ export default {
             
         });
 
+        // Add this method in the setup function before the return statement
+        const calculateAge = (birthDate) => {
+        if (!birthDate) return '-';
+        
+        const today = new Date();
+        const birth = new Date(birthDate);
+        
+        let age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+        
+        // Kurangi 1 tahun jika belum mencapai bulan & tanggal kelahiran
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+            age--;
+        }
+        
+        return age;
+        }
+        
+        // Make sure to include calculateAge in the return statement
         return {
             search,
             selectedArea,
@@ -492,7 +515,8 @@ export default {
             perPage,
             goToPage,
             setPerPage,
-            pageNumbers
+            pageNumbers,
+            calculateAge  // Add this line to include the calculateAge function
         }
     }
 };

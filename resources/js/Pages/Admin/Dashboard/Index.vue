@@ -274,6 +274,224 @@
         </div>
         <!-- End Dashboard tabel level stream per regional -->
 
+        <!-- Dashboard tabel Usia - Skill  -->
+        <div class="row mt-1 mb-4">
+            <div class="col-md-12">
+                <div class="card border-0 shadow">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5>
+                                <span class="svg-icon svg-icon-muted svg-icon-2hx">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M17.5 11H6.5C4 11 2 9 2 6.5C2 4 4 2 6.5 2H17.5C20 2 22 4 22 6.5C22 9 20 11 17.5 11ZM15 6.5C15 7.9 16.1 9 17.5 9C18.9 9 20 7.9 20 6.5C20 5.1 18.9 4 17.5 4C16.1 4 15 5.1 15 6.5Z" fill="currentColor"/>
+                                        <path opacity="0.3" d="M17.5 22H6.5C4 22 2 20 2 17.5C2 15 4 13 6.5 13H17.5C20 13 22 15 22 17.5C22 20 20 22 17.5 22ZM4 17.5C4 18.9 5.1 20 6.5 20C7.9 20 9 18.9 9 17.5C9 16.1 7.9 15 6.5 15C5.1 15 4 16.1 4 17.5Z" fill="currentColor"/>
+                                    </svg>
+                                </span>
+                                Tabel Distribusi Usia - Skill
+                            </h5>
+                            <button @click="exportAgeSkillToExcel" class="btn btn-success btn-sm text-white">
+                                <i class="fas fa-file-excel me-1 text-white"></i> Export Excel
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-centered table-nowrap mb-0 rounded">
+                                <thead class="thead-dark">
+                                    <tr class="border-0">
+                                        <th class="border-0 rounded-start" style="width:10%">No.</th>
+                                        <th class="border-0">Usia</th>
+                                        <th class="border-0">Skill</th>
+                                        <th class="border-0">TIF 1 - Telkom Regional 1</th>
+                                        <th class="border-0">TIF 1 - Telkom Regional 2</th>
+                                        <th class="border-0">TIF 1 - Telkom Regional 3</th>
+                                        <th class="border-0">TIF 1 - Telkom Regional 4</th>
+                                        <th class="border-0">TIF 1 - Telkom Regional 5</th>
+                                        <th class="border-0">TIF 1 - Telkom Regional 6</th>
+                                        <th class="border-0">TIF 1 - Telkom Regional 7</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!--STARTER-->
+                                    <tr>
+                                        <td class="fw-bold text-center" rowspan="5">1</td>
+                                        <td class="fw-bold text-center" rowspan="5">STARTER</td>
+                                        <td>20 - 30 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'starter-20-30-'+index">
+                                            {{ getAgeSkillCount('20-30', 'starter', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>31 - 40 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'starter-30-40-'+index">
+                                            {{ getAgeSkillCount('30-40','starter', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>41 - 50 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'starter-40-50-'+index">
+                                            {{ getAgeSkillCount('40-50','starter', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td> >50 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'starter-50-60-'+index">
+                                            {{ getAgeSkillCount('50-60','starter', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Undefined</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'starter-undefined-'+index">
+                                            {{ getAgeSkillCountUndefined('starter', index) }}
+                                        </td>
+                                    </tr>
+
+                                    <!--BASIC-->
+                                    <tr>
+                                        <td class="fw-bold text-center" rowspan="5">2</td>
+                                        <td class="fw-bold text-center" rowspan="5">BASIC</td>
+                                        <td>20 - 30 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'basic-20-30-'+index">
+                                            {{ getAgeSkillCount('20-30','basic', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>31 - 40 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'basic-30-40-'+index">
+                                            {{ getAgeSkillCount('30-40','basic', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>41 - 50 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'basic-40-50-'+index">
+                                            {{ getAgeSkillCount('40-50','basic', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td> >50 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'basic-50-60-'+index">
+                                            {{ getAgeSkillCount('50-60','basic', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Undefined</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'basic-undefined-'+index">
+                                            {{ getAgeSkillCountUndefined('basic', index) }}
+                                        </td>
+                                    </tr>
+                                    <!--INTERMEDIATE-->
+                                    <tr>
+                                        <td class="fw-bold text-center" rowspan="5">3</td>
+                                        <td class="fw-bold text-center" rowspan="5">INTERMEDIATE</td>
+                                        <td>20 - 30 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'intermediate-20-30-'+index">
+                                            {{ getAgeSkillCount('20-30','intermediate', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>31 - 40 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'intermediate-30-40-'+index">
+                                            {{ getAgeSkillCount('30-40','intermediate', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>41 - 50 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'intermediate-40-50-'+index">
+                                            {{ getAgeSkillCount('40-50','intermediate', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td> >50 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'intermediate-50-60-'+index">
+                                            {{ getAgeSkillCount('50-60','intermediate', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Undefined</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'intermediate-undefined-'+index">
+                                            {{ getAgeSkillCountUndefined('intermediate', index) }}
+                                        </td>
+                                    </tr>
+                                    <!--ADVANCED-->
+                                    <tr>
+                                        <td class="fw-bold text-center" rowspan="5">4</td>
+                                        <td class="fw-bold text-center" rowspan="5">ADVANCED</td>
+                                        <td>20 - 30 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'advanced-20-30-'+index">
+                                            {{ getAgeSkillCount('20-30','advanced', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>31 - 40 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'advanced-30-40-'+index">
+                                            {{ getAgeSkillCount('30-40','advanced', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>41 - 50 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'advanced-40-50-'+index">
+                                            {{ getAgeSkillCount('40-50','advanced', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td> >50 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'advanced-50-60-'+index">
+                                            {{ getAgeSkillCount('50-60','advanced', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Undefined</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'advanced-undefined-'+index">
+                                            {{ getAgeSkillCountUndefined('advanced', index) }}
+                                        </td>
+                                    </tr>
+                                    <!--EXPERT-->
+                                    <tr>
+                                        <td class="fw-bold text-center" rowspan="5">5</td>
+                                        <td class="fw-bold text-center" rowspan="5">EXPERT</td>
+                                        <td>20 - 30 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'expert-20-30-'+index">
+                                            {{ getAgeSkillCount('20-30','expert', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>31 - 40 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'expert-30-40-'+index">
+                                            {{ getAgeSkillCount('30-40','expert', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>41 - 50 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'expert-40-50-'+index">
+                                            {{ getAgeSkillCount('40-50','expert', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td> >50 tahun</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'expert-50-60-'+index">
+                                            {{ getAgeSkillCount('50-60','expert', index) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Undefined</td>
+                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'expert-undefined-'+index">
+                                            {{ getAgeSkillCountUndefined('expert', index) }}
+                                        </td>
+                                    </tr>
+                                <<!-- TOTAL -->
+                                <tr class="bg-light fw-bold">
+                                    <td class="text-center" colspan="3">Total</td>
+                                    <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'total-'+index">
+                                        {{ getTotalAgeSkillCount(index) }}
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Dashboard tabel Usia - Skill -->
+
         <div class="row mb-4">
             <div class="col-md-12">
                 <div class="card border-0 shadow">
@@ -323,6 +541,43 @@
                 </div>
             </div>
         </div>
+        <!-- End Dashboard tabel top participant per regional -->
+
+        <!--masa kerja dan usia distribution-->
+        <!-- <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card border-0 shadow">
+                    <div class="card-body">
+                        <div id="age-distribution-chart">
+                            <apexchart
+                            type="bar"
+                            height="700"
+                            :options="ageDistributionChartOptions"
+                            :series="ageDistributionSeries"
+                            ></apexchart>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 mb-4">
+                <div class="card border-0 shadow">
+                    <div class="card-body">
+                        <div id="experience-distribution-chart">
+                            <apexchart
+                            type="bar"
+                            height="350"
+                            :options="experienceDistributionChartOptions"
+                            :series="experienceDistributionSeries"
+                            ></apexchart>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <!-- End Dashboard tabel top participant per regional -->
+        
+
+         
 </template>
 
 <script>
@@ -351,11 +606,12 @@ import VueApexCharts from 'vue3-apexcharts';
             exam_sessions: Number,
             areas: Number,
             areaLevelStats: Array,
-            assessmentData: Object, // Add this line
+            assessmentData: Object,
+            participantDistribution: Object, // Add this line
         },
 
         computed: {
-            filteredAreaStats() {
+        filteredAreaStats() {
                 if (!this.areaLevelStats) return [];
                 return this.areaLevelStats.filter(stat => !stat.title.toLowerCase().includes('nasional'));
             },
@@ -442,7 +698,210 @@ import VueApexCharts from 'vue3-apexcharts';
             name: 'Expert 💎',
             data: this.assessmentData.expert || []
         }];
-     }
+        },
+    //     ageDistributionSeries() {
+    //     if (!this.participantDistribution || !this.participantDistribution.age_skill_distribution) {
+    //     // Fallback data if no backend data is available
+    //         return [
+    //             {
+    //                 name: 'Starter 🌱 (20-30)',
+    //                 data: [5, 2, 5, 5],
+    //                 stack: '20-30'
+    //             },
+    //             {
+    //                 name: 'Basic 🥉 (20-30)',
+    //                 data: [5, 5, 5, 2],
+    //                 stack: '20-30'
+    //             },
+    //             {
+    //                 name: 'Intermediate 🥈 (20-30)',
+    //                 data: [3, 3, 3, 2],
+    //                 stack: '20-30'
+    //             },
+    //             {
+    //                 name: 'Advanced 🥇 (20-30)',
+    //                 data: [3, 3, 3, 3],
+    //                 stack: '20-30'
+    //             },
+    //             {
+    //                 name: 'Expert 💎 (20-30)',
+    //                 data: [1, 0, 15, 1],
+    //                 stack: '20-30'
+    //             },
+    //             {
+    //                 name: 'Starter 🌱 (31-40)',
+    //                 data: [5, 2, 5, 5],
+    //                 stack: '31-40'
+    //             },
+    //             {
+    //                 name: 'Basic 🥉 (31-40)',
+    //                 data: [5, 5, 5, 2],
+    //                 stack: '31-40'
+    //             },
+    //             {
+    //                 name: 'Intermediate 🥈 (31-40)',
+    //                 data: [3, 3, 3, 2],
+    //                 stack: '31-40'
+    //             },
+    //             {
+    //                 name: 'Advanced 🥇 (31-40)',
+    //                 data: [3, 3, 3, 3],
+    //                 stack: '31-40'
+    //             },
+    //             {
+    //                 name: 'Expert 💎 (31-40)',
+    //                 data: [1, 0, 15, 1],
+    //                 stack: '31-40'
+    //             },
+    //             {
+    //                 name: 'Starter 🌱 (41-50)',
+    //                 data: [5, 2, 5, 5],
+    //                 stack: '41-50'
+    //             },
+    //             {
+    //                 name: 'Basic 🥉 (41-50)',
+    //                 data: [5, 5, 5, 2],
+    //                 stack: '41-50'
+    //             },
+    //             {
+    //                 name: 'Intermediate 🥈 (41-50)',
+    //                 data: [3, 3, 3, 2],
+    //                 stack: '41-50'
+    //             },
+    //             {
+    //                 name: 'Advanced 🥇 (41-50)',
+    //                 data: [3, 3, 3, 3],
+    //                 stack: '41-50'
+    //             },
+    //             {
+    //                 name: 'Expert 💎 (41-50)',
+    //                 data: [1, 0, 15, 1],
+    //                 stack: '41-50'
+    //             },
+    //             {
+    //                 name: 'Starter 🌱 (>50)',
+    //                 data: [5, 2, 5, 5],
+    //                 stack: '>50'
+    //             },
+    //             {
+    //                 name: 'Basic 🥉 (>50)',
+    //                 data: [5, 5, 5, 2],
+    //                 stack: '>50'
+    //             },
+    //             {
+    //                 name: 'Intermediate 🥈 (>50)',
+    //                 data: [3, 3, 3, 2],
+    //                 stack: '>50'
+    //             },
+    //             {
+    //                 name: 'Advanced 🥇 (>50)',
+    //                 data: [3, 3, 3, 3],
+    //                 stack: '>50'
+    //             },
+    //             {
+    //                 name: 'Expert 💎 (>50)',
+    //                 data: [1, 0, 15, 1],
+    //                 stack: '>50'
+    //             }
+    //             // Add similar entries for 41-50 and >50 age groups
+    //         ];
+    // }
+    
+    // // Filter out 'nasional' from treg_names and get the filtered indices
+    // const filteredIndices = this.participantDistribution.treg_names.map((name, index) => 
+    //     !name.toLowerCase().includes('nasional') ? index : null).filter(index => index !== null);
+    
+    // // Create series for each age group and skill level
+    // const series = [];
+    // const ageGroups = ['20-30', '31-40', '41-50', '>50'];
+    // const skillLevels = ['starter', 'basic', 'intermediate', 'advanced', 'expert'];
+    // const skillEmojis = {
+    //     'starter': '🌱',
+    //     'basic': '🥉',
+    //     'intermediate': '🥈',
+    //     'advanced': '🥇',
+    //     'expert': '💎'
+    // };
+    
+    // // Restructure the data to create visual grouping
+    // // We'll add empty bars between age groups
+    // let tregCount = filteredIndices.length;
+    
+    // ageGroups.forEach((ageGroup, ageIndex) => {
+    //     skillLevels.forEach(skill => {
+    //         // Create data array with zeros
+    //         let dataArray = Array(tregCount * ageGroups.length).fill(0);
+            
+    //         // Fill in actual data at the right positions
+    //         if (this.participantDistribution.age_skill_distribution && 
+    //             this.participantDistribution.age_skill_distribution[ageGroup] && 
+    //             this.participantDistribution.age_skill_distribution[ageGroup][skill]) {
+                
+    //             filteredIndices.forEach((tregIndex, i) => {
+    //                 // Position data at the right spot to create visual grouping
+    //                 dataArray[i * ageGroups.length + ageIndex] = 
+    //                     this.participantDistribution.age_skill_distribution[ageGroup][skill][tregIndex] || 0;
+    //             });
+    //         }
+            
+    //         series.push({
+    //             name: `${skill.charAt(0).toUpperCase() + skill.slice(1)} ${skillEmojis[skill]} (${ageGroup})`,
+    //             data: dataArray,
+    //             stack: ageGroup
+    //         });
+    //     });
+    // });
+    
+    // return series;
+    //     },
+        
+        // experienceDistributionSeries() {
+        //     if (!this.participantDistribution) {
+        //         // Fallback data if no backend data is available
+        //         return [
+        //             {
+        //                 name: '<1 tahun',
+        //                 data: [2, 1, 4]
+        //             },
+        //             {
+        //                 name: '1-5 tahun',
+        //                 data: [4, 3, 2]
+        //             },
+        //             {
+        //                 name: '6-10 tahun',
+        //                 data: [2, 5, 1]
+        //             },
+        //             {
+        //                 name: '>10 tahun',
+        //                 data: [3, 1, 4]
+        //             }
+        //         ];
+        //     }
+            
+        //     // Filter out 'nasional' from treg_names and get the filtered indices
+        //     const filteredIndices = this.participantDistribution.treg_names.map((name, index) => 
+        //         !name.toLowerCase().includes('nasional') ? index : null).filter(index => index !== null);
+            
+        //     return [
+        //         {
+        //             name: '<1 tahun',
+        //             data: filteredIndices.map(index => this.participantDistribution.experience_groups['<1'][index] || 0)
+        //         },
+        //         {
+        //             name: '1-5 tahun',
+        //             data: filteredIndices.map(index => this.participantDistribution.experience_groups['1-5'][index] || 0)
+        //         },
+        //         {
+        //             name: '6-10 tahun',
+        //             data: filteredIndices.map(index => this.participantDistribution.experience_groups['6-10'][index] || 0)
+        //         },
+        //         {
+        //             name: '>10 tahun',
+        //             data: filteredIndices.map(index => this.participantDistribution.experience_groups['>10'][index] || 0)
+        //         }
+                
+        //     ];
+        // }
     },
     data() {
         return {
@@ -544,7 +1003,146 @@ import VueApexCharts from 'vue3-apexcharts';
                         }
                     }
                 }]
-            }
+            },
+
+            // ageDistributionChartOptions: {
+            //     chart: {
+            //         type: 'bar',
+            //         height: 700,
+            //         stacked: true,
+            //         stackType: '100%',
+            //         toolbar: {
+            //             show: true
+            //         }
+            //     },
+            //     plotOptions: {
+            //         bar: {
+            //             horizontal: true,
+            //             barHeight: '60%',
+            //             dataLabels: {
+            //                 total: {
+            //                     enabled: true,
+            //                     offsetX: 0
+            //                 }
+            //             }
+            //         },
+            //     },
+            //     stroke: {
+            //         width: 1,
+            //         colors: ['#fff']
+            //     },
+            //     title: {
+            //         text: 'Distribusi Usia per TREG'
+            //     },
+            //     xaxis: {
+            //         categories: this.participantDistribution?.treg_names.filter(name => 
+            //             !name.toLowerCase().includes('nasional')) || []
+            //     },
+            //     yaxis: {
+            //         title: {
+            //             text: undefined
+            //         },
+            //     },
+            //     tooltip: {
+            //         y: {
+            //             formatter: function (val) {
+            //                 return val + " orang"
+            //             }
+            //         }
+            //     },
+            //     fill: {
+            //         opacity: 1
+            //     },
+            //     legend: {
+            //         position: 'top',
+            //         horizontalAlign: 'left',
+            //         offsetX: 40,
+            //         formatter: function(seriesName, opts) {
+            //             // Extract just the skill name and emoji
+            //             const parts = seriesName.split(' ');
+            //             if (parts.length >= 2) {
+            //                 return parts[0] + ' ' + parts[1]; // Skill name + emoji
+            //             }
+            //             return seriesName;
+            //         },
+            //         // Optional: to prevent duplicate legend entries
+            //         customLegendItems: ['Starter 🌱', 'Basic 🥉', 'Intermediate 🥈', 'Advanced 🥇', 'Expert 💎']
+            //     },
+            //     colors: ['#00e396', '#008ffb', '#feb019', '#ff6178', '#8b75d7'],
+            //     // Add this to create the grouped effect
+            //     grid: {
+            //         xaxis: {
+            //             lines: {
+            //                 show: true
+            //             }
+            //         },
+            //         yaxis: {
+            //             lines: {
+            //                 show: false
+            //             }
+            //         }
+            //     }
+            // },
+            
+            // experienceDistributionChartOptions: {
+            //     chart: {
+            //         type: 'bar',
+            //         height: 350,
+            //         stacked: true,
+            //         toolbar: {
+            //             show: true
+            //         }
+            //     },
+            //     plotOptions: {
+            //         bar: {
+            //             horizontal: true,
+            //             dataLabels: {
+            //                 total: {
+            //                     enabled: true,
+            //                     offsetX: 0
+            //                 }
+            //             }
+            //         },
+            //     },
+            //     stroke: {
+            //         width: 1,
+            //         colors: ['#fff']
+            //     },
+            //     title: {
+            //         text: 'Distribusi Masa Kerja per TREG'
+            //     },
+            //     xaxis: {
+            //         categories: this.participantDistribution?.treg_names.filter(name => 
+            //             !name.toLowerCase().includes('nasional')) || [],
+            //         labels: {
+            //             formatter: function (val) {
+            //                 return val
+            //             }
+            //         }
+            //     },
+            //     yaxis: {
+            //         title: {
+            //             text: undefined
+            //         },
+            //     },
+            //     tooltip: {
+            //         y: {
+            //             formatter: function (val) {
+            //                 return val + " orang"
+            //             }
+            //         }
+            //     },
+            //     fill: {
+            //         opacity: 1
+            //     },
+            //     legend: {
+            //         position: 'top',
+            //         horizontalAlign: 'left',
+            //         offsetX: 40
+            //     },
+            //     colors: ['#00e396', '#008ffb', '#feb019', '#ff6178', '#8b75d7']
+            // }
+        
         }
     },
 
@@ -686,6 +1284,130 @@ import VueApexCharts from 'vue3-apexcharts';
             const url = URL.createObjectURL(blob);
             link.setAttribute('href', url);
             link.setAttribute('download', `${this.modalTitle.replace(/[^\w\s]/gi, '_')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        },
+        
+        getAgeSkillCount(ageGroup, skill, regionIndex) {
+            if (!this.participantDistribution || !this.participantDistribution.age_skill_distribution) {
+                return 0;
+            }
+            
+            const ageData = this.participantDistribution.age_skill_distribution[ageGroup];
+            if (!ageData || !ageData[skill] || !ageData[skill][regionIndex]) {
+                return 0;
+            }
+            
+            return ageData[skill][regionIndex];
+        },
+        
+        getAgeSkillCountUndefined(skill, regionIndex) {
+            // Calculate undefined by subtracting all defined age groups from total
+            const total = this.getTotalSkillByRegion(skill, regionIndex);
+            const defined = [
+                this.getAgeSkillCount('20-30', skill, regionIndex),
+                this.getAgeSkillCount('31-40', skill, regionIndex),
+                this.getAgeSkillCount('41-50', skill, regionIndex),
+                this.getAgeSkillCount('>50', skill, regionIndex)
+            ].reduce((sum, count) => sum + count, 0);
+            
+            return Math.max(0, total - defined);
+        },
+        
+        getTotalSkillByRegion(skill, regionIndex) {
+            if (!this.participantDistribution || !this.participantDistribution.age_skill_distribution) {
+                return 0;
+            }
+            
+            let total = 0;
+            const ageGroups = ['20-30', '31-40', '41-50', '>50'];
+            
+            ageGroups.forEach(ageGroup => {
+                const ageData = this.participantDistribution.age_skill_distribution[ageGroup];
+                if (ageData && ageData[skill] && ageData[skill][regionIndex]) {
+                    total += ageData[skill][regionIndex];
+                }
+            });
+            
+            return total;
+        },
+        
+        getTotalAgeSkillCount(regionIndex) {
+            if (!this.participantDistribution || !this.participantDistribution.age_skill_distribution) {
+                return 0;
+            }
+            
+            let total = 0;
+            const skills = ['starter', 'basic', 'intermediate', 'advanced', 'expert'];
+            const ageGroups = ['20-30', '31-40', '41-50', '>50'];
+            
+            skills.forEach(skill => {
+                ageGroups.forEach(ageGroup => {
+                    const ageData = this.participantDistribution.age_skill_distribution[ageGroup];
+                    if (ageData && ageData[skill] && ageData[skill][regionIndex]) {
+                        total += ageData[skill][regionIndex];
+                    }
+                });
+            });
+            
+            return total;
+        },
+        
+        exportAgeSkillToExcel() {
+            if (!this.participantDistribution || !this.participantDistribution.treg_names) {
+                return;
+            }
+            
+            const skills = ['STARTER', 'BASIC', 'INTERMEDIATE', 'ADVANCED', 'EXPERT'];
+            const ageGroups = ['20-30 tahun', '31-40 tahun', '41-50 tahun', '>50 tahun', 'Undefined'];
+            const regions = this.participantDistribution.treg_names;
+            
+            // Create headers
+            const headers = ['NO', 'SKILL', 'USIA', ...regions];
+            
+            // Create rows
+            const rows = [];
+            
+            skills.forEach((skill, skillIndex) => {
+                const skillLower = skill.toLowerCase();
+                
+                ageGroups.forEach((ageGroup, ageIndex) => {
+                    const row = [skillIndex + 1, skill, ageGroup];
+                    
+                    // Add data for each region
+                    regions.forEach((region, regionIndex) => {
+                        if (ageGroup === 'Undefined') {
+                            row.push(this.getAgeSkillCountUndefined(skillLower, regionIndex));
+                        } else {
+                            const ageKey = ageGroup.replace(' tahun', '');
+                            row.push(this.getAgeSkillCount(ageKey, skillLower, regionIndex));
+                        }
+                    });
+                    
+                    rows.push(row);
+                });
+            });
+            
+            // Add total row
+            const totalRow = ['', '', 'TOTAL'];
+            regions.forEach((region, regionIndex) => {
+                totalRow.push(this.getTotalAgeSkillCount(regionIndex));
+            });
+            rows.push(totalRow);
+            
+            // Create CSV content
+            const csvContent = [
+                headers,
+                ...rows
+            ].map(row => row.join(',')).join('\n');
+            
+            // Create and trigger download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'Distribusi_Usia_Skill.csv');
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);

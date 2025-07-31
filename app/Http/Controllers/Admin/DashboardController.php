@@ -158,6 +158,9 @@ class DashboardController extends Controller
         
         // Get assessment data by category
         $assessmentData = $this->getAssessmentDataByCategory();
+        
+        // Get participant distribution data
+        $participantDistribution = $this->getParticipantDistribution();
     
         return inertia('Admin/Dashboard/Index', [
             'participants'  => $participants,
@@ -165,7 +168,8 @@ class DashboardController extends Controller
             'exam_sessions' => $exam_sessions,
             'areas'         => $areas,
             'areaLevelStats' => $areaLevelStats,
-            'assessmentData' => $assessmentData
+            'assessmentData' => $assessmentData,
+            'participantDistribution' => $participantDistribution
         ]);
     }
     
@@ -240,6 +244,214 @@ class DashboardController extends Controller
         
         return $assessmentData;
     }  
+    
+    /**
+     * Get participant distribution by age groups and work experience groups per TREG
+     */
+    private function getParticipantDistribution()
+    {
+        // Get all areas (TREG)
+        $areas = Area::orderBy('title')->get();
+        
+        $result = [
+            'treg_names' => [], // Will hold TREG names
+            'age_groups' => [
+                '20-30' => [],
+                '31-40' => [],
+                '41-50' => [],
+                '>50'   => []   
+            ],
+            'experience_groups' => [
+                '<1' => [],
+                '1-5' => [],
+                '6-10' => [],
+                '>10' => []
+            ],
+            // New data structure for age-skill distribution
+            'age_skill_distribution' => [
+                '20-30' => [],
+                '31-40' => [],
+                '41-50' => [],
+                '>50' => []
+            ]
+        ];
+        
+        foreach ($areas as $area) {
+            // Add area title to categories
+            $result['treg_names'][] = $area->title;
+            
+            // Get participants for this area
+            $participants = Participant::where('area_id', $area->id)->get();
+            
+            // Count participants by age groups
+            $ageGroups = [
+                '20-30' => 0,
+                '31-40' => 0,
+                '41-50' => 0,
+                '>50' => 0,
+            ];
+            
+            // Count participants by work experience groups
+            $experienceGroups = [
+                '<1' => 0,
+                '1-5' => 0,
+                '6-10' => 0,
+                '>10' => 0
+            ];
+            
+            // Count participants age range by skill level
+            $ageSkillGroups = [
+                '20-30' => [
+                    'starter' => 0,
+                    'basic' => 0,
+                    'intermediate' => 0,
+                    'advanced' => 0,
+                    'expert' => 0
+                ],
+                '31-40' => [
+                    'starter' => 0,
+                    'basic' => 0,
+                    'intermediate' => 0,
+                    'advanced' => 0,
+                    'expert' => 0
+                ],
+                '41-50' => [
+                    'starter' => 0,
+                    'basic' => 0,
+                    'intermediate' => 0,
+                    'advanced' => 0,
+                    'expert' => 0
+                ],
+                '>50' => [
+                    'starter' => 0,
+                    'basic' => 0,
+                    'intermediate' => 0,
+                    'advanced' => 0,
+                    'expert' => 0
+                ]
+            ];
+            
+            foreach ($participants as $participant) {
+                // Calculate age
+                $age = $participant->getUsiaAttribute();
+                
+                // Determine age group
+                $ageGroup = null;
+                if ($age >= 20 && $age <= 30) {
+                    $ageGroup = '20-30';
+                    $ageGroups['20-30']++;
+                } elseif ($age > 30 && $age <= 40) {
+                    $ageGroup = '31-40';
+                    $ageGroups['31-40']++;
+                } elseif ($age > 40 && $age <= 50) {
+                    $ageGroup = '41-50';
+                    $ageGroups['41-50']++;
+                } elseif ($age > 50) {
+                    $ageGroup = '>50';
+                    $ageGroups['>50']++;
+                }
+                
+                // If we have a valid age group, calculate skill level
+                if ($ageGroup) {
+                    // Get participant's average grade to determine skill level
+                    $grades = $participant->grades;
+                    if ($grades->isNotEmpty()) {
+                        // Define all weights
+                        $weights = [
+                            'multiple_choice' => 0.35,
+                            'ujian_attitude' => 0.15,
+                            'ujian_pratik' => 0.50
+                        ];
+                        
+                        // Group grades by exam_type and calculate average for each type
+                        $examTypeAverages = [];
+                        $gradesByType = $grades->groupBy('exam_type');
+                        
+                        // Calculate averages for available exam types
+                        foreach ($gradesByType as $examType => $typeGrades) {
+                            if ($examType === null) continue;
+                            
+                            $validGrades = $typeGrades->filter(function($grade) {
+                                return $grade->grade !== null;
+                            });
+                            
+                            if ($validGrades->isNotEmpty()) {
+                                $examTypeAverages[$examType] = $validGrades->avg('grade');
+                            }
+                        }
+                        
+                        // Calculate weighted sum
+                        $weightedSum = 0;
+                        $totalWeight = 0;
+                        
+                        // Apply weights for all exam types, use 0 for missing ones
+                        foreach ($weights as $examType => $weight) {
+                            $grade = $examTypeAverages[$examType] ?? 0;
+                            $weightedSum += $grade * $weight;
+                            $totalWeight += $weight;
+                        }
+                        
+                        // Only process if there are any valid grades and weighted sum is not 0
+                        if (!empty($examTypeAverages) && $weightedSum > 0) {
+                            $averageGrade = round($weightedSum, 2);
+                            
+                            // Categorize based on average grade
+                            if ($averageGrade >= 0 && $averageGrade <= 30) {
+                                $ageSkillGroups[$ageGroup]['starter']++;
+                            } elseif ($averageGrade <= 60) {
+                                $ageSkillGroups[$ageGroup]['basic']++;
+                            } elseif ($averageGrade <= 70) {
+                                $ageSkillGroups[$ageGroup]['intermediate']++;
+                            } elseif ($averageGrade <= 90) {
+                                $ageSkillGroups[$ageGroup]['advanced']++;
+                            } else {
+                                $ageSkillGroups[$ageGroup]['expert']++;
+                            }
+                        }
+                    }
+                }
+                
+                // Group by work experience (masa kerja)
+                // ... existing code ...
+            }
+            
+            // Add counts to result
+            $result['age_groups']['20-30'][] = $ageGroups['20-30'];
+            $result['age_groups']['31-40'][] = $ageGroups['31-40'];
+            $result['age_groups']['41-50'][] = $ageGroups['41-50'];
+            $result['age_groups']['>50'][] = $ageGroups['>50'];
+            
+            // Add experience groups
+            // ... existing code ...
+            
+            // Add age-skill distribution counts for each age group
+            foreach ($ageSkillGroups as $ageGroup => $skillCounts) {
+                foreach ($skillCounts as $skill => $count) {
+                    if (!isset($result['age_skill_distribution'][$ageGroup])) {
+                        $result['age_skill_distribution'][$ageGroup] = [];
+                    }
+                    if (!isset($result['age_skill_distribution'][$ageGroup][$skill])) {
+                        $result['age_skill_distribution'][$ageGroup][$skill] = [];
+                    }
+                    $result['age_skill_distribution'][$ageGroup][$skill][] = $count;
+                }
+            }
+            
+            // Add counts to result
+            $result['age_groups']['20-30'][] = $ageGroups['20-30'];
+            $result['age_groups']['31-40'][] = $ageGroups['31-40'];
+            $result['age_groups']['41-50'][] = $ageGroups['41-50'];
+            $result['age_groups']['>50'][] = $ageGroups['>50'];
+
+            $result['experience_groups']['<1'][] = $experienceGroups['<1'];
+            $result['experience_groups']['1-5'][] = $experienceGroups['1-5'];
+            $result['experience_groups']['6-10'][] = $experienceGroups['6-10'];
+            $result['experience_groups']['>10'][] = $experienceGroups['>10'];
+            
+        }
+        
+        return $result;
+    }
 }
 
 // Around line 43, you likely have something like:
