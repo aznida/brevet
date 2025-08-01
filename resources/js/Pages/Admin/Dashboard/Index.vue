@@ -300,14 +300,7 @@
                                         <th class="border-0 rounded-start" style="width:10%">No.</th>
                                         <th class="border-0">Usia</th>
                                         <th class="border-0">Skill</th>
-                                        <th class="border-0">Jumlah</th>
-                                        <th class="border-0">TIF 1 - Telkom Regional 1</th>
-                                        <th class="border-0">TIF 2 - Telkom Regional 2</th>
-                                        <th class="border-0">TIF 2 - Telkom Regional 3</th>
-                                        <th class="border-0">TIF 3 - Telkom Regional 4</th>
-                                        <th class="border-0">TIF 3 - Telkom Regional 5</th>
-                                        <th class="border-0">TIF 4 - Telkom Regional 6</th>
-                                        <th class="border-0">TIF 4 - Telkom Regional 7</th>
+                                        <th class="border-0" v-for="(region, index) in filteredTregNames" :key="'region-'+index">{{ region }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -316,31 +309,31 @@
                                         <td class="fw-bold text-center" rowspan="5">1</td>
                                         <td class="fw-bold text-center" rowspan="5">STARTER</td>
                                         <td>20 - 30 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'starter-20-30-'+index">
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'starter-20-30-'+index">
                                             {{ getAgeSkillCount('20-30', 'starter', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>31 - 40 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'starter-30-40-'+index">
-                                            {{ getAgeSkillCount('30-40','starter', index) }}
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'starter-30-40-'+index">
+                                            {{ getAgeSkillCount('31-40','starter', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>41 - 50 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'starter-40-50-'+index">
-                                            {{ getAgeSkillCount('40-50','starter', index) }}
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'starter-40-50-'+index">
+                                            {{ getAgeSkillCount('41-50','starter', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td> >50 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'starter-50-60-'+index">
-                                            {{ getAgeSkillCount('50-60','starter', index) }}
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'starter-50-60-'+index">
+                                            {{ getAgeSkillCount('>50','starter', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Undefined</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'starter-undefined-'+index">
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'starter-undefined-'+index">
                                             {{ getAgeSkillCountUndefined('starter', index) }}
                                         </td>
                                     </tr>
@@ -350,31 +343,31 @@
                                         <td class="fw-bold text-center" rowspan="5">2</td>
                                         <td class="fw-bold text-center" rowspan="5">BASIC</td>
                                         <td>20 - 30 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'basic-20-30-'+index">
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'basic-20-30-'+index">
                                             {{ getAgeSkillCount('20-30','basic', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>31 - 40 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'basic-30-40-'+index">
-                                            {{ getAgeSkillCount('30-40','basic', index) }}
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'basic-30-40-'+index">
+                                            {{ getAgeSkillCount('31-40','basic', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>41 - 50 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'basic-40-50-'+index">
-                                            {{ getAgeSkillCount('40-50','basic', index) }}
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'basic-40-50-'+index">
+                                            {{ getAgeSkillCount('41-50','basic', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td> >50 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'basic-50-60-'+index">
-                                            {{ getAgeSkillCount('50-60','basic', index) }}
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'basic-50-60-'+index">
+                                            {{ getAgeSkillCount('>50','basic', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Undefined</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'basic-undefined-'+index">
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'basic-undefined-'+index">
                                             {{ getAgeSkillCountUndefined('basic', index) }}
                                         </td>
                                     </tr>
@@ -383,31 +376,31 @@
                                         <td class="fw-bold text-center" rowspan="5">3</td>
                                         <td class="fw-bold text-center" rowspan="5">INTERMEDIATE</td>
                                         <td>20 - 30 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'intermediate-20-30-'+index">
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'intermediate-20-30-'+index">
                                             {{ getAgeSkillCount('20-30','intermediate', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>31 - 40 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'intermediate-30-40-'+index">
-                                            {{ getAgeSkillCount('30-40','intermediate', index) }}
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'intermediate-30-40-'+index">
+                                            {{ getAgeSkillCount('31-40','intermediate', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>41 - 50 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'intermediate-40-50-'+index">
-                                            {{ getAgeSkillCount('40-50','intermediate', index) }}
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'intermediate-40-50-'+index">
+                                            {{ getAgeSkillCount('41-50','intermediate', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td> >50 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'intermediate-50-60-'+index">
-                                            {{ getAgeSkillCount('50-60','intermediate', index) }}
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'intermediate-50-60-'+index">
+                                            {{ getAgeSkillCount('>50','intermediate', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Undefined</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'intermediate-undefined-'+index">
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'intermediate-undefined-'+index">
                                             {{ getAgeSkillCountUndefined('intermediate', index) }}
                                         </td>
                                     </tr>
@@ -416,31 +409,31 @@
                                         <td class="fw-bold text-center" rowspan="5">4</td>
                                         <td class="fw-bold text-center" rowspan="5">ADVANCED</td>
                                         <td>20 - 30 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'advanced-20-30-'+index">
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'advanced-20-30-'+index">
                                             {{ getAgeSkillCount('20-30','advanced', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>31 - 40 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'advanced-30-40-'+index">
-                                            {{ getAgeSkillCount('30-40','advanced', index) }}
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'advanced-30-40-'+index">
+                                            {{ getAgeSkillCount('31-40','advanced', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>41 - 50 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'advanced-40-50-'+index">
-                                            {{ getAgeSkillCount('40-50','advanced', index) }}
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'advanced-40-50-'+index">
+                                            {{ getAgeSkillCount('41-50','advanced', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td> >50 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'advanced-50-60-'+index">
-                                            {{ getAgeSkillCount('50-60','advanced', index) }}
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'advanced-50-60-'+index">
+                                            {{ getAgeSkillCount('>50','advanced', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Undefined</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'advanced-undefined-'+index">
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'advanced-undefined-'+index">
                                             {{ getAgeSkillCountUndefined('advanced', index) }}
                                         </td>
                                     </tr>
@@ -449,38 +442,38 @@
                                         <td class="fw-bold text-center" rowspan="5">5</td>
                                         <td class="fw-bold text-center" rowspan="5">EXPERT</td>
                                         <td>20 - 30 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'expert-20-30-'+index">
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'expert-20-30-'+index">
                                             {{ getAgeSkillCount('20-30','expert', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>31 - 40 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'expert-30-40-'+index">
-                                            {{ getAgeSkillCount('30-40','expert', index) }}
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'expert-30-40-'+index">
+                                            {{ getAgeSkillCount('31-40','expert', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>41 - 50 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'expert-40-50-'+index">
-                                            {{ getAgeSkillCount('40-50','expert', index) }}
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'expert-40-50-'+index">
+                                            {{ getAgeSkillCount('41-50','expert', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td> >50 tahun</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'expert-50-60-'+index">
-                                            {{ getAgeSkillCount('50-60','expert', index) }}
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'expert-50-60-'+index">
+                                            {{ getAgeSkillCount('>50','expert', index) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Undefined</td>
-                                        <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'expert-undefined-'+index">
+                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'expert-undefined-'+index">
                                             {{ getAgeSkillCountUndefined('expert', index) }}
                                         </td>
                                     </tr>
                                 <<!-- TOTAL -->
                                 <tr class="bg-light fw-bold">
                                     <td class="text-center" colspan="3">Total</td>
-                                    <td class="text-center" v-for="(area, index) in participantDistribution.treg_names" :key="'total-'+index">
+                                    <td class="text-center" v-for="index in filteredTregIndices" :key="'total-'+index">
                                         {{ getTotalAgeSkillCount(index) }}
                                     </td>
                                 </tr>
@@ -608,7 +601,10 @@ import VueApexCharts from 'vue3-apexcharts';
             areas: Number,
             areaLevelStats: Array,
             assessmentData: Object,
-            participantDistribution: Object, // Add this line
+            participantDistribution: Object,
+            errors: Object,     // Add this line
+            session: Object,    // Add this line
+            auth: Object,       // Add this line
         },
 
         computed: {
@@ -616,6 +612,21 @@ import VueApexCharts from 'vue3-apexcharts';
                 if (!this.areaLevelStats) return [];
                 return this.areaLevelStats.filter(stat => !stat.title.toLowerCase().includes('nasional'));
             },
+        filteredTregNames() {
+            if (!this.participantDistribution || !this.participantDistribution.treg_names) {
+                return [];
+            }
+            return this.participantDistribution.treg_names.filter(name => 
+                !name.toLowerCase().includes('nasional'));
+        },
+        filteredTregIndices() {
+            if (!this.participantDistribution || !this.participantDistribution.treg_names) {
+                return [];
+            }
+            return this.participantDistribution.treg_names
+                .map((name, index) => !name.toLowerCase().includes('nasional') ? index : null)
+                .filter(index => index !== null);
+        },
         levelStreamSeries() {
             return [
                 this.getTotalByLevel('starter'),
@@ -1362,13 +1373,14 @@ import VueApexCharts from 'vue3-apexcharts';
             
             const skills = ['STARTER', 'BASIC', 'INTERMEDIATE', 'ADVANCED', 'EXPERT'];
             const ageGroups = ['20-30 tahun', '31-40 tahun', '41-50 tahun', '>50 tahun', 'Undefined'];
-            const regions = this.participantDistribution.treg_names;
+            const regions = this.filteredTregNames;
             
             // Create headers
             const headers = ['NO', 'SKILL', 'USIA', ...regions];
             
             // Create rows
             const rows = [];
+
             
             skills.forEach((skill, skillIndex) => {
                 const skillLower = skill.toLowerCase();
@@ -1377,12 +1389,12 @@ import VueApexCharts from 'vue3-apexcharts';
                     const row = [skillIndex + 1, skill, ageGroup];
                     
                     // Add data for each region
-                    regions.forEach((region, regionIndex) => {
+                    this.filteredTregIndices.forEach((originalIndex, i) => {
                         if (ageGroup === 'Undefined') {
-                            row.push(this.getAgeSkillCountUndefined(skillLower, regionIndex));
+                            row.push(this.getAgeSkillCountUndefined(skillLower, originalIndex));
                         } else {
                             const ageKey = ageGroup.replace(' tahun', '');
-                            row.push(this.getAgeSkillCount(ageKey, skillLower, regionIndex));
+                            row.push(this.getAgeSkillCount(ageKey, skillLower, originalIndex));
                         }
                     });
                     
@@ -1392,8 +1404,8 @@ import VueApexCharts from 'vue3-apexcharts';
             
             // Add total row
             const totalRow = ['', '', 'TOTAL'];
-            regions.forEach((region, regionIndex) => {
-                totalRow.push(this.getTotalAgeSkillCount(regionIndex));
+            this.filteredTregIndices.forEach((originalIndex) => {
+                totalRow.push(this.getTotalAgeSkillCount(originalIndex));
             });
             rows.push(totalRow);
             
