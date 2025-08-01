@@ -300,13 +300,14 @@
                                         <th class="border-0 rounded-start" style="width:10%">No.</th>
                                         <th class="border-0">Usia</th>
                                         <th class="border-0">Skill</th>
+                                        <th class="border-0">Jumlah</th>
                                         <th class="border-0">TIF 1 - Telkom Regional 1</th>
-                                        <th class="border-0">TIF 1 - Telkom Regional 2</th>
-                                        <th class="border-0">TIF 1 - Telkom Regional 3</th>
-                                        <th class="border-0">TIF 1 - Telkom Regional 4</th>
-                                        <th class="border-0">TIF 1 - Telkom Regional 5</th>
-                                        <th class="border-0">TIF 1 - Telkom Regional 6</th>
-                                        <th class="border-0">TIF 1 - Telkom Regional 7</th>
+                                        <th class="border-0">TIF 2 - Telkom Regional 2</th>
+                                        <th class="border-0">TIF 2 - Telkom Regional 3</th>
+                                        <th class="border-0">TIF 3 - Telkom Regional 4</th>
+                                        <th class="border-0">TIF 3 - Telkom Regional 5</th>
+                                        <th class="border-0">TIF 4 - Telkom Regional 6</th>
+                                        <th class="border-0">TIF 4 - Telkom Regional 7</th>
                                     </tr>
                                 </thead>
                                 <tbody>
