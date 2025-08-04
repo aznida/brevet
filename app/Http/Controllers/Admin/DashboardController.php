@@ -256,7 +256,8 @@ class DashboardController extends Controller
         $result = [
             'treg_names' => [], // Will hold TREG names
             'age_groups' => [
-                '20-30' => [],
+                '0-20' => [],
+                '21-30' => [],
                 '31-40' => [],
                 '41-50' => [],
                 '>50'   => []   
@@ -269,10 +270,12 @@ class DashboardController extends Controller
             ],
             // New data structure for age-skill distribution
             'age_skill_distribution' => [
-                '20-30' => [],
+                '0-20' => [],
+                '21-30' => [],
                 '31-40' => [],
                 '41-50' => [],
-                '>50' => []
+                '>50' => [],
+                'undefined' => []
             ]
         ];
         
@@ -285,7 +288,8 @@ class DashboardController extends Controller
             
             // Count participants by age groups
             $ageGroups = [
-                '20-30' => 0,
+                '0-20' => 0,
+                '21-30' => 0,
                 '31-40' => 0,
                 '41-50' => 0,
                 '>50' => 0,
@@ -301,7 +305,14 @@ class DashboardController extends Controller
             
             // Count participants age range by skill level
             $ageSkillGroups = [
-                '20-30' => [
+                '0-20' => [
+                  'starter' => 0,
+                    'basic' => 0,
+                    'intermediate' => 0,
+                    'advanced' => 0,
+                    'expert' => 0
+                ],
+                '21-30' => [
                     'starter' => 0,
                     'basic' => 0,
                     'intermediate' => 0,
@@ -328,7 +339,14 @@ class DashboardController extends Controller
                     'intermediate' => 0,
                     'advanced' => 0,
                     'expert' => 0
-                ]
+                ],
+                'undefined' => [
+                    'starter' => 0,
+                    'basic' => 0,
+                    'intermediate' => 0,
+                    'advanced' => 0,
+                    'expert' => 0
+                ],
             ];
             
             foreach ($participants as $participant) {
@@ -337,13 +355,22 @@ class DashboardController extends Controller
                 
                 // Determine age group
                 $ageGroup = null;
-                if ($age >= 20 && $age <= 30) {
-                    $ageGroup = '20-30';
-                    $ageGroups['20-30']++;
-                } elseif ($age > 30 && $age <= 40) {
+                if ($age === null) {
+                    $ageGroup = 'undefined';
+                    if (!isset($ageGroups['undefined'])) {
+                        $ageGroups['undefined'] = 0;
+                    }
+                    $ageGroups['undefined']++;
+                } elseif ($age >= 0 && $age <= 20) {
+                    $ageGroup = '0-20';
+                    $ageGroups['0-20']++;
+                } elseif ($age >= 21 && $age <= 30) {
+                    $ageGroup = '21-30';
+                    $ageGroups['21-30']++;
+                } elseif ($age >= 31 && $age <= 40) {
                     $ageGroup = '31-40';
                     $ageGroups['31-40']++;
-                } elseif ($age > 40 && $age <= 50) {
+                } elseif ($age >= 41 && $age <= 50) {
                     $ageGroup = '41-50';
                     $ageGroups['41-50']++;
                 } elseif ($age > 50) {
@@ -395,12 +422,13 @@ class DashboardController extends Controller
                         if (!empty($examTypeAverages) && $weightedSum > 0) {
                             $averageGrade = round($weightedSum, 2);
                             
-                            // Categorize based on average grade
-                            if ($averageGrade >= 0 && $averageGrade <= 30) {
+                            // In getParticipantDistribution method, update the categorization to match
+                            // Categorize based on average grade (around line 414)
+                            if ($averageGrade >= 0 && $averageGrade <= 40) {
                                 $ageSkillGroups[$ageGroup]['starter']++;
                             } elseif ($averageGrade <= 60) {
                                 $ageSkillGroups[$ageGroup]['basic']++;
-                            } elseif ($averageGrade <= 70) {
+                            } elseif ($averageGrade <= 75) {
                                 $ageSkillGroups[$ageGroup]['intermediate']++;
                             } elseif ($averageGrade <= 90) {
                                 $ageSkillGroups[$ageGroup]['advanced']++;
@@ -410,19 +438,22 @@ class DashboardController extends Controller
                         }
                     }
                 }
-                
-                // Group by work experience (masa kerja)
-                // ... existing code ...
+
             }
             
-            // Add counts to result
-            $result['age_groups']['20-30'][] = $ageGroups['20-30'];
+            $result['age_groups']['0-20'][] = $ageGroups['0-20'];
+            $result['age_groups']['21-30'][] = $ageGroups['21-30'];
             $result['age_groups']['31-40'][] = $ageGroups['31-40'];
             $result['age_groups']['41-50'][] = $ageGroups['41-50'];
             $result['age_groups']['>50'][] = $ageGroups['>50'];
             
-            // Add experience groups
-            // ... existing code ...
+            // Add undefined age-skill distribution - properly handle this case
+            if (isset($ageGroups['undefined'])) {
+                if (!isset($result['age_groups']['undefined'])) {
+                    $result['age_groups']['undefined'] = [];
+                }
+                $result['age_groups']['undefined'][] = $ageGroups['undefined'];
+            }
             
             // Add age-skill distribution counts for each age group
             foreach ($ageSkillGroups as $ageGroup => $skillCounts) {
@@ -436,17 +467,6 @@ class DashboardController extends Controller
                     $result['age_skill_distribution'][$ageGroup][$skill][] = $count;
                 }
             }
-            
-            // Add counts to result
-            $result['age_groups']['20-30'][] = $ageGroups['20-30'];
-            $result['age_groups']['31-40'][] = $ageGroups['31-40'];
-            $result['age_groups']['41-50'][] = $ageGroups['41-50'];
-            $result['age_groups']['>50'][] = $ageGroups['>50'];
-
-            $result['experience_groups']['<1'][] = $experienceGroups['<1'];
-            $result['experience_groups']['1-5'][] = $experienceGroups['1-5'];
-            $result['experience_groups']['6-10'][] = $experienceGroups['6-10'];
-            $result['experience_groups']['>10'][] = $experienceGroups['>10'];
             
         }
         
