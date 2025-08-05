@@ -245,6 +245,7 @@
                                         <th class="border-0">TREG - Area</th>
                                         <th class="border-0">Witel</th>
                                         <th class="border-0">Role</th>
+                                        <th v-if="!isLevelStreamModal" class="border-0">Usia</th>
                                         <th class="border-0">Nilai</th>
                                         <th class="border-0 rounded-end" style="width:20%">Level Stream</th>
                                     </tr>
@@ -256,6 +257,7 @@
                                         <td>{{ participant.areas }}</td>
                                         <td>{{ participant.witel || '-' }}</td>
                                         <td>{{ participant.role }}</td>
+                                        <td v-if="!isLevelStreamModal" class="text-center">{{ participant.usia !== null && participant.usia !== undefined ? participant.usia : '-' }}</td>
                                         <td class="text-center">{{ participant.grade }}</td>
                                         <td class="text-center">{{ participant.level }}</td>
                                     </tr>
@@ -316,11 +318,12 @@
                                     <tr class="skill-section-starter">
                                         <td class="fw-bold text-center" rowspan="6">1</td>
                                         <td class="fw-bold text-center" rowspan="6">STARTER🌱</td>
-                                        <td> < 20 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'starter-0-20-'+index">
+                                        <td> =< 20 tahun</td>
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'starter-0-20-'+index" 
+                                        @click="showAgeSkillParticipants('0-20', 'starter', index)">
                                             {{ getAgeSkillCount('0-20', 'starter', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('0-20', 'starter')">
                                             {{ getAgeSkillSum('0-20', 'starter') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -329,10 +332,11 @@
                                     </tr>
                                     <tr class="skill-section-starter">
                                         <td>21 - 30 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'starter-21-30-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'starter-21-30-'+index"
+                                        @click="showAgeSkillParticipants('21-30', 'starter', index)">
                                             {{ getAgeSkillCount('21-30','starter', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('21-30', 'starter')">
                                             {{ getAgeSkillSum('21-30','starter') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -341,10 +345,11 @@
                                     </tr>
                                     <tr class="skill-section-starter">
                                         <td>31 - 40 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'starter-31-40-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'starter-31-40-'+index"
+                                        @click="showAgeSkillParticipants('31-40', 'starter', index)">
                                             {{ getAgeSkillCount('31-40','starter', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('31-40', 'starter')">
                                             {{ getAgeSkillSum('31-40','starter') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -353,10 +358,11 @@
                                     </tr>
                                     <tr class="skill-section-starter">
                                         <td>41 - 50 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'starter-41-50-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'starter-41-50-'+index"
+                                        @click="showAgeSkillParticipants('41-50', 'starter', index)">
                                             {{ getAgeSkillCount('41-50','starter', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('41-50', 'starter')">
                                             {{ getAgeSkillSum('41-50','starter') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -365,10 +371,11 @@
                                     </tr>
                                     <tr class="skill-section-starter">
                                         <td> >50 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'starter->50-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'starter->50-'+index"
+                                            @click="showAgeSkillParticipants('>50', 'starter', index)">
                                             {{ getAgeSkillCount('>50','starter', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('>50', 'starter')">
                                             {{ getAgeSkillSum('>50','starter') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -377,10 +384,11 @@
                                     </tr>
                                     <tr class="skill-section-starter">
                                         <td>Undefined</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'starter-undefined-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'starter-undefined-'+index"
+                                        @click="showAgeSkillParticipantsUndefined('starter', index)">
                                             {{ getAgeSkillCountUndefined('starter', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('undefined', 'starter')">
                                             {{ getAgeSkillSumUndefined('starter') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -392,11 +400,12 @@
                                     <tr class="skill-section-basic">
                                         <td class="fw-bold text-center" rowspan="6">2</td>
                                         <td class="fw-bold text-center" rowspan="6">BASIC🥉</td>
-                                        <td> < 20 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'basic-0-20-'+index">
+                                        <td> =< 20 tahun</td>
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'basic-0-20-'+index"
+                                        @click="showAgeSkillParticipants('0-20', 'basic', index)">
                                             {{ getAgeSkillCount('0-20','basic', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('0-20', 'basic')">
                                             {{ getAgeSkillSum('0-20','basic') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -405,10 +414,11 @@
                                     </tr>
                                     <tr class="skill-section-basic">
                                         <td>21 - 30 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'basic-21-30-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'basic-21-30-'+index"
+                                        @click="showAgeSkillParticipants('21-30', 'basic', index)">
                                             {{ getAgeSkillCount('21-30','basic', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('21-30', 'basic')">
                                             {{ getAgeSkillSum('21-30','basic') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -417,10 +427,11 @@
                                     </tr>
                                     <tr class="skill-section-basic">
                                         <td>31 - 40 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'basic-31-40-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'basic-31-40-'+index"
+                                        @click="showAgeSkillParticipants('31-40', 'basic', index)">
                                             {{ getAgeSkillCount('31-40','basic', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('31-40', 'basic')">
                                             {{ getAgeSkillSum('31-40','basic') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -429,10 +440,11 @@
                                     </tr>
                                     <tr class="skill-section-basic">
                                         <td>41 - 50 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'basic-41-50-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'basic-41-50-'+index"
+                                        @click="showAgeSkillParticipants('41-50', 'basic', index)">
                                             {{ getAgeSkillCount('41-50','basic', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('41-50', 'basic')">
                                             {{ getAgeSkillSum('41-50','basic') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -441,10 +453,11 @@
                                     </tr>
                                     <tr class="skill-section-basic">
                                         <td> >50 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'basic->50-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'basic->50-'+index"
+                                            @click="showAgeSkillParticipants('>50', 'basic', index)">
                                             {{ getAgeSkillCount('>50','basic', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('>50', 'basic')">
                                             {{ getAgeSkillSum('>50','basic') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -453,10 +466,11 @@
                                     </tr>
                                     <tr class="skill-section-basic">
                                         <td>Undefined</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'basic-undefined-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'basic-undefined-'+index"
+                                        @click="showAgeSkillParticipantsUndefined('basic', index)">
                                             {{ getAgeSkillCountUndefined('basic', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('undefined', 'basic')">
                                             {{ getAgeSkillSumUndefined('basic') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -467,11 +481,12 @@
                                     <tr class="skill-section-intermediate">
                                         <td class="fw-bold text-center" rowspan="6">3</td>
                                         <td class="fw-bold text-center" rowspan="6">INTERMEDIATE🥈</td>
-                                        <td> < 20 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'intermediate-0-20-'+index">
+                                        <td> =< 20 tahun</td>
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'intermediate-0-20-'+index"
+                                        @click="showAgeSkillParticipants('0-20', 'intermediate', index)">
                                             {{ getAgeSkillCount('0-20','intermediate', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('0-20', 'intermediate')">
                                             {{ getAgeSkillSum('0-20','intermediate') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -480,10 +495,11 @@
                                     </tr>
                                     <tr class="skill-section-intermediate">
                                         <td>21 - 30 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'intermediate-21-30-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'intermediate-21-30-'+index"
+                                        @click="showAgeSkillParticipants('21-30', 'intermediate', index)">
                                             {{ getAgeSkillCount('21-30','intermediate', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('21-30', 'intermediate')">
                                             {{ getAgeSkillSum('21-30','intermediate') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -492,10 +508,11 @@
                                     </tr>
                                     <tr class="skill-section-intermediate">
                                         <td>31 - 40 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'intermediate-31-40-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'intermediate-31-40-'+index"
+                                        @click="showAgeSkillParticipants('31-40', 'intermediate', index)">
                                             {{ getAgeSkillCount('31-40','intermediate', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('31-40', 'intermediate')">
                                             {{ getAgeSkillSum('31-40','intermediate') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -504,10 +521,11 @@
                                     </tr>
                                     <tr class="skill-section-intermediate">
                                         <td>41 - 50 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'intermediate-41-50-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'intermediate-41-50-'+index"
+                                        @click="showAgeSkillParticipants('41-50', 'intermediate', index)">
                                             {{ getAgeSkillCount('41-50','intermediate', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('41-50', 'intermediate')">
                                             {{ getAgeSkillSum('41-50','intermediate') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -516,10 +534,11 @@
                                     </tr>
                                     <tr class="skill-section-intermediate">
                                         <td> >50 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'intermediate->50-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'intermediate->50-'+index"
+                                            @click="showAgeSkillParticipants('>50', 'intermediate', index)">
                                             {{ getAgeSkillCount('>50','intermediate', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('>50', 'intermediate')">
                                             {{ getAgeSkillSum('>50','intermediate') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -528,10 +547,11 @@
                                     </tr>
                                     <tr class="skill-section-intermediate">
                                         <td>Undefined</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'intermediate-undefined-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'intermediate-undefined-'+index"
+                                        @click="showAgeSkillParticipantsUndefined('intermediate', index)">
                                             {{ getAgeSkillCountUndefined('intermediate', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('undefined', 'intermediate')">
                                             {{ getAgeSkillSumUndefined('intermediate') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -542,11 +562,12 @@
                                     <tr class="skill-section-advanced">
                                         <td class="fw-bold text-center" rowspan="6">4</td>
                                         <td class="fw-bold text-center" rowspan="6">ADVANCED🥇</td>
-                                        <td> < 20 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'advanced-0-20-'+index">
+                                        <td> =< 20 tahun</td>
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'advanced-0-20-'+index"
+                                        @click="showAgeSkillParticipants('0-20', 'advanced', index)">
                                             {{ getAgeSkillCount('0-20','advanced', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('0-20', 'advanced')">
                                             {{ getAgeSkillSum('0-20','advanced') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -555,10 +576,11 @@
                                     </tr>
                                     <tr class="skill-section-advanced">
                                         <td>21 - 30 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'advanced-21-30-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'advanced-21-30-'+index"
+                                        @click="showAgeSkillParticipants('21-30', 'advanced', index)">
                                             {{ getAgeSkillCount('21-30','advanced', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('21-30', 'advanced')">
                                             {{ getAgeSkillSum('21-30','advanced') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -567,10 +589,11 @@
                                     </tr>
                                     <tr class="skill-section-advanced">
                                         <td>31 - 40 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'advanced-31-40-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'advanced-31-40-'+index"
+                                        @click="showAgeSkillParticipants('31-40', 'advanced', index)">
                                             {{ getAgeSkillCount('31-40','advanced', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('31-40', 'advanced')">
                                             {{ getAgeSkillSum('31-40','advanced') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -579,10 +602,11 @@
                                     </tr>
                                     <tr class="skill-section-advanced">
                                         <td>41 - 50 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'advanced-41-50-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'advanced-41-50-'+index"
+                                        @click="showAgeSkillParticipants('41-50', 'advanced', index)">
                                             {{ getAgeSkillCount('41-50','advanced', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('41-50', 'advanced')">
                                             {{ getAgeSkillSum('41-50','advanced') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -591,10 +615,11 @@
                                     </tr>
                                     <tr class="skill-section-advanced">
                                         <td> >50 tahun</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'advanced->50-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'advanced->50-'+index"
+                                            @click="showAgeSkillParticipants('>50', 'advanced', index)">
                                             {{ getAgeSkillCount('>50','advanced', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('>50', 'advanced')">
                                             {{ getAgeSkillSum('>50','advanced') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -603,10 +628,11 @@
                                     </tr>
                                     <tr class="skill-section-advanced">
                                         <td>Undefined</td>
-                                        <td class="text-center" v-for="index in filteredTregIndices" :key="'advanced-undefined-'+index">
+                                        <td class="text-center cursor-pointer" v-for="index in filteredTregIndices" :key="'advanced-undefined-'+index"
+                                        @click="showAgeSkillParticipantsUndefined('advanced', index)">
                                             {{ getAgeSkillCountUndefined('advanced', index) }}
                                         </td>
-                                        <td class="text-center fw-bold">
+                                        <td class="text-center fw-bold cursor-pointer" @click="showAllAgeSkillParticipants('undefined', 'advanced')">
                                             {{ getAgeSkillSumUndefined('advanced') }}
                                         </td>
                                         <td class="text-center fw-bold">
@@ -617,11 +643,12 @@
                                     <tr class="skill-section-expert">
                                         <td class="fw-bold text-center bg-light-danger" rowspan="6">5</td>
                                         <td class="fw-bold text-center bg-light-danger" rowspan="6">EXPERT💎</td>
-                                        <td class="bg-light-danger"> < 20 tahun</td>
-                                        <td class="text-center bg-light-danger" v-for="index in filteredTregIndices" :key="'expert-0-20-'+index">
+                                        <td class="bg-light-danger"> =< 20 tahun</td>
+                                        <td class="text-center bg-light-danger cursor-pointer" v-for="index in filteredTregIndices" :key="'expert-0-20-'+index"
+                                        @click="showAgeSkillParticipants('0-20', 'expert', index)">
                                             {{ getAgeSkillCount('0-20','expert', index) }}
                                         </td>
-                                        <td class="text-center fw-bold bg-light-danger">
+                                        <td class="text-center fw-bold bg-light-danger cursor-pointer" @click="showAllAgeSkillParticipants('0-20', 'expert')">
                                             {{ getAgeSkillSum('0-20','expert') }}
                                         </td>
                                         <td class="text-center fw-bold bg-light-danger">
@@ -630,10 +657,11 @@
                                     </tr>
                                     <tr class="skill-section-expert">
                                         <td class="bg-light-danger">21 - 30 tahun</td>
-                                        <td class="text-center bg-light-danger" v-for="index in filteredTregIndices" :key="'expert-21-30-'+index">
+                                        <td class="text-center bg-light-danger cursor-pointer" v-for="index in filteredTregIndices" :key="'expert-21-30-'+index"
+                                        @click="showAgeSkillParticipants('21-30', 'expert', index)">
                                             {{ getAgeSkillCount('21-30','expert', index) }}
                                         </td>
-                                        <td class="text-center fw-bold bg-light-danger">
+                                        <td class="text-center fw-bold bg-light-danger cursor-pointer" @click="showAllAgeSkillParticipants('21-30', 'expert')">
                                             {{ getAgeSkillSum('21-30','expert') }}
                                         </td>
                                         <td class="text-center fw-bold bg-light-danger">
@@ -642,10 +670,11 @@
                                     </tr>
                                     <tr class="skill-section-expert">
                                         <td class="bg-light-danger">31 - 40 tahun</td>
-                                        <td class="text-center bg-light-danger" v-for="index in filteredTregIndices" :key="'expert-31-40-'+index">
+                                        <td class="text-center bg-light-danger cursor-pointer" v-for="index in filteredTregIndices" :key="'expert-31-40-'+index"
+                                        @click="showAgeSkillParticipants('31-40', 'expert', index)">
                                             {{ getAgeSkillCount('31-40','expert', index) }}
                                         </td>
-                                        <td class="text-center fw-bold bg-light-danger">
+                                        <td class="text-center fw-bold bg-light-danger cursor-pointer" @click="showAllAgeSkillParticipants('31-40', 'expert')">
                                             {{ getAgeSkillSum('31-40','expert') }}
                                         </td>
                                         <td class="text-center fw-bold bg-light-danger">
@@ -654,10 +683,11 @@
                                     </tr>
                                     <tr class="skill-section-expert">
                                         <td class="bg-light-danger">41 - 50 tahun</td>
-                                        <td class="text-center bg-light-danger" v-for="index in filteredTregIndices" :key="'expert-41-50-'+index">
+                                        <td class="text-center bg-light-danger cursor-pointer" v-for="index in filteredTregIndices" :key="'expert-41-50-'+index"
+                                        @click="showAgeSkillParticipants('41-50', 'expert', index)">
                                             {{ getAgeSkillCount('41-50','expert', index) }}
                                         </td>
-                                        <td class="text-center fw-bold bg-light-danger">
+                                        <td class="text-center fw-bold bg-light-danger cursor-pointer" @click="showAllAgeSkillParticipants('41-50', 'expert')">
                                             {{ getAgeSkillSum('41-50','expert') }}
                                         </td>
                                         <td class="text-center fw-bold bg-light-danger">
@@ -666,10 +696,11 @@
                                     </tr>
                                     <tr class="skill-section-expert">
                                         <td class="bg-light-danger"> >50 tahun</td>
-                                        <td class="text-center bg-light-danger" v-for="index in filteredTregIndices" :key="'expert->50-'+index">
+                                        <td class="text-center bg-light-danger cursor-pointer" v-for="index in filteredTregIndices" :key="'expert->50-'+index"
+                                            @click="showAgeSkillParticipants('>50', 'expert', index)">
                                             {{ getAgeSkillCount('>50','expert', index) }}
                                         </td>
-                                        <td class="text-center fw-bold bg-light-danger">
+                                        <td class="text-center fw-bold bg-light-danger cursor-pointer" @click="showAllAgeSkillParticipants('>50', 'expert')">
                                             {{ getAgeSkillSum('>50','expert') }}
                                         </td>
                                         <td class="text-center fw-bold bg-light-danger">
@@ -678,10 +709,11 @@
                                     </tr>
                                     <tr class="skill-section-expert">
                                         <td class="bg-light-danger">Undefined</td>
-                                        <td class="text-center bg-light-danger" v-for="index in filteredTregIndices" :key="'expert-undefined-'+index">
+                                        <td class="text-center bg-light-danger cursor-pointer" v-for="index in filteredTregIndices" :key="'expert-undefined-'+index"
+                                        @click="showAgeSkillParticipantsUndefined('expert', index)">
                                             {{ getAgeSkillCountUndefined('expert', index) }}
                                         </td>
-                                        <td class="text-center fw-bold bg-light-danger">
+                                        <td class="text-center fw-bold bg-light-danger cursor-pointer" @click="showAllAgeSkillParticipants('undefined', 'expert')">
                                             {{ getAgeSkillSumUndefined('expert') }}
                                         </td>
                                         <td class="text-center fw-bold bg-light-danger">
@@ -844,6 +876,11 @@ import VueApexCharts from 'vue3-apexcharts';
             return this.participantDistribution.treg_names
                 .map((name, index) => !name.toLowerCase().includes('nasional') ? index : null)
                 .filter(index => index !== null);
+        },
+        isLevelStreamModal() {
+            // Level stream modal titles have format: "Area - Level"
+            // Age-skill modal titles have format: "Region - Age Group - Skill"
+            return this.modalTitle && !this.modalTitle.includes('tahun') && !this.modalTitle.includes('Undefined Age');
         },
         levelStreamSeries() {
             return [
@@ -1058,6 +1095,7 @@ import VueApexCharts from 'vue3-apexcharts';
                 areas: area,
                 witel: participant.witel,  // Preserve witel
                 role: participant.role || '-', // Pastikan role ditampilkan
+                usia: participant.usia !== undefined && participant.usia !== null ? participant.usia : '-',
                 level: `${level.charAt(0).toUpperCase() + level.slice(1)} ${levelEmoji[level]}`
             })) || [];
             this.modal.show();
@@ -1107,6 +1145,7 @@ import VueApexCharts from 'vue3-apexcharts';
                             areas: stat.title,
                             witel: p.witel,  // Add witel to export
                             role: p.role || '-', // Tambahkan role ke ekspor
+                            usia: p.usia !== null && p.usia !== undefined ? p.usia : '-', // Add usia field
                             grade: p.grade,
                             level: this.getLevelWithEmoji(level)
                         });
@@ -1114,8 +1153,8 @@ import VueApexCharts from 'vue3-apexcharts';
                 });
             });
         
-            // Update headers to include Witel and Role
-            const headers = ['No.', 'Nama', 'TREG - Area', 'Witel', 'Role', 'Nilai', 'Level Stream'];
+            // Update headers to include Witel, Role, and Age
+            const headers = ['No.', 'Nama', 'TREG - Area', 'Witel', 'Role', 'Usia', 'Nilai', 'Level Stream'];
             const csvContent = [
                 headers,
                 ...allParticipants.map((p, index) => [
@@ -1124,6 +1163,7 @@ import VueApexCharts from 'vue3-apexcharts';
                     p.areas,
                     p.witel || '-',
                     p.role || '-', // Tambahkan role ke ekspor
+                    p.usia, // Now this will have the correct value
                     p.grade,
                     p.level
                 ])
@@ -1154,20 +1194,30 @@ import VueApexCharts from 'vue3-apexcharts';
             return this.filteredAreaStats.reduce((total, stat) => total + (stat[level] || 0), 0);
         },
         exportToExcel() {
-            // Create CSV content
-            const headers = ['No.', 'Nama', 'TREG - Area', 'Witel', 'Role', 'Nilai', 'Level Stream'];
-                const csvContent = [
-                    headers,
-                    ...this.selectedParticipants.map((p, index) => [
+            // Create CSV content with conditional headers
+            const baseHeaders = ['No.', 'Nama', 'TREG - Area', 'Witel', 'Role'];
+            const ageHeader = this.isLevelStreamModal ? [] : ['Usia'];
+            const endHeaders = ['Nilai', 'Level Stream'];
+            const headers = [...baseHeaders, ...ageHeader, ...endHeaders];
+            
+            const csvContent = [
+                headers,
+                ...this.selectedParticipants.map((p, index) => {
+                    const baseData = [
                         index + 1,
                         p.name,
                         p.areas,
                         p.witel || '-',
-                        p.role || '-', // Tambahkan role ke ekspor
+                        p.role || '-'
+                    ];
+                    const ageData = this.isLevelStreamModal ? [] : [p.usia !== null && p.usia !== undefined ? p.usia : '-'];
+                    const endData = [
                         p.grade,
                         p.level
-                    ])
-                ].map(row => row.join(',')).join('\n');
+                    ];
+                    return [...baseData, ...ageData, ...endData];
+                })
+            ].map(row => row.join(',')).join('\n');
 
             // Create and trigger download
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1458,6 +1508,176 @@ import VueApexCharts from 'vue3-apexcharts';
             const total = this.getTotalAllAgeSkill();
             if (total === 0) return '0%';
             return ((sum / total) * 100).toFixed(1) + '%';
+        },
+
+        showAgeSkillParticipants(ageGroup, skill, regionIndex) {
+            const levelEmoji = {
+                'starter': '🌱',
+                'basic': '🥉',
+                'intermediate': '🥈',
+                'advanced': '🥇',
+                'expert': '💎'
+            };
+            
+            // Format age group for display
+            let displayAgeGroup = ageGroup;
+            if (ageGroup === '0-20') displayAgeGroup = '=< 20 tahun';
+            else if (ageGroup === '21-30') displayAgeGroup = '21 - 30 tahun';
+            else if (ageGroup === '31-40') displayAgeGroup = '31 - 40 tahun';
+            else if (ageGroup === '41-50') displayAgeGroup = '41 - 50 tahun';
+            else if (ageGroup === '>50') displayAgeGroup = '> 50 tahun';
+            
+            // Get region name
+            const regionName = this.participantDistribution.treg_names[regionIndex];
+            
+            // Get participants data
+            let participants = [];
+            if (this.participantDistribution && 
+                this.participantDistribution.age_skill_participants && 
+                this.participantDistribution.age_skill_participants[ageGroup] && 
+                this.participantDistribution.age_skill_participants[ageGroup][skill] && 
+                this.participantDistribution.age_skill_participants[ageGroup][skill][regionIndex]) {
+                participants = this.participantDistribution.age_skill_participants[ageGroup][skill][regionIndex];
+            }
+            
+            // Set modal title and participants
+            this.modalTitle = `${regionName} - ${displayAgeGroup} - ${skill.charAt(0).toUpperCase() + skill.slice(1)} ${levelEmoji[skill]}`;
+            this.selectedParticipants = participants.map(participant => ({
+                ...participant,
+                areas: regionName,
+                witel: participant.witel || '-',
+                role: participant.role || '-',
+                usia: participant.usia !== undefined && participant.usia !== null ? participant.usia : '-',
+                level: `${skill.charAt(0).toUpperCase() + skill.slice(1)} ${levelEmoji[skill]}`
+            }));
+            
+            // Show modal
+            this.modal.show();
+        },
+
+        showAllAgeSkillParticipants(ageGroup, skill) {
+            const levelEmoji = {
+                'starter': '🌱',
+                'basic': '🥉',
+                'intermediate': '🥈',
+                'advanced': '🥇',
+                'expert': '💎'
+            };
+            
+            // Format age group for display
+            let displayAgeGroup = ageGroup;
+            if (ageGroup === '0-20') displayAgeGroup = '=< 20 tahun';
+            else if (ageGroup === '21-30') displayAgeGroup = '21 - 30 tahun';
+            else if (ageGroup === '31-40') displayAgeGroup = '31 - 40 tahun';
+            else if (ageGroup === '41-50') displayAgeGroup = '41 - 50 tahun';
+            else if (ageGroup === '>50') displayAgeGroup = '> 50 tahun';
+            
+            // Get all participants for this age group and skill across all regions
+            const allParticipants = [];
+            this.filteredTregIndices.forEach(regionIndex => {
+                const regionName = this.participantDistribution.treg_names[regionIndex];
+                
+                if (this.participantDistribution && 
+                    this.participantDistribution.age_skill_participants && 
+                    this.participantDistribution.age_skill_participants[ageGroup] && 
+                    this.participantDistribution.age_skill_participants[ageGroup][skill] && 
+                    this.participantDistribution.age_skill_participants[ageGroup][skill][regionIndex]) {
+                    
+                    const participants = this.participantDistribution.age_skill_participants[ageGroup][skill][regionIndex];
+                    participants.forEach(p => {
+                        allParticipants.push({
+                            ...p,
+                            areas: regionName,
+                            witel: p.witel || '-',
+                            role: p.role || '-',
+                            level: `${skill.charAt(0).toUpperCase() + skill.slice(1)} ${levelEmoji[skill]}`
+                        });
+                    });
+                }
+            });
+            
+            // Set modal title and participants
+            this.modalTitle = `All Regions - ${displayAgeGroup} - ${skill.charAt(0).toUpperCase() + skill.slice(1)} ${levelEmoji[skill]}`;
+            this.selectedParticipants = allParticipants;
+            
+            // Show modal
+            this.modal.show();
+        },
+        showAgeSkillParticipantsUndefined(skill, regionIndex) {
+            const levelEmoji = {
+                'starter': '🌱',
+                'basic': '🥉',
+                'intermediate': '🥈',
+                'advanced': '🥇',
+                'expert': '💎'
+            };
+            
+            // Get region name
+            const regionName = this.participantDistribution.treg_names[regionIndex];
+            
+            // Get participants data
+            let participants = [];
+            if (this.participantDistribution && 
+                this.participantDistribution.age_skill_participants && 
+                this.participantDistribution.age_skill_participants['undefined'] && 
+                this.participantDistribution.age_skill_participants['undefined'][skill] && 
+                this.participantDistribution.age_skill_participants['undefined'][skill][regionIndex]) {
+                participants = this.participantDistribution.age_skill_participants['undefined'][skill][regionIndex];
+            }
+            
+            // Set modal title and participants
+            this.modalTitle = `${regionName} - Undefined Age - ${skill.charAt(0).toUpperCase() + skill.slice(1)} ${levelEmoji[skill]}`;
+            this.selectedParticipants = participants.map(participant => ({
+                ...participant,
+                areas: regionName,
+                witel: participant.witel || '-',
+                role: participant.role || '-',
+                usia: participant.usia !== undefined && participant.usia !== null ? participant.usia : '-',
+                level: `${skill.charAt(0).toUpperCase() + skill.slice(1)} ${levelEmoji[skill]}`
+            }));
+            
+            // Show modal
+            this.modal.show();
+        },
+        showAllAgeSkillParticipantsUndefined(skill) {
+            const levelEmoji = {
+                'starter': '🌱',
+                'basic': '🥉',
+                'intermediate': '🥈',
+                'advanced': '🥇',
+                'expert': '💎'
+            };
+            
+            // Get all participants for undefined age group and this skill across all regions
+            const allParticipants = [];
+            this.filteredTregIndices.forEach(regionIndex => {
+                const regionName = this.participantDistribution.treg_names[regionIndex];
+                
+                if (this.participantDistribution && 
+                    this.participantDistribution.age_skill_participants && 
+                    this.participantDistribution.age_skill_participants['undefined'] && 
+                    this.participantDistribution.age_skill_participants['undefined'][skill] && 
+                    this.participantDistribution.age_skill_participants['undefined'][skill][regionIndex]) {
+                    
+                    const participants = this.participantDistribution.age_skill_participants['undefined'][skill][regionIndex];
+                    participants.forEach(p => {
+                        allParticipants.push({
+                            ...p,
+                            areas: regionName,
+                            witel: p.witel || '-',
+                            role: p.role || '-',
+                            level: `${skill.charAt(0).toUpperCase() + skill.slice(1)} ${levelEmoji[skill]}`
+                        });
+                    });
+                }
+            });
+            
+            // Set modal title and participants
+            this.modalTitle = `All Regions - Undefined Age - ${skill.charAt(0).toUpperCase() + skill.slice(1)} ${levelEmoji[skill]}`;
+            this.selectedParticipants = allParticipants;
+            
+            // Show modal
+            this.modal.show();
         },
         }
     }

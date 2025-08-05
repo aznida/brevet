@@ -268,8 +268,17 @@ class DashboardController extends Controller
                 '6-10' => [],
                 '>10' => []
             ],
-            // New data structure for age-skill distribution
+            // Data structure for age-skill distribution
             'age_skill_distribution' => [
+                '0-20' => [],
+                '21-30' => [],
+                '31-40' => [],
+                '41-50' => [],
+                '>50' => [],
+                'undefined' => []
+            ],
+            // New data structure for age-skill participants
+            'age_skill_participants' => [
                 '0-20' => [],
                 '21-30' => [],
                 '31-40' => [],
@@ -306,7 +315,7 @@ class DashboardController extends Controller
             // Count participants age range by skill level
             $ageSkillGroups = [
                 '0-20' => [
-                  'starter' => 0,
+                    'starter' => 0,
                     'basic' => 0,
                     'intermediate' => 0,
                     'advanced' => 0,
@@ -346,6 +355,52 @@ class DashboardController extends Controller
                     'intermediate' => 0,
                     'advanced' => 0,
                     'expert' => 0
+                ],
+            ];
+            
+            // Store participants by age group and skill level
+            $ageSkillParticipants = [
+                '0-20' => [
+                    'starter' => [],
+                    'basic' => [],
+                    'intermediate' => [],
+                    'advanced' => [],
+                    'expert' => []
+                ],
+                '21-30' => [
+                    'starter' => [],
+                    'basic' => [],
+                    'intermediate' => [],
+                    'advanced' => [],
+                    'expert' => []
+                ],
+                '31-40' => [
+                    'starter' => [],
+                    'basic' => [],
+                    'intermediate' => [],
+                    'advanced' => [],
+                    'expert' => []
+                ],
+                '41-50' => [
+                    'starter' => [],
+                    'basic' => [],
+                    'intermediate' => [],
+                    'advanced' => [],
+                    'expert' => []
+                ],
+                '>50' => [
+                    'starter' => [],
+                    'basic' => [],
+                    'intermediate' => [],
+                    'advanced' => [],
+                    'expert' => []
+                ],
+                'undefined' => [
+                    'starter' => [],
+                    'basic' => [],
+                    'intermediate' => [],
+                    'advanced' => [],
+                    'expert' => []
                 ],
             ];
             
@@ -422,23 +477,72 @@ class DashboardController extends Controller
                         if (!empty($examTypeAverages) && $weightedSum > 0) {
                             $averageGrade = round($weightedSum, 2);
                             
-                            // In getParticipantDistribution method, update the categorization to match
-                            // Categorize based on average grade (around line 414)
+                            // Determine skill level based on average grade
+                            $skillLevel = '';
                             if ($averageGrade >= 0 && $averageGrade <= 40) {
+                                $skillLevel = 'starter';
                                 $ageSkillGroups[$ageGroup]['starter']++;
+                                
+                                // Add participant to the appropriate age-skill group
+                                $ageSkillParticipants[$ageGroup]['starter'][] = [
+                                    'name' => $participant->name,
+                                    'witel' => $participant->witel,
+                                    'role' => $participant->role,
+                                    'usia' => $participant->getUsiaAttribute(),
+                                    'grade' => $averageGrade
+                                ];
                             } elseif ($averageGrade <= 60) {
+                                $skillLevel = 'basic';
                                 $ageSkillGroups[$ageGroup]['basic']++;
+                                
+                                // Add participant to the appropriate age-skill group
+                                $ageSkillParticipants[$ageGroup]['basic'][] = [
+                                    'name' => $participant->name,
+                                    'witel' => $participant->witel,
+                                    'role' => $participant->role,
+                                    'usia' => $participant->getUsiaAttribute(),
+                                    'grade' => $averageGrade
+                                ];
                             } elseif ($averageGrade <= 75) {
+                                $skillLevel = 'intermediate';
                                 $ageSkillGroups[$ageGroup]['intermediate']++;
+                                
+                                // Add participant to the appropriate age-skill group
+                                $ageSkillParticipants[$ageGroup]['intermediate'][] = [
+                                    'name' => $participant->name,
+                                    'witel' => $participant->witel,
+                                    'role' => $participant->role,
+                                    'usia' => $participant->getUsiaAttribute(),
+                                    'grade' => $averageGrade
+                                ];
                             } elseif ($averageGrade <= 90) {
+                                $skillLevel = 'advanced';
                                 $ageSkillGroups[$ageGroup]['advanced']++;
+                                
+                                // Add participant to the appropriate age-skill group
+                                $ageSkillParticipants[$ageGroup]['advanced'][] = [
+                                    'name' => $participant->name,
+                                    'witel' => $participant->witel,
+                                    'role' => $participant->role,
+                                    'usia' => $participant->getUsiaAttribute(),
+                                    'grade' => $averageGrade
+                                ];
                             } else {
+                                $skillLevel = 'expert';
                                 $ageSkillGroups[$ageGroup]['expert']++;
+                                
+                                // Add participant to the appropriate age-skill group
+                                $ageSkillParticipants[$ageGroup]['expert'][] = [
+                                    'name' => $participant->name,
+                                    'witel' => $participant->witel,
+                                    'role' => $participant->role,
+                                    'usia' => $participant->getUsiaAttribute(),
+                                    'grade' => $averageGrade
+                                ];
                             }
                         }
                     }
                 }
-
             }
             
             $result['age_groups']['0-20'][] = $ageGroups['0-20'];
@@ -468,6 +572,18 @@ class DashboardController extends Controller
                 }
             }
             
+            // Add age-skill participants for each age group
+            foreach ($ageSkillParticipants as $ageGroup => $skillParticipants) {
+                foreach ($skillParticipants as $skill => $participants) {
+                    if (!isset($result['age_skill_participants'][$ageGroup])) {
+                        $result['age_skill_participants'][$ageGroup] = [];
+                    }
+                    if (!isset($result['age_skill_participants'][$ageGroup][$skill])) {
+                        $result['age_skill_participants'][$ageGroup][$skill] = [];
+                    }
+                    $result['age_skill_participants'][$ageGroup][$skill][] = $participants;
+                }
+            }
         }
         
         return $result;
@@ -477,4 +593,4 @@ class DashboardController extends Controller
 // Around line 43, you likely have something like:
 $participants = Participant::with('grades')->get();
 
-// Make sure your Grade model exists and has the correct table/fields
+
