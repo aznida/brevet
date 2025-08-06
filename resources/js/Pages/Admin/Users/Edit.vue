@@ -5,7 +5,7 @@
     <div class="container-fluid mb-5 mt-5">
         <div class="row">
             <div class="col-md-12">
-                <Link :href="route('admin.users.index')" class="btn btn-md btn-primary border-0 shadow mb-3" type="button"><i class="fa fa-long-arrow-alt-left me-2"></i> Kembali</Link>
+                <Link href="/admin/users" class="btn btn-md btn-primary border-0 shadow mb-3" type="button"><i class="fa fa-long-arrow-alt-left me-2"></i> Kembali</Link>
                 <div class="card border-0 shadow">
                     <div class="card-body">
                         <h5><i class="fa fa-user"></i> Edit User</h5>
@@ -88,7 +88,8 @@
         //register components
         components: {
             Head,
-            Link
+            Link,
+            router,
         },
 
         //props
