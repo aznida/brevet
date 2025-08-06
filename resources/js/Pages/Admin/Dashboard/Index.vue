@@ -878,9 +878,7 @@ import VueApexCharts from 'vue3-apexcharts';
                 .filter(index => index !== null);
         },
         isLevelStreamModal() {
-            // Level stream modal titles have format: "Area - Level"
-            // Age-skill modal titles have format: "Region - Age Group - Skill"
-            return this.modalTitle && !this.modalTitle.includes('tahun') && !this.modalTitle.includes('Undefined Age');
+            return this.modalTitle && this.modalTitle.includes('Level');
         },
         levelStreamSeries() {
             return [
@@ -1143,18 +1141,19 @@ import VueApexCharts from 'vue3-apexcharts';
                         allParticipants.push({
                             name: p.name,
                             areas: stat.title,
-                            witel: p.witel,  // Add witel to export
-                            role: p.role || '-', // Tambahkan role ke ekspor
-                            usia: p.usia !== null && p.usia !== undefined ? p.usia : '-', // Add usia field
+                            witel: p.witel,
+                            role: p.role || '-',
+                            usia: p.usia !== null && p.usia !== undefined ? p.usia : '-',
                             grade: p.grade,
                             level: this.getLevelWithEmoji(level)
                         });
                     });
                 });
             });
-        
-            // Update headers to include Witel, Role, and Age
-            const headers = ['No.', 'Nama', 'TREG - Area', 'Witel', 'Role', 'Usia', 'Nilai', 'Level Stream'];
+
+            // Level Stream table should NEVER include Usia column
+            const headers = ['No.', 'Nama', 'TREG - Area', 'Witel', 'Role', 'Nilai', 'Level Stream'];
+            
             const csvContent = [
                 headers,
                 ...allParticipants.map((p, index) => [
@@ -1162,8 +1161,7 @@ import VueApexCharts from 'vue3-apexcharts';
                     p.name,
                     p.areas,
                     p.witel || '-',
-                    p.role || '-', // Tambahkan role ke ekspor
-                    p.usia, // Now this will have the correct value
+                    p.role || '-',
                     p.grade,
                     p.level
                 ])
@@ -1174,7 +1172,7 @@ import VueApexCharts from 'vue3-apexcharts';
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             link.setAttribute('href', url);
-            link.setAttribute('download', 'Level_Stream_per_Regional.csv');
+            link.setAttribute('download', `All_Participants_${this.modalTitle.replace(/[^\w\s]/gi, '_')}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
